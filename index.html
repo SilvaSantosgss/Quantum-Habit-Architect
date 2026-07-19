@@ -2752,8 +2752,14 @@
                 <!-- Left Column: Action Center & Filters -->
                 <div class="space-y-4 sm:space-y-6">
                     <!-- Advanced Creation Trigger -->
-                    <div class="bg-gradient-to-br from-indigo-900/40 to-slate-900/40 border border-indigo-500/30 rounded-2xl p-4 sm:p-6 relative overflow-hidden shadow-xl">
-                        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                    <style>
+                        @media (max-width: 767px) {
+                            #initProtocolCard { background: none !important; border: none !important; padding: 0 !important; box-shadow: none !important; }
+                            #initProtocolCard h2, #initProtocolCard p, #initProtocolCard .protocol-glow { display: none !important; }
+                        }
+                    </style>
+                    <div id="initProtocolCard" class="bg-gradient-to-br from-indigo-900/40 to-slate-900/40 border border-indigo-500/30 rounded-2xl p-4 sm:p-6 relative overflow-hidden shadow-xl">
+                        <div class="protocol-glow absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
                         <h2 class="text-base sm:text-xl font-bold text-white mb-1.5 flex items-center gap-2">Initialize Protocol</h2>
                         <p class="text-[10px] sm:text-xs text-slate-400 mb-4 sm:mb-6 leading-relaxed">Construct a new high-precision habit node.</p>
                         <button onclick="openCreateModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs sm:text-sm py-2.5 sm:py-3 px-4 rounded-xl transition shadow-lg shadow-indigo-900/50 flex justify-center items-center gap-2 cursor-pointer relative z-10">
@@ -3151,6 +3157,28 @@
                 <div class="text-center mb-4 sm:mb-8">
                     <h2 class="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">Data Control Center</h2>
                     <p class="text-slate-400 text-xs sm:text-sm">Offline backups, encryption payload parsing, and cloud mirroring.</p>
+                </div>
+
+                <style>
+                    #mobileAccountPanel { display: none; }
+                    @media (max-width: 767px) {
+                        #mobileAccountPanel { display: flex; flex-direction: column; }
+                        #accountBox { display: none !important; }
+                        header p { display: none !important; }
+                    }
+                </style>
+                <div id="mobileAccountPanel" class="gap-3 bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="user" class="w-4 h-4 text-indigo-400 shrink-0"></i>
+                        <span id="accountEmailM" class="text-sm text-slate-200 truncate flex-1 min-w-0">Account</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="syncDotM" class="w-2 h-2 rounded-full" style="background:#64748b"></span>
+                        <span id="syncStatusM" class="text-xs text-slate-400 font-medium">Offline</span>
+                    </div>
+                    <button onclick="logoutUser()" class="w-full flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 rounded-xl px-3 py-2.5 text-sm font-semibold transition cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+                    </button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -4750,6 +4778,10 @@
             if (el) el.textContent = text;
             const tones = { ok: '#34d399', busy: '#fbbf24', off: '#64748b', err: '#f87171' };
             if (dot) dot.style.background = tones[tone] || tones.off;
+            const elM = document.getElementById('syncStatusM');
+            const dotM = document.getElementById('syncDotM');
+            if (elM) elM.textContent = text;
+            if (dotM) dotM.style.background = tones[tone] || tones.off;
         }
 
         function fbAuthMessage(code) {
@@ -4915,6 +4947,8 @@
                     if (acct) acct.style.display = 'flex';
                     const em = document.getElementById('accountEmail');
                     if (em) em.textContent = user.email || 'Account';
+                    const emM = document.getElementById('accountEmailM');
+                    if (emM) emM.textContent = user.email || 'Account';
                     setSyncStatus('Connecting...', 'busy');
                     showAuthOverlay(false);
                     const btn = document.getElementById('authSubmitBtn');
