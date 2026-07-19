@@ -3310,6 +3310,197 @@
                         <div id="journalLogsHistory" class="bg-slate-950/60 shadow-inner rounded-xl p-3 sm:p-4 border border-slate-900 max-h-32 sm:max-h-40 overflow-y-auto text-[10px] sm:text-xs space-y-2 flex-grow"></div>
                     </div>
                 </div>
+
+                <style>
+                    #workoutTrackerSection { margin-top: 4px; }
+                    #workoutTrackerSection .wt-wrap { display:grid; grid-template-columns: 1fr 300px; gap:14px; align-items:start; }
+                    #workoutTrackerSection .wt-panel { background: rgba(2,6,23,0.5); border:1px solid rgba(30,41,59,0.8); border-radius:14px; padding:14px; }
+                    #workoutTrackerSection .wt-pill { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; border-radius:999px; background: rgba(16,185,129,0.12); color:#34d399; font-size:11px; font-weight:700; }
+                    #workoutTrackerSection .wt-dot { width:7px; height:7px; border-radius:50%; background:currentColor; }
+                    #workoutTrackerSection .wt-exname { font-size:26px; font-weight:800; letter-spacing:-0.03em; color:#fff; margin:10px 0 2px; }
+                    #workoutTrackerSection .wt-cue { color:#94a3b8; font-size:13px; margin:0 0 14px; }
+                    #workoutTrackerSection .wt-bigtimer { display:grid; place-items:center; min-height:130px; background:linear-gradient(135deg, rgba(99,102,241,0.15), rgba(2,6,23,0.4)); border:1px solid rgba(99,102,241,0.25); border-radius:14px; margin-bottom:12px; }
+                    #workoutTrackerSection .wt-timernum { font-size:clamp(46px,12vw,72px); font-weight:800; letter-spacing:-0.05em; color:#fff; font-variant-numeric:tabular-nums; line-height:1; text-align:center; }
+                    #workoutTrackerSection .wt-timercap { color:#94a3b8; font-size:12px; text-align:center; margin-top:6px; }
+                    #workoutTrackerSection .wt-controls { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+                    #workoutTrackerSection .wt-controls.wt-secondary { grid-template-columns:repeat(2,1fr); margin-top:8px; }
+                    #workoutTrackerSection .wt-btn { min-height:42px; border:1px solid rgba(30,41,59,0.9); border-radius:10px; background:#0f172a; color:#e2e8f0; cursor:pointer; font-weight:700; font-size:12px; transition:all .12s ease; }
+                    #workoutTrackerSection .wt-btn:hover { background:#1e293b; }
+                    #workoutTrackerSection .wt-btn:disabled { opacity:.4; cursor:not-allowed; }
+                    #workoutTrackerSection .wt-btn.wt-primary { background:#4f46e5; border-color:#4f46e5; color:#fff; }
+                    #workoutTrackerSection .wt-btn.wt-primary:hover { background:#4338ca; }
+                    #workoutTrackerSection .wt-btn.wt-done { background:#059669; border-color:#059669; color:#fff; }
+                    #workoutTrackerSection .wt-btn.wt-done:hover { background:#047857; }
+                    #workoutTrackerSection .wt-danger { color:#fb7185; }
+                    #workoutTrackerSection .wt-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; }
+                    #workoutTrackerSection .wt-metric { padding:10px; border-radius:12px; background:rgba(2,6,23,0.6); border:1px solid rgba(30,41,59,0.6); }
+                    #workoutTrackerSection .wt-metric b { display:block; font-size:20px; color:#fff; font-variant-numeric:tabular-nums; }
+                    #workoutTrackerSection .wt-metric span { color:#94a3b8; font-size:11px; }
+                    #workoutTrackerSection .wt-notes { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+                    #workoutTrackerSection .wt-field { display:grid; gap:5px; }
+                    #workoutTrackerSection .wt-field label { color:#94a3b8; font-size:11px; font-weight:700; }
+                    #workoutTrackerSection .wt-input, #workoutTrackerSection .wt-select, #workoutTrackerSection .wt-note { width:100%; border:1px solid rgba(30,41,59,0.9); border-radius:10px; background:#0f172a; color:#e2e8f0; padding:9px; outline:none; }
+                    #workoutTrackerSection .wt-input:focus, #workoutTrackerSection .wt-select:focus, #workoutTrackerSection .wt-note:focus { border-color:#4f46e5; }
+                    #workoutTrackerSection .wt-note { grid-column:1/-1; resize:vertical; min-height:60px; }
+                    #workoutTrackerSection .wt-side h4 { margin:0; font-size:14px; color:#fff; }
+                    #workoutTrackerSection .wt-list { display:grid; gap:8px; margin-top:10px; }
+                    #workoutTrackerSection .wt-item { display:grid; grid-template-columns:24px 1fr auto; gap:8px; align-items:center; padding:9px; border:1px solid rgba(30,41,59,0.9); border-radius:10px; background:#0f172a; }
+                    #workoutTrackerSection .wt-item.active { border-color:#4f46e5; background:rgba(99,102,241,0.12); }
+                    #workoutTrackerSection .wt-item.completed { opacity:.6; }
+                    #workoutTrackerSection .wt-item.completed .wt-iname { text-decoration:line-through; }
+                    #workoutTrackerSection .wt-check { width:22px; height:22px; border-radius:6px; border:1px solid rgba(30,41,59,0.9); display:grid; place-items:center; color:#fff; font-size:13px; background:#020617; }
+                    #workoutTrackerSection .wt-item.completed .wt-check { background:#059669; border-color:#059669; }
+                    #workoutTrackerSection .wt-iname { font-weight:700; font-size:13px; color:#e2e8f0; }
+                    #workoutTrackerSection .wt-imeta { color:#94a3b8; font-size:11px; margin-top:2px; }
+                    #workoutTrackerSection .wt-mini { min-height:32px; padding:0 10px; font-size:11px; border:1px solid rgba(30,41,59,0.9); border-radius:8px; background:#0f172a; color:#e2e8f0; cursor:pointer; font-weight:700; }
+                    #workoutTrackerSection .wt-mini:hover { background:#1e293b; }
+                    #workoutTrackerSection .wt-bar { height:9px; background:rgba(30,41,59,0.9); border-radius:999px; overflow:hidden; margin-top:6px; }
+                    #workoutTrackerSection .wt-barfill { height:100%; width:0%; background:#059669; border-radius:inherit; transition:width .2s ease; }
+                    #workoutTrackerSection .wt-proglabel { display:flex; justify-content:space-between; color:#94a3b8; font-size:12px; margin-top:12px; }
+                    @media (max-width:767px) {
+                        #workoutTrackerSection .wt-wrap { grid-template-columns:1fr; }
+                        #workoutTrackerSection .wt-controls { grid-template-columns:repeat(2,1fr); }
+                        #workoutTrackerSection .wt-metrics { grid-template-columns:repeat(2,1fr); }
+                        #workoutTrackerSection .wt-notes { grid-template-columns:1fr; }
+                    }
+                </style>
+                <div id="workoutTrackerSection" class="hidden">
+                    <div class="flex items-center justify-between mb-3 pt-2 border-t border-slate-800">
+                        <div>
+                            <span class="text-[9px] sm:text-[10px] font-mono text-indigo-400 uppercase tracking-widest block mb-0.5 mt-3">Live Protocol Runner</span>
+                            <h3 class="text-base sm:text-lg font-bold text-white">Workout Live Tracker</h3>
+                        </div>
+                        <div class="wt-panel" style="padding:8px 14px; text-align:right;">
+                            <div style="color:#94a3b8; font-size:11px;">Session</div>
+                            <div id="wtSessionTime" style="font-size:24px; font-weight:800; color:#fff; font-variant-numeric:tabular-nums;">00:00</div>
+                        </div>
+                    </div>
+                    <div class="wt-wrap">
+                        <div class="wt-panel">
+                            <span class="wt-pill"><span class="wt-dot"></span><span id="wtStatus">Ready</span></span>
+                            <h4 class="wt-exname" id="wtExercise">Squat</h4>
+                            <p class="wt-cue" id="wtCue">15 reps · focus on clean depth and steady breathing.</p>
+                            <div class="wt-bigtimer"><div><div class="wt-timernum" id="wtTimer">00:30</div><div class="wt-timercap" id="wtTimerCap">Rest timer</div></div></div>
+                            <div class="wt-controls">
+                                <button class="wt-btn wt-primary" id="wtStartPause">Start</button>
+                                <button class="wt-btn" id="wtExBtn">Exercise timer</button>
+                                <button class="wt-btn" id="wtRest30">30s rest</button>
+                                <button class="wt-btn wt-done" id="wtMarkDone">Done + next</button>
+                            </div>
+                            <div class="wt-controls wt-secondary">
+                                <button class="wt-btn" id="wtRest60">60s rest</button>
+                                <button class="wt-btn" id="wtStop">Stop timer</button>
+                            </div>
+                            <div class="wt-metrics">
+                                <div class="wt-metric"><b id="wtDone">0</b><span>done</span></div>
+                                <div class="wt-metric"><b id="wtRound">1</b><span>round</span></div>
+                                <div class="wt-metric"><b id="wtIntensity">—</b><span>intensity</span></div>
+                                <div class="wt-metric"><b id="wtPct">0%</b><span>complete</span></div>
+                            </div>
+                            <div class="wt-notes">
+                                <div class="wt-field"><label for="wtRoundInput">Rounds completed</label><input id="wtRoundInput" class="wt-input" type="number" min="1" max="10" value="1"></div>
+                                <div class="wt-field"><label for="wtIntensityInput">Intensity</label><select id="wtIntensityInput" class="wt-select"><option>Moderate</option><option>Easy</option><option>Hard</option></select></div>
+                                <textarea id="wtNoteInput" class="wt-note" placeholder="Quick note: energy, pain, changes, or reps…"></textarea>
+                            </div>
+                        </div>
+                        <div class="wt-panel wt-side">
+                            <div class="flex items-center justify-between">
+                                <h4>Today's routine</h4>
+                                <button class="wt-mini wt-danger" id="wtReset">Reset</button>
+                            </div>
+                            <select id="wtRoutine" class="wt-select" style="margin-top:10px;">
+                                <option value="strengthA">Strength A</option>
+                                <option value="cardio">Moderate cardio</option>
+                                <option value="strengthB">Strength B + core</option>
+                                <option value="recovery">Active recovery</option>
+                                <option value="hiit">Light HIIT</option>
+                            </select>
+                            <div class="wt-list" id="wtList"></div>
+                            <div class="wt-proglabel"><span>Progress</span><span id="wtProgText">0 of 6</span></div>
+                            <div class="wt-bar"><div class="wt-barfill" id="wtBarFill"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                (function(){
+                    const routines = {
+                        strengthA: [["Squat","15 reps","Clean depth and steady breathing."],["Push-up","8–12 reps","Keep body straight; incline if needed."],["Alternating lunge","10/leg","Control the knee and stand tall."],["Backpack row","12–15 reps","Pull elbows back; squeeze shoulder blades."],["Plank","30–45 sec","Brace core; avoid sagging hips."],["Glute bridge","15 reps","Pause at the top."]],
+                        cardio: [["Warm up","5 min","Easy pace."],["Steady cardio","25–35 min","You can talk, but not sing."],["Cool down","5 min","Slow breathing."]],
+                        strengthB: [["Backpack squat","12–15 reps","Keep weight close."],["Incline push-up","10–15 reps","Smooth reps."],["Backpack deadlift","12–15 reps","Hinge, neutral back."],["Shoulder press","10–12 reps","Ribs down; press overhead."],["Dead bug","10/side","Slow and controlled."],["Side plank","20–30 sec/side","Stack shoulders and hips."]],
+                        recovery: [["Light walk","20–30 min","Recover, not exhaust."],["Mobility","10 min","Hips, ankles, shoulders."],["Breathing","3 min","Slow nasal breathing."]],
+                        hiit: [["Strength circuit","3 rounds","Repeat Strength A with clean form."],["HIIT interval","20s effort","Fast movement."],["Rest interval","40s rest","Recover fully."],["Repeat","10 rounds","Controlled intensity."]]
+                    };
+                    const LS = "workoutWidgetState";
+                    let s = {}; try { s = JSON.parse(localStorage.getItem(LS) || "{}") || {}; } catch(e){ s = {}; }
+                    let routineKey = s.routineKey || "strengthA";
+                    let completed = new Set(s.completed || []);
+                    let currentIndex = s.currentIndex || 0;
+                    let sessionSeconds = s.sessionSeconds || 0;
+                    let sessionRunning = false;
+                    let restRemaining = (s.restRemaining != null ? s.restRemaining : 30);
+                    let restRunning = false;
+                    let timerMode = null;
+                    let sessionInterval = null, restInterval = null;
+                    let inited = false;
+                    const $ = (id) => document.getElementById(id);
+                    const fmt = (x) => String(Math.floor(x/60)).padStart(2,"0") + ":" + String(x%60).padStart(2,"0");
+                    const secFromMeta = (meta) => { const m = String(meta).match(/(\d+)\s*(?:–|-)?\s*(\d+)?\s*(sec|s|min)/i); if(!m) return null; const n = Number(m[2]||m[1]); return /min/i.test(m[3]) ? n*60 : n; };
+                    const isTimed = (meta) => secFromMeta(meta) !== null;
+                    function toast(msg){ if(window.showToast){ try{ showToast(msg,'success'); }catch(e){} } }
+                    function save(){ localStorage.setItem(LS, JSON.stringify({ routineKey, completed:[...completed], currentIndex, sessionSeconds, restRemaining, rounds: $("wtRoundInput")?$("wtRoundInput").value:1, intensity: $("wtIntensityInput")?$("wtIntensityInput").value:"Moderate", note: $("wtNoteInput")?$("wtNoteInput").value:"" })); }
+                    function render(){
+                        if(!$("wtExercise")) return;
+                        const routine = routines[routineKey];
+                        if(currentIndex >= routine.length) currentIndex = routine.length - 1;
+                        const cur = routine[currentIndex];
+                        $("wtExercise").textContent = cur[0];
+                        $("wtCue").textContent = cur[1] + " · " + cur[2];
+                        $("wtSessionTime").textContent = fmt(sessionSeconds);
+                        $("wtTimer").textContent = fmt(restRemaining);
+                        $("wtTimerCap").textContent = timerMode === "exercise" ? "Exercise timer" : "Rest timer";
+                        const timed = isTimed(cur[1]);
+                        $("wtExBtn").disabled = !timed;
+                        $("wtExBtn").textContent = timed ? "Exercise timer" : "No timer needed";
+                        $("wtRound").textContent = $("wtRoundInput").value || "1";
+                        $("wtIntensity").textContent = $("wtIntensityInput").value;
+                        $("wtStatus").textContent = sessionRunning ? "Training" : restRunning ? "Resting" : "Ready";
+                        $("wtStartPause").textContent = sessionRunning ? "Pause" : "Start";
+                        const done = completed.size;
+                        const pct = Math.round(done / routine.length * 100);
+                        $("wtDone").textContent = done;
+                        $("wtPct").textContent = pct + "%";
+                        $("wtProgText").textContent = done + " of " + routine.length;
+                        $("wtBarFill").style.width = pct + "%";
+                        $("wtList").innerHTML = routine.map((ex,i) => '<div class="wt-item ' + (i===currentIndex?"active":"") + ' ' + (completed.has(i)?"completed":"") + '"><div class="wt-check">' + (completed.has(i)?"✓":"") + '</div><div><div class="wt-iname">' + ex[0] + '</div><div class="wt-imeta">' + ex[1] + '</div></div><button class="wt-mini" data-wtjump="' + i + '">Go</button></div>').join("");
+                        document.querySelectorAll("[data-wtjump]").forEach(btn => btn.onclick = () => { stopRest(); currentIndex = Number(btn.dataset.wtjump); render(); save(); });
+                        save();
+                    }
+                    function startSession(){ sessionRunning = !sessionRunning; if(sessionRunning){ sessionInterval = setInterval(() => { sessionSeconds++; render(); }, 1000); } else { clearInterval(sessionInterval); } render(); }
+                    function stopRest(resetTo){ restRunning = false; timerMode = null; clearInterval(restInterval); if(resetTo != null) restRemaining = resetTo; }
+                    function countdown(seconds, mode){ restRemaining = seconds; restRunning = true; timerMode = mode; clearInterval(restInterval); restInterval = setInterval(() => { restRemaining--; if(restRemaining <= 0){ restRemaining = 0; const fm = timerMode; stopRest(); toast(fm === "exercise" ? "Exercise time done" : "Rest done — next set"); } render(); }, 1000); render(); }
+                    function startExerciseTimer(){ const meta = routines[routineKey][currentIndex][1]; const sec = secFromMeta(meta); if(!sec){ toast("This exercise uses reps"); return; } countdown(sec, "exercise"); }
+                    function markDone(){ stopRest(); completed.add(currentIndex); const routine = routines[routineKey]; const next = routine.findIndex((_,i) => i > currentIndex && !completed.has(i)); if(next !== -1) currentIndex = next; else if(completed.size === routine.length) toast("Workout complete"); render(); }
+                    function bind(){
+                        $("wtStartPause").onclick = startSession;
+                        $("wtExBtn").onclick = startExerciseTimer;
+                        $("wtRest30").onclick = () => countdown(30, "rest");
+                        $("wtRest60").onclick = () => countdown(60, "rest");
+                        $("wtStop").onclick = () => { stopRest(30); render(); };
+                        $("wtMarkDone").onclick = markDone;
+                        $("wtRoutine").onchange = (e) => { stopRest(30); routineKey = e.target.value; completed = new Set(); currentIndex = 0; render(); };
+                        $("wtReset").onclick = () => { completed = new Set(); currentIndex = 0; sessionSeconds = 0; restRemaining = 30; sessionRunning = false; stopRest(30); clearInterval(sessionInterval); render(); toast("Reset"); };
+                        ["wtRoundInput","wtIntensityInput","wtNoteInput"].forEach(id => $(id).addEventListener("input", render));
+                        $("wtRoutine").value = routineKey;
+                        if(s.rounds) $("wtRoundInput").value = s.rounds;
+                        if(s.intensity) $("wtIntensityInput").value = s.intensity;
+                        if(s.note) $("wtNoteInput").value = s.note;
+                    }
+                    window.WorkoutTracker = {
+                        open(){ const sec = $("workoutTrackerSection"); if(!sec) return; sec.classList.remove("hidden"); if(!inited){ bind(); inited = true; } render(); },
+                        hide(){ const sec = $("workoutTrackerSection"); if(sec) sec.classList.add("hidden"); }
+                    };
+                })();
+                </script>
             </div>
         </div>
     </div>
@@ -4305,6 +4496,11 @@
                 type: 'line', data: { labels, datasets: [{ data: chartData, borderColor: hexLine, backgroundColor: hexLine + '15', fill: true, stepped: true, pointRadius: 2 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 1, ticks: { stepSize: 1, callback: v => v===1 ? 'DONE' : '' }, grid: { color: 'rgba(255,255,255,0.02)' } }, x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } } } }
             });
+
+            if (window.WorkoutTracker) {
+                const hName = (typeof unescapeHTML === 'function' ? unescapeHTML(habit.name || '') : (habit.name || '')).trim().toLowerCase();
+                if (hName === 'workout') { WorkoutTracker.open(); } else { WorkoutTracker.hide(); }
+            }
 
             openModal('modalReport');
         }
