@@ -3873,6 +3873,14 @@
                         <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Notes (Optional)</label>
                         <textarea id="createTaskNotes" rows="2" placeholder="Details..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-sky-500 transition outline-none resize-none"></textarea>
                     </div>
+                    <div>
+                        <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Checklist (Optional)</label>
+                        <div class="flex items-center gap-2 mb-2">
+                            <input id="createTaskSubtaskInput" type="text" placeholder="Add a checklist item..." onkeydown="if(event.key==='Enter'){event.preventDefault();addCreateTaskSubtaskFromInput();}" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 transition" />
+                            <button type="button" onclick="addCreateTaskSubtaskFromInput()" class="shrink-0 rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs font-bold text-sky-200 hover:bg-sky-500/20 transition cursor-pointer">Add</button>
+                        </div>
+                        <div id="createTaskSubtaskList" class="space-y-1.5"></div>
+                    </div>
                 </div>
             </div>
 
@@ -4631,6 +4639,33 @@
             const inp = document.getElementById('createTaskTime');
             if (inp) inp.classList.toggle('hidden', !(cb && cb.checked));
         }
+        let createTaskSubtasks = [];
+        function renderCreateTaskSubtasks() {
+            const wrap = document.getElementById('createTaskSubtaskList');
+            if (!wrap) return;
+            if (!createTaskSubtasks.length) { wrap.innerHTML = `<div class="rounded-lg border border-dashed border-slate-800 py-3 text-center text-[11px] text-slate-600">No checklist items yet.</div>`; if (window.lucide) lucide.createIcons(); return; }
+            wrap.innerHTML = createTaskSubtasks.map(s => `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleCreateTaskSubtask('${s.id}')" class="h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" /><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteCreateTaskSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`).join('');
+            if (window.lucide) lucide.createIcons();
+        }
+        function addCreateTaskSubtaskFromInput() {
+            const inp = document.getElementById('createTaskSubtaskInput');
+            if (!inp) return;
+            const text = (inp.value || '').trim();
+            if (!text) return;
+            createTaskSubtasks.push({ id: 'sub_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), text: text, done: false });
+            inp.value = '';
+            renderCreateTaskSubtasks();
+        }
+        function toggleCreateTaskSubtask(sid) {
+            const s = createTaskSubtasks.find(x => x.id === sid);
+            if (s) s.done = !s.done;
+            renderCreateTaskSubtasks();
+        }
+        function deleteCreateTaskSubtask(sid) {
+            const i = createTaskSubtasks.findIndex(x => x.id === sid);
+            if (i >= 0) createTaskSubtasks.splice(i, 1);
+            renderCreateTaskSubtasks();
+        }
         function initCreateTaskForm() {
             const dateEl = document.getElementById('createTaskDate');
             if (dateEl) dateEl.value = getISODateString(new Date());
@@ -4642,6 +4677,9 @@
             if (cb) cb.checked = false;
             const tm = document.getElementById('createTaskTime');
             if (tm) { tm.value = ''; tm.classList.add('hidden'); }
+            createTaskSubtasks = [];
+            const stInput = document.getElementById('createTaskSubtaskInput'); if (stInput) stInput.value = '';
+            renderCreateTaskSubtasks();
             createTaskDays = [];
             setCreateTaskRecur('once');
             renderCreateTaskWeekdays();
@@ -4665,7 +4703,7 @@
                 createdAt: todayStr,
                 history: {},
                 notes: notes,
-                subtasks: [],
+                subtasks: createTaskSubtasks.map(s => ({ id: s.id, text: s.text, done: !!s.done })),
                 archived: false
             };
             if (todo.recur === 'weekly' && todo.days.length === 0) { showToast('Pick at least one weekday.', 'error'); return; }
