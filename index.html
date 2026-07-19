@@ -2958,7 +2958,7 @@
                     <div class="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                         <div>
                             <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-indigo-300">
-                                <i data-lucide="sparkles" class="h-3 w-3"></i> Habit RPG Ruleset
+                                <i data-lucide="sparkles" class="h-3 w-3"></i> <span id="gameRank">Rank I · Novice</span>
                             </div>
                             <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight text-white">Level up by executing habits.</h2>
                             <p class="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-400">Every completed habit gives XP, coins, and streak power. Missed habits damage HP and create recovery quests for tomorrow.</p>
@@ -3013,13 +3013,13 @@
                     </div>
                     <div class="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-4 sm:p-5">
                         <div class="mb-3 flex items-center gap-2">
-                            <div class="rounded-lg border border-amber-500/20 bg-amber-500/10 p-2"><i data-lucide="gift" class="h-4 w-4 text-amber-300"></i></div>
-                            <h3 class="text-sm font-bold text-white">Reward shop</h3>
+                            <div class="rounded-lg border border-amber-500/20 bg-amber-500/10 p-2"><i data-lucide="wallet" class="h-4 w-4 text-amber-300"></i></div>
+                            <h3 class="text-sm font-bold text-white">Your wallet</h3>
                         </div>
                         <div class="space-y-2 text-xs">
-                            <div class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2"><span class="text-slate-300">Small break</span><span class="font-mono text-amber-300">25 coins</span></div>
-                            <div class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2"><span class="text-slate-300">Movie / episode</span><span class="font-mono text-amber-300">60 coins</span></div>
-                            <div class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2"><span class="text-slate-300">Free night</span><span class="font-mono text-amber-300">120 coins</span></div>
+                            <div class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2"><span class="text-slate-300">Available</span><span id="walletAvailable2" class="font-mono text-amber-300">0</span></div>
+                            <div class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2"><span class="text-slate-300">Spent</span><span id="walletSpent" class="font-mono text-slate-400">0</span></div>
+                            <div class="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2"><span class="text-slate-300">Rewards redeemed</span><span id="walletRedeemed" class="font-mono text-slate-400">0</span></div>
                         </div>
                     </div>
                 </div>
@@ -3044,6 +3044,64 @@
                             <span id="gameMissedScore" class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-xs font-bold text-rose-300">0 missed</span>
                         </div>
                         <div id="gamePenaltyList" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="rounded-2xl border border-orange-500/20 bg-orange-950/10 p-4 text-center">
+                        <span class="block text-[9px] font-bold uppercase tracking-wider text-orange-300">Current Streak</span>
+                        <span id="gameCurrentStreak" class="mt-1 block text-xl sm:text-2xl font-extrabold text-orange-300 font-mono">0d</span>
+                    </div>
+                    <div class="rounded-2xl border border-amber-500/20 bg-amber-950/10 p-4 text-center">
+                        <span class="block text-[9px] font-bold uppercase tracking-wider text-amber-300">Best Streak</span>
+                        <span id="gameBestStreak" class="mt-1 block text-xl sm:text-2xl font-extrabold text-amber-300 font-mono">0d</span>
+                    </div>
+                    <div class="rounded-2xl border border-emerald-500/20 bg-emerald-950/10 p-4 text-center">
+                        <span class="block text-[9px] font-bold uppercase tracking-wider text-emerald-300">Coins Earned</span>
+                        <span id="walletEarned" class="mt-1 block text-xl sm:text-2xl font-extrabold text-emerald-300 font-mono">0</span>
+                    </div>
+                    <div class="rounded-2xl border border-indigo-500/20 bg-indigo-950/10 p-4 text-center">
+                        <span class="block text-[9px] font-bold uppercase tracking-wider text-indigo-300">Achievements</span>
+                        <span id="achieveCount" class="mt-1 block text-xl sm:text-2xl font-extrabold text-indigo-300 font-mono">0 / 0</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="rounded-2xl border border-amber-500/20 bg-slate-900/40 p-4 sm:p-6">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <div class="rounded-lg border border-amber-500/20 bg-amber-500/10 p-2"><i data-lucide="shopping-bag" class="h-4 w-4 text-amber-300"></i></div>
+                                <div>
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Reward shop</h3>
+                                    <p class="text-[10px] text-slate-500">Spend coins on real-life rewards.</p>
+                                </div>
+                            </div>
+                            <span class="rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-300"><span id="walletAvailable">0</span> coins</span>
+                        </div>
+                        <div id="gameRewardShop" class="space-y-2"></div>
+                        <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                            <input id="newRewardName" type="text" placeholder="New reward name" class="flex-grow rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-xs text-white placeholder-slate-600 focus:border-amber-500/50 focus:outline-none" />
+                            <input id="newRewardCost" type="number" min="1" placeholder="Cost" class="w-full sm:w-24 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-xs text-white placeholder-slate-600 focus:border-amber-500/50 focus:outline-none" />
+                            <button onclick="addCustomReward()" class="shrink-0 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-2 text-xs font-bold text-amber-200 hover:bg-amber-500/20 transition cursor-pointer">Add</button>
+                        </div>
+                        <div class="mt-5">
+                            <h4 class="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Redemption history</h4>
+                            <div id="gameRedemptionLog" class="space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <div class="rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-2"><i data-lucide="trophy" class="h-4 w-4 text-indigo-300"></i></div>
+                                <div>
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Achievements</h3>
+                                    <p class="text-[10px] text-slate-500">Unlock badges as you build momentum.</p>
+                                </div>
+                            </div>
+                            <span class="rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs font-bold text-indigo-300"><span id="achieveCount2">0 / 0</span></span>
+                        </div>
+                        <div id="gameAchievements" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                     </div>
                 </div>
             </div>
@@ -3855,12 +3913,16 @@
             if(lsCats) loadedCategories = lsCats;
         }
 
+        let loadedGame = { spentCoins: 0, redeemed: [], unlockedBadges: [], customRewards: [] };
+        try { const _g = JSON.parse(localStorage.getItem('quantum_sync_game')); if (_g && typeof _g === 'object') loadedGame = Object.assign(loadedGame, _g); } catch(e) {}
+
         let state = {
             habits: loadedHabits,
             categories: loadedCategories,
             currentDate: new Date(),
             selectedReportHabitId: null,
-            activeFilter: 'All'
+            activeFilter: 'All',
+            game: loadedGame
         };
 
         state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
@@ -4074,6 +4136,7 @@
         function saveToStorage() {
             localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits));
             localStorage.setItem('quantum_sync_categories', JSON.stringify(state.categories));
+            localStorage.setItem('quantum_sync_game', JSON.stringify(state.game || {}));
             updateDashboard();
             if(document.getElementById('section-calendar').classList.contains('active')) renderFullCalendarTab();
             cloudSave();
@@ -4842,9 +4905,175 @@
             lucide.createIcons();
         }
 
+        const GAME_RANKS = [
+            { min: 1, name: 'Novice' },
+            { min: 3, name: 'Apprentice' },
+            { min: 5, name: 'Adept' },
+            { min: 10, name: 'Expert' },
+            { min: 20, name: 'Master' },
+            { min: 35, name: 'Grandmaster' },
+            { min: 50, name: 'Legend' }
+        ];
+        function getRank(level) {
+            let r = GAME_RANKS[0], idx = 0;
+            GAME_RANKS.forEach((rank, i) => { if (level >= rank.min) { r = rank; idx = i; } });
+            return { name: r.name, index: idx + 1 };
+        }
+
+        const DEFAULT_REWARDS = [
+            { id: 'break', name: 'Small break', cost: 25, icon: 'coffee' },
+            { id: 'snack', name: 'Treat / snack', cost: 40, icon: 'cookie' },
+            { id: 'movie', name: 'Movie / episode', cost: 60, icon: 'clapperboard' },
+            { id: 'game1h', name: '1h gaming', cost: 90, icon: 'gamepad-2' },
+            { id: 'freenight', name: 'Free night', cost: 120, icon: 'moon' }
+        ];
+
+        const GAME_BADGES = [
+            { id: 'first_step', name: 'First Step', desc: 'Complete your first habit', icon: 'footprints', check: s => s.totalCompleted >= 1 },
+            { id: 'ten', name: 'Warming Up', desc: '10 total completions', icon: 'flame', check: s => s.totalCompleted >= 10 },
+            { id: 'fifty', name: 'Committed', desc: '50 total completions', icon: 'target', check: s => s.totalCompleted >= 50 },
+            { id: 'century', name: 'Centurion', desc: '100 total completions', icon: 'shield', check: s => s.totalCompleted >= 100 },
+            { id: 'lvl5', name: 'Rising Star', desc: 'Reach level 5', icon: 'star', check: s => s.level >= 5 },
+            { id: 'lvl10', name: 'Veteran', desc: 'Reach level 10', icon: 'medal', check: s => s.level >= 10 },
+            { id: 'streak7', name: 'Week Warrior', desc: '7-day streak', icon: 'calendar-check', check: s => s.bestStreak >= 7 },
+            { id: 'streak30', name: 'Unstoppable', desc: '30-day streak', icon: 'zap', check: s => s.bestStreak >= 30 },
+            { id: 'perfect', name: 'Flawless', desc: 'Full HP with 10+ done', icon: 'heart', check: s => s.hp >= 100 && s.totalCompleted >= 10 },
+            { id: 'spender', name: 'Treat Yourself', desc: 'Redeem your first reward', icon: 'gift', check: s => s.redeemedCount >= 1 },
+            { id: 'rich', name: 'Coin Collector', desc: 'Earn 500 coins total', icon: 'coins', check: s => s.totalEarnedCoins >= 500 }
+        ];
+
+        function computeBestGlobalStreak() {
+            const days = new Set();
+            (state.habits || []).forEach(h => Object.keys(h.history || {}).forEach(d => { if (h.history[d] === true) days.add(d); }));
+            if (!days.size) return 0;
+            const sorted = Array.from(days).sort();
+            let best = 1, cur = 1;
+            for (let i = 1; i < sorted.length; i++) {
+                const diff = Math.round((new Date(sorted[i]) - new Date(sorted[i - 1])) / 86400000);
+                if (diff === 1) { cur++; best = Math.max(best, cur); }
+                else if (diff > 1) { cur = 1; }
+            }
+            return best;
+        }
+
+        function ensureGameState() {
+            if (!state.game || typeof state.game !== 'object') state.game = {};
+            const g = state.game;
+            g.spentCoins = g.spentCoins || 0;
+            g.redeemed = g.redeemed || [];
+            g.unlockedBadges = g.unlockedBadges || [];
+            g.customRewards = g.customRewards || [];
+            return g;
+        }
+
+        function saveGameState() {
+            localStorage.setItem('quantum_sync_game', JSON.stringify(state.game || {}));
+            if (typeof cloudSave === 'function') cloudSave();
+        }
+
+        function getAllRewards() {
+            const g = ensureGameState();
+            return DEFAULT_REWARDS.concat(g.customRewards.map((r, i) => ({ id: 'custom_' + i, name: r.name, cost: r.cost, icon: 'sparkles', custom: true })));
+        }
+
+        function currentAvailableCoins() {
+            const habits = state.habits || [];
+            const totalCompleted = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(Boolean).length, 0);
+            return Math.max(0, totalCompleted * 5 - ensureGameState().spentCoins);
+        }
+
+        function redeemReward(id) {
+            const reward = getAllRewards().find(r => r.id === id);
+            if (!reward) return;
+            if (currentAvailableCoins() < reward.cost) { showToast('Not enough coins for this reward.', 'error'); return; }
+            const g = ensureGameState();
+            g.spentCoins += reward.cost;
+            g.redeemed.unshift({ name: reward.name, cost: reward.cost, date: new Date().toISOString() });
+            saveGameState();
+            renderGameSection();
+            showToast(`Redeemed: ${reward.name} (-${reward.cost} coins)`);
+        }
+
+        function addCustomReward() {
+            const nameEl = document.getElementById('newRewardName');
+            const costEl = document.getElementById('newRewardCost');
+            if (!nameEl || !costEl) return;
+            const name = (nameEl.value || '').trim();
+            const cost = parseInt(costEl.value, 10);
+            if (!name) { showToast('Enter a reward name.', 'error'); return; }
+            if (!cost || cost < 1) { showToast('Enter a valid coin cost.', 'error'); return; }
+            ensureGameState().customRewards.push({ name: name, cost: cost });
+            nameEl.value = ''; costEl.value = '';
+            saveGameState();
+            renderGameSection();
+            showToast('Custom reward added.');
+        }
+
+        function deleteCustomReward(id) {
+            const idx = parseInt(String(id).replace('custom_', ''), 10);
+            if (isNaN(idx)) return;
+            ensureGameState().customRewards.splice(idx, 1);
+            saveGameState();
+            renderGameSection();
+        }
+
+        function renderRewardShop(availableCoins) {
+            const container = document.getElementById('gameRewardShop');
+            if (!container) return;
+            container.innerHTML = getAllRewards().map(r => {
+                const affordable = availableCoins >= r.cost;
+                return `<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2">
+                    <div class="flex min-w-0 items-center gap-2"><i data-lucide="${r.icon}" class="h-4 w-4 shrink-0 text-amber-300"></i><span class="truncate text-xs text-slate-200">${escapeHTML(r.name)}</span></div>
+                    <div class="flex shrink-0 items-center gap-2">
+                        <span class="font-mono text-[11px] text-amber-300">${r.cost}</span>
+                        <button onclick="redeemReward('${r.id}')" ${affordable ? '' : 'disabled'} class="rounded-md border px-2 py-1 text-[10px] font-bold transition ${affordable ? 'border-amber-500/40 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 cursor-pointer' : 'border-slate-800 text-slate-600 cursor-not-allowed'}">Redeem</button>
+                        ${r.custom ? `<button onclick="deleteCustomReward('${r.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-rose-300 cursor-pointer" title="Remove"><i data-lucide="trash-2" class="h-3 w-3"></i></button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderRedemptionHistory() {
+            const container = document.getElementById('gameRedemptionLog');
+            if (!container) return;
+            const list = ensureGameState().redeemed;
+            container.innerHTML = list.length ? list.slice(0, 12).map(r => {
+                const d = new Date(r.date);
+                const ds = isNaN(d.getTime()) ? '' : d.toLocaleDateString();
+                return `<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/40 px-3 py-2 text-xs">
+                    <span class="truncate text-slate-300">${escapeHTML(r.name)}</span>
+                    <span class="shrink-0 text-[10px] text-slate-500">${ds} · <span class="font-mono text-amber-300">-${r.cost}</span></span>
+                </div>`;
+            }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-6 text-center text-xs text-slate-500">No rewards redeemed yet.</div>`;
+        }
+
+        function renderAchievements(stats) {
+            const g = ensureGameState();
+            const container = document.getElementById('gameAchievements');
+            const newlyUnlocked = [];
+            const html = GAME_BADGES.map(b => {
+                const unlocked = !!b.check(stats);
+                if (unlocked && !g.unlockedBadges.includes(b.id)) { g.unlockedBadges.push(b.id); newlyUnlocked.push(b); }
+                const isUnlocked = unlocked || g.unlockedBadges.includes(b.id);
+                return `<div class="flex items-center gap-3 rounded-xl border ${isUnlocked ? 'border-amber-500/30 bg-amber-500/5' : 'border-slate-800 bg-slate-950/40 opacity-60'} px-3 py-2.5">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${isUnlocked ? 'bg-amber-500/15 text-amber-300' : 'bg-slate-800 text-slate-600'}"><i data-lucide="${isUnlocked ? b.icon : 'lock'}" class="h-4 w-4"></i></div>
+                    <div class="min-w-0"><div class="truncate text-xs font-bold ${isUnlocked ? 'text-white' : 'text-slate-500'}">${b.name}</div><div class="truncate text-[10px] text-slate-500">${b.desc}</div></div>
+                    ${isUnlocked ? '<i data-lucide="check-circle-2" class="ml-auto h-4 w-4 shrink-0 text-emerald-400"></i>' : ''}
+                </div>`;
+            }).join('');
+            if (container) container.innerHTML = html;
+            const label = `${g.unlockedBadges.length} / ${GAME_BADGES.length}`;
+            ['achieveCount', 'achieveCount2'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = label; });
+            if (newlyUnlocked.length) {
+                newlyUnlocked.forEach(b => showToast(`🏆 Achievement unlocked: ${b.name}`));
+                saveGameState();
+            }
+        }
+
         function renderGameSection() {
             const today = getISODateString(new Date());
             const habits = state.habits || [];
+            const g = ensureGameState();
             const completedToday = habits.filter(h => h.history && h.history[today] === true);
             const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
             const missedToday = habits.filter(h => {
@@ -4856,16 +5085,28 @@
             const xpTotal = totalCompleted * 10;
             const level = Math.floor(xpTotal / 100) + 1;
             const xpIntoLevel = xpTotal % 100;
-            const coins = totalCompleted * 5;
+            const totalEarnedCoins = totalCompleted * 5;
+            const availableCoins = Math.max(0, totalEarnedCoins - g.spentCoins);
             const hp = Math.max(0, 100 - (explicitMisses * 5));
+            const bestStreak = computeBestGlobalStreak();
+            const currentStreak = (typeof computeGlobalStreak === 'function') ? computeGlobalStreak() : 0;
+            const rank = getRank(level);
 
             const setText = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
             setText('gameLevel', level);
-            setText('gameCoins', coins);
+            setText('gameCoins', availableCoins);
             setText('gameHP', hp);
-            setText('gameXpLabel', `${xpIntoLevel} / 100 XP`);
+            setText('gameXpLabel', `${xpIntoLevel} / 100 XP · ${100 - xpIntoLevel} to next`);
             setText('gameTodayScore', `${completedToday.length} done`);
             setText('gameMissedScore', `${missedToday.length} not done`);
+            setText('gameRank', `Rank ${rank.index} · ${rank.name}`);
+            setText('gameCurrentStreak', `${currentStreak}d`);
+            setText('gameBestStreak', `${bestStreak}d`);
+            setText('walletAvailable', availableCoins);
+            setText('walletAvailable2', availableCoins);
+            setText('walletEarned', totalEarnedCoins);
+            setText('walletSpent', g.spentCoins);
+            setText('walletRedeemed', g.redeemed.length);
             const xpBar = document.getElementById('gameXpBar');
             if(xpBar) xpBar.style.width = `${xpIntoLevel}%`;
 
@@ -4893,7 +5134,12 @@
                         <span class="shrink-0 rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[10px] font-bold text-rose-300">-5 HP</span>
                     </div>`).join('') : `<div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 py-8 text-center text-xs font-semibold text-emerald-300">Perfect run. No recovery quests today.</div>`;
             }
-            lucide.createIcons();
+
+            renderRewardShop(availableCoins);
+            renderRedemptionHistory();
+            renderAchievements({ totalCompleted, level, hp, bestStreak, redeemedCount: g.redeemed.length, totalEarnedCoins });
+
+            if (window.lucide) lucide.createIcons();
         }
 
         const DEFAULT_WEB_THEME = {
@@ -5164,6 +5410,7 @@
                     await ref.set({
                         habits: state.habits,
                         categories: state.categories,
+                        game: state.game || {},
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                         client: 'quantum-web'
                     }, { merge: true });
@@ -5180,9 +5427,11 @@
             try {
                 if (Array.isArray(data.habits)) state.habits = data.habits;
                 if (Array.isArray(data.categories)) state.categories = data.categories;
+                if (data.game && typeof data.game === 'object') state.game = Object.assign({ spentCoins: 0, redeemed: [], unlockedBadges: [], customRewards: [] }, data.game);
                 state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
                 localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits));
                 localStorage.setItem('quantum_sync_categories', JSON.stringify(state.categories));
+                localStorage.setItem('quantum_sync_game', JSON.stringify(state.game || {}));
                 renderCategories();
                 updateDashboard();
                 if (document.getElementById('section-calendar').classList.contains('active')) renderFullCalendarTab();
