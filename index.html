@@ -2507,11 +2507,11 @@
             #mobileMenuToggle { display: flex; }
             #mainNav { display: none; }
         }
-        /* Desktop nav: full-width single-line bar, no scroll, no wrapping */
+        /* Desktop nav: compact single-line bar on its own row (not full width) */
         @media (min-width: 1024px) {
             header > div { flex-wrap: wrap !important; row-gap: 14px; align-items: center; }
-            #mainNav { order: 3; width: 100% !important; overflow: visible !important; flex-wrap: nowrap; justify-content: space-between; gap: 6px; }
-            #mainNav button { flex: 1 1 0; white-space: nowrap; }
+            #mainNav { order: 3; flex-basis: 100%; width: auto !important; max-width: 560px; margin-left: auto; margin-right: auto; overflow: visible !important; flex-wrap: nowrap; justify-content: center; gap: 4px; }
+            #mainNav button { flex: 0 1 auto; white-space: nowrap; }
             #accountBox { order: 2; }
         }
 
