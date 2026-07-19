@@ -2507,10 +2507,12 @@
             #mobileMenuToggle { display: flex; }
             #mainNav { display: none; }
         }
-        /* Desktop nav: fit every tab without horizontal scrolling */
+        /* Desktop nav: full-width single-line bar, no scroll, no wrapping */
         @media (min-width: 1024px) {
-            #mainNav { overflow: visible !important; flex-wrap: wrap; justify-content: flex-end; row-gap: 4px; }
-            #mainNav button { flex: 0 0 auto; }
+            header > div { flex-wrap: wrap !important; row-gap: 14px; align-items: center; }
+            #mainNav { order: 3; width: 100% !important; overflow: visible !important; flex-wrap: nowrap; justify-content: space-between; gap: 6px; }
+            #mainNav button { flex: 1 1 0; white-space: nowrap; }
+            #accountBox { order: 2; }
         }
 
         /* Node iconography pagination */
