@@ -4,7 +4,8 @@
     <title>Quantum Habit Architect - Professional Edition</title>
     
     <!-- Inline SVG Favicon -->
-    <link rel="icon" type="image/png" href="image_5bbbce27-6494-4699-9e9e-1d3a51e6c0c6.png">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Cpath d='M6 16h4l3 7 6-14 3 7h4' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234f46e5'/%3E%3Cpath d='M6 16h4l3 7 6-14 3 7h4' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     
     <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script><style>/*! tailwindcss v4.3.2 | MIT License | https://tailwindcss.com */
@@ -3283,18 +3284,42 @@
             </div>
             
             <div class="p-4 sm:p-5 overflow-y-auto space-y-4 sm:space-y-6">
+                <div id="reportMetaChips" class="flex flex-wrap items-center gap-1.5 sm:gap-2"></div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <div class="space-y-3 sm:space-y-4">
-                        <div class="grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
-                            <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 shadow-inner flex flex-col justify-center">
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
                                 <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">All-Time Cycles</span>
                                 <span id="reportTotalDone" class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 block">0</span>
                             </div>
-                            <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 shadow-inner flex flex-col justify-center">
-                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Adherence Rate</span>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Adherence</span>
                                 <span id="reportConsistencyRate" class="text-lg sm:text-2xl font-bold font-mono text-emerald-400 mt-1 block">0%</span>
                             </div>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3 text-orange-400"></i>Current Streak</span>
+                                <span id="reportCurrentStreak" class="text-lg sm:text-2xl font-bold font-mono text-orange-400 mt-1 block">0d</span>
+                            </div>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="trophy" class="w-3 h-3 text-amber-400"></i>Best Streak</span>
+                                <span id="reportBestStreak" class="text-lg sm:text-2xl font-bold font-mono text-amber-400 mt-1 block">0d</span>
+                            </div>
                         </div>
+
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">This Week</span>
+                                <span id="reportWeekProgress" class="text-sm sm:text-lg font-bold font-mono text-white mt-1 block">0/0</span>
+                            </div>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">This Month</span>
+                                <span id="reportMonthCount" class="text-sm sm:text-lg font-bold font-mono text-white mt-1 block">0</span>
+                            </div>
+                        </div>
+
+                        <button id="reportCompleteTodayBtn" onclick="toggleTodayFromReport()" class="w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span id="reportCompleteTodayLabel">Mark Today Complete</span>
+                        </button>
                         
                         <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 sm:space-y-3 shadow-inner">
                             <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Daily Node Log</span>
@@ -4349,6 +4374,25 @@
             return currentStreak;
         }
 
+        function computeBestStreak(habit) {
+            const days = Object.keys(habit.history || {}).filter(k => habit.history[k]).sort();
+            let best = 0, run = 0, prev = null;
+            for (const d of days) {
+                const cur = new Date(d + 'T00:00:00');
+                if (prev) { const diff = Math.round((cur - prev) / 86400000); run = (diff === 1) ? run + 1 : 1; }
+                else { run = 1; }
+                if (run > best) best = run;
+                prev = cur;
+            }
+            return best;
+        }
+
+        function toggleTodayFromReport() {
+            if (!state.selectedReportHabitId) return;
+            toggleDay(state.selectedReportHabitId, getISODateString(new Date()));
+            openReportInspector(state.selectedReportHabitId);
+        }
+
         function computeGlobalStreak() {
             let streak = 0, checkDate = new Date();
             while (true) {
@@ -4472,6 +4516,40 @@
             const totalTrackedDays = Math.max(Object.keys(habit.history).length, 1);
             document.getElementById('reportConsistencyRate').innerText = `${Math.round((totalDone / totalTrackedDays) * 100)}%`;
 
+            // --- Enhanced inspector metrics ---
+            document.getElementById('reportCurrentStreak').innerText = computeStreak(habit) + 'd';
+            document.getElementById('reportBestStreak').innerText = computeBestStreak(habit) + 'd';
+            const _wk = getWeekDays(state.currentDate);
+            const _wkDone = _wk.filter(d => habit.history[getISODateString(d)] === true).length;
+            let _wkTarget = habit.frequency || 7;
+            if (isTargetedScheduleMode(habit.scheduleMode)) { _wkTarget = (habit.specificDays || []).length || _wkTarget; }
+            document.getElementById('reportWeekProgress').innerText = _wkDone + '/' + _wkTarget;
+            const _now = new Date();
+            const _mPrefix = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0');
+            document.getElementById('reportMonthCount').innerText = Object.keys(habit.history).filter(k => habit.history[k] && k.startsWith(_mPrefix)).length;
+            const _todayDone = !!habit.history[todayStr];
+            const _btn = document.getElementById('reportCompleteTodayBtn');
+            const _lbl = document.getElementById('reportCompleteTodayLabel');
+            if (_btn && _lbl) {
+                if (_todayDone) { _btn.className = 'w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25'; _lbl.innerText = 'Completed Today ✓'; }
+                else { _btn.className = 'w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white'; _lbl.innerText = 'Mark Today Complete'; }
+            }
+            const _chips = document.getElementById('reportMetaChips');
+            if (_chips) {
+                const _cc = habit.color || legacyCatColors[habit.category] || 'slate';
+                const _sd = palette[_cc] || palette['slate'];
+                const _schedLabels = { flexible: 'Flexible Volume', specific: 'Specific Days', daily: 'Daily', weekdays: 'Weekdays', weekends: 'Weekends', recovery: 'Recovery' };
+                const _schedTxt = _schedLabels[habit.scheduleMode] || 'Flexible Volume';
+                const _timeTxt = habit.specificTime || habit.timeOfDay || 'Anytime';
+                const _chip = (icon, text) => `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border border-slate-700 bg-slate-900/70 text-slate-300 rounded-full px-2 py-1"><i data-lucide="${icon}" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i>${escapeHTML(text)}</span>`;
+                let _chipsHtml = `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border rounded-full px-2 py-1 ${_sd.tailwindBadge}"><i data-lucide="${habit.icon || 'activity'}" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i>${escapeHTML(habit.category || 'Uncategorized')}</span>`;
+                _chipsHtml += _chip('repeat', _schedTxt);
+                _chipsHtml += _chip('calendar-check', (habit.frequency || 0) + 'x / week');
+                if (_timeTxt && _timeTxt !== 'Anytime') _chipsHtml += _chip('clock', _timeTxt);
+                if (habit.goal) _chipsHtml += _chip('target', unescapeHTML(habit.goal));
+                _chips.innerHTML = _chipsHtml;
+            }
+
             const logsHistoryContainer = document.getElementById('journalLogsHistory');
             if(habit.journal && Object.keys(habit.journal).length > 0) {
                 logsHistoryContainer.innerHTML = Object.keys(habit.journal).sort().reverse().map(dateKey => `
@@ -4502,6 +4580,7 @@
                 if (hName === 'workout') { WorkoutTracker.open(); } else { WorkoutTracker.hide(); }
             }
 
+            if (window.lucide) lucide.createIcons();
             openModal('modalReport');
         }
 
