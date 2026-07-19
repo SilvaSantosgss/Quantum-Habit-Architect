@@ -2724,6 +2724,9 @@
                     <button onclick="switchTab('tracker')" id="nav-tracker" class="flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="layout-grid" aria-hidden="true" class="lucide lucide-layout-grid w-3.5 h-3.5 sm:w-4 sm:h-4"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg> Tracker
                     </button>
+                    <button onclick="switchTab('todo')" id="nav-todo" class="flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="list-checks" aria-hidden="true" class="lucide w-3.5 h-3.5 sm:w-4 sm:h-4"><path d="m3 17 2 2 4-4"></path><path d="m3 7 2 2 4-4"></path><path d="M13 6h8"></path><path d="M13 12h8"></path><path d="M13 18h8"></path></svg> To-Do
+                    </button>
                     <button onclick="switchTab('game')" id="nav-game" class="flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="gamepad-2" aria-hidden="true" class="lucide lucide-gamepad-2 w-3.5 h-3.5 sm:w-4 sm:h-4"><line x1="6" x2="10" y1="11" y2="11"></line><line x1="8" x2="8" y1="9" y2="13"></line><line x1="15" x2="15.01" y1="12" y2="12"></line><line x1="18" x2="18.01" y1="10" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.98 3.59c-.24 2.33-.24 4.49 0 6.82A4 4 0 0 0 6.68 19h10.64a4 4 0 0 0 3.98-3.59c.24-2.33.24-4.49 0-6.82A4 4 0 0 0 17.32 5Z"></path></svg> Game
                     </button>
@@ -2951,6 +2954,100 @@
         </section>
 
         <!-- ================= SECTION 2: GAME STRUCTURE ================= -->
+        <!-- ================= SECTION: TO-DO ================= -->
+        <section id="section-todo" class="tab-section">
+            <div class="space-y-4 sm:space-y-8">
+                <div class="relative overflow-hidden rounded-2xl border border-sky-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-sky-950/40 p-4 sm:p-6 shadow-xl">
+                    <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-sky-500/20 blur-3xl"></div>
+                    <div class="relative z-10 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                        <div>
+                            <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-sky-300">
+                                <i data-lucide="list-checks" class="h-3 w-3"></i> Task Board
+                            </div>
+                            <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight text-white">Plan tasks, feed your game.</h2>
+                            <p class="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-400">Create one-time or recurring tasks, with or without a set time. Completing them grants XP &amp; coins; missing scheduled ones costs HP in the Game tab.</p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 sm:gap-3 lg:min-w-[320px]">
+                            <div class="rounded-xl border border-sky-500/20 bg-sky-500/10 p-3 text-center">
+                                <span class="block text-[9px] font-bold uppercase tracking-wider text-sky-300">Due today</span>
+                                <span id="todoDueCount" class="mt-1 block text-xl sm:text-2xl font-extrabold text-sky-200 font-mono">0</span>
+                            </div>
+                            <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-center">
+                                <span class="block text-[9px] font-bold uppercase tracking-wider text-emerald-300">Done today</span>
+                                <span id="todoDoneCount" class="mt-1 block text-xl sm:text-2xl font-extrabold text-emerald-300 font-mono">0</span>
+                            </div>
+                            <div class="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-center">
+                                <span class="block text-[9px] font-bold uppercase tracking-wider text-rose-300">Overdue</span>
+                                <span id="todoOverdueCount" class="mt-1 block text-xl sm:text-2xl font-extrabold text-rose-300 font-mono">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="lg:col-span-1 rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                        <div class="mb-4 flex items-center gap-2">
+                            <div class="rounded-lg border border-sky-500/20 bg-sky-500/10 p-2"><i data-lucide="plus-circle" class="h-4 w-4 text-sky-300"></i></div>
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">New task</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Task</label>
+                                <input id="todoTitle" type="text" placeholder="e.g. Pay electricity bill" class="w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white placeholder-slate-600 focus:border-sky-500/50 focus:outline-none" />
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Repeat</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" data-recur="once" onclick="setTodoRecur('once')" class="todo-recur-btn rounded-lg border px-2 py-2 text-xs font-bold transition cursor-pointer">Once</button>
+                                    <button type="button" data-recur="daily" onclick="setTodoRecur('daily')" class="todo-recur-btn rounded-lg border px-2 py-2 text-xs font-bold transition cursor-pointer">Daily</button>
+                                    <button type="button" data-recur="weekly" onclick="setTodoRecur('weekly')" class="todo-recur-btn rounded-lg border px-2 py-2 text-xs font-bold transition cursor-pointer">Weekly</button>
+                                </div>
+                            </div>
+                            <div id="todoDateWrap">
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Date</label>
+                                <input id="todoDate" type="date" class="w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white focus:border-sky-500/50 focus:outline-none" />
+                            </div>
+                            <div id="todoWeekdayWrap" class="hidden">
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">On these days</label>
+                                <div id="todoWeekdays" class="grid grid-cols-7 gap-1"></div>
+                            </div>
+                            <div>
+                                <label class="flex items-center gap-2 cursor-pointer select-none">
+                                    <input id="todoHasTime" type="checkbox" onchange="toggleTodoTimeInput()" class="h-4 w-4 rounded border-slate-700 bg-slate-950 accent-sky-500 cursor-pointer" />
+                                    <span class="text-xs font-medium text-slate-300">Specific time</span>
+                                </label>
+                                <input id="todoTime" type="time" class="mt-2 hidden w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white focus:border-sky-500/50 focus:outline-none" />
+                            </div>
+                            <button onclick="addTodo()" class="w-full rounded-lg border border-sky-500/40 bg-sky-500/10 px-4 py-2.5 text-sm font-bold text-sky-200 hover:bg-sky-500/20 transition cursor-pointer">Add task</button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+                        <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                            <div class="mb-4 flex items-center justify-between gap-3">
+                                <div>
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Today</h3>
+                                    <p class="text-[10px] text-slate-500">Tasks scheduled for today. Check them off to earn XP &amp; coins.</p>
+                                </div>
+                                <span id="todoTodayBadge" class="rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-1 text-xs font-bold text-sky-300">0 due</span>
+                            </div>
+                            <div id="todoTodayList" class="space-y-2"></div>
+                        </div>
+                        <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                            <div class="mb-4 flex items-center justify-between gap-3">
+                                <div>
+                                    <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Upcoming &amp; recurring</h3>
+                                    <p class="text-[10px] text-slate-500">Everything on your board. Overdue one-time tasks are flagged.</p>
+                                </div>
+                                <span id="todoAllBadge" class="rounded-lg border border-slate-700 bg-slate-800/50 px-2 py-1 text-xs font-bold text-slate-300">0 tasks</span>
+                            </div>
+                            <div id="todoAllList" class="space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="section-game" class="tab-section">
             <div class="space-y-4 sm:space-y-8">
                 <div class="relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/50 p-4 sm:p-6 shadow-xl">
@@ -2961,7 +3058,7 @@
                                 <i data-lucide="sparkles" class="h-3 w-3"></i> <span id="gameRank">Rank I · Novice</span>
                             </div>
                             <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight text-white">Level up by executing habits.</h2>
-                            <p class="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-400">Every completed habit gives XP, coins, and streak power. Missed habits damage HP and create recovery quests for tomorrow.</p>
+                            <p class="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-400">Every completed habit and task gives XP, coins, and streak power. Missed ones damage HP and create recovery quests for tomorrow.</p>
                         </div>
                         <div class="grid grid-cols-3 gap-2 sm:gap-3 lg:min-w-[360px]">
                             <div class="rounded-xl border border-slate-800 bg-slate-950/50 p-3 text-center">
@@ -2995,7 +3092,7 @@
                             <h3 class="text-sm font-bold text-white">When you do the habit</h3>
                         </div>
                         <ul class="space-y-2 text-xs text-slate-300">
-                            <li class="flex gap-2"><span class="text-emerald-300">+10 XP</span><span>for each completed habit.</span></li>
+                            <li class="flex gap-2"><span class="text-emerald-300">+10 XP</span><span>for each completed habit or task.</span></li>
                             <li class="flex gap-2"><span class="text-emerald-300">+5 coins</span><span>to spend on real rewards.</span></li>
                             <li class="flex gap-2"><span class="text-emerald-300">Combo</span><span>streaks multiply identity confidence.</span></li>
                         </ul>
@@ -3006,7 +3103,7 @@
                             <h3 class="text-sm font-bold text-white">When you don't do it</h3>
                         </div>
                         <ul class="space-y-2 text-xs text-slate-300">
-                            <li class="flex gap-2"><span class="text-rose-300">-5 HP</span><span>for each missed habit.</span></li>
+                            <li class="flex gap-2"><span class="text-rose-300">-5 HP</span><span>for each missed habit or task.</span></li>
                             <li class="flex gap-2"><span class="text-rose-300">Recovery quest</span><span>appears until the habit is done again.</span></li>
                             <li class="flex gap-2"><span class="text-rose-300">No shame</span><span>only feedback. Restart the run.</span></li>
                         </ul>
@@ -3029,7 +3126,7 @@
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Today's quest board</h3>
-                                <p class="text-[10px] text-slate-500">Live status from your habit matrix.</p>
+                                <p class="text-[10px] text-slate-500">Live status from your habits and tasks.</p>
                             </div>
                             <span id="gameTodayScore" class="rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2 py-1 text-xs font-bold text-indigo-300">0 done</span>
                         </div>
@@ -3801,6 +3898,7 @@
     </style>
     <nav id="mobileTabBar" aria-label="Primary navigation">
         <button id="mnav-tracker" type="button" onclick="switchTab('tracker')"><i data-lucide="layout-grid"></i><span>Tracker</span></button>
+        <button id="mnav-todo" type="button" onclick="switchTab('todo')"><i data-lucide="list-checks"></i><span>To-Do</span></button>
         <button id="mnav-game" type="button" onclick="switchTab('game')"><i data-lucide="gamepad-2"></i><span>Game</span></button>
         <button id="mnav-add" type="button" onclick="openCreateModal()" aria-label="Add habit"><span class="add-fab"><i data-lucide="plus"></i></span><span>Add</span></button>
         <button id="mnav-calendar" type="button" onclick="switchTab('calendar')"><i data-lucide="calendar-days"></i><span>Calendar</span></button>
@@ -3916,13 +4014,18 @@
         let loadedGame = { spentCoins: 0, redeemed: [], unlockedBadges: [], customRewards: [] };
         try { const _g = JSON.parse(localStorage.getItem('quantum_sync_game')); if (_g && typeof _g === 'object') loadedGame = Object.assign(loadedGame, _g); } catch(e) {}
 
+        let loadedTodos = [];
+        if (INJECTED_DATA && !Array.isArray(INJECTED_DATA) && Array.isArray(INJECTED_DATA.todos)) { loadedTodos = INJECTED_DATA.todos; }
+        else { try { const _t = JSON.parse(localStorage.getItem('quantum_sync_todos')); if (Array.isArray(_t)) loadedTodos = _t; } catch(e) {} }
+
         let state = {
             habits: loadedHabits,
             categories: loadedCategories,
             currentDate: new Date(),
             selectedReportHabitId: null,
             activeFilter: 'All',
-            game: loadedGame
+            game: loadedGame,
+            todos: loadedTodos
         };
 
         state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
@@ -4063,7 +4166,7 @@
         });
 
         function setMobileTabActive(tabName) {
-            ['tracker', 'game', 'calendar', 'analytics', 'system'].forEach(t => {
+            ['tracker', 'todo', 'game', 'calendar', 'analytics', 'system'].forEach(t => {
                 const b = document.getElementById('mnav-' + t);
                 if (b) b.classList.toggle('active', t === tabName);
             });
@@ -4072,7 +4175,7 @@
         // --- Core UI Modifiers ---
         function switchTab(tabName) {
             document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
-            ['nav-tracker', 'nav-game', 'nav-calendar', 'nav-analytics', 'nav-system'].forEach(id => {
+            ['nav-tracker', 'nav-todo', 'nav-game', 'nav-calendar', 'nav-analytics', 'nav-system'].forEach(id => {
                 document.getElementById(id).className = 'flex-none flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 cursor-pointer';
             });
             document.getElementById(`section-${tabName}`).classList.add('active');
@@ -4080,6 +4183,7 @@
             
             if (tabName === 'analytics' || tabName === 'tracker' || tabName === 'game') updateDashboard();
             if (tabName === 'calendar') renderFullCalendarTab();
+            if (tabName === 'todo') renderTodos();
             setMobileTabActive(tabName);
             closeMobileMenuIfNeeded();
         }
@@ -4137,6 +4241,7 @@
             localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits));
             localStorage.setItem('quantum_sync_categories', JSON.stringify(state.categories));
             localStorage.setItem('quantum_sync_game', JSON.stringify(state.game || {}));
+            localStorage.setItem('quantum_sync_todos', JSON.stringify(state.todos || []));
             updateDashboard();
             if(document.getElementById('section-calendar').classList.contains('active')) renderFullCalendarTab();
             cloudSave();
@@ -4978,8 +5083,9 @@
 
         function currentAvailableCoins() {
             const habits = state.habits || [];
-            const totalCompleted = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(Boolean).length, 0);
-            return Math.max(0, totalCompleted * 5 - ensureGameState().spentCoins);
+            const habitCompleted = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(Boolean).length, 0);
+            const todoCompleted = (typeof totalTodoCompletions === 'function') ? totalTodoCompletions() : 0;
+            return Math.max(0, (habitCompleted + todoCompleted) * 5 - ensureGameState().spentCoins);
         }
 
         function redeemReward(id) {
@@ -5070,6 +5176,217 @@
             }
         }
 
+        // ===================== TO-DO ENGINE =====================
+        const TODO_WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        let todoFormRecur = 'once';
+        let todoFormDays = [];
+
+        function ensureTodos() {
+            if (!Array.isArray(state.todos)) state.todos = [];
+            return state.todos;
+        }
+        function todoWeekdayIndex(date) {
+            const d = date.getDay();
+            return d === 0 ? 6 : d - 1;
+        }
+        function isTodoScheduledOn(todo, dateStr, weekdayIdx) {
+            if (todo.createdAt && dateStr < todo.createdAt) return false;
+            if (todo.recur === 'once') return todo.date === dateStr;
+            if (todo.recur === 'weekly') return Array.isArray(todo.days) && todo.days.includes(weekdayIdx);
+            return true;
+        }
+        function isTodoDoneOn(todo, dateStr) {
+            return !!(todo.history && todo.history[dateStr] === true);
+        }
+        function todaysTodos() {
+            const todayStr = getISODateString(new Date());
+            const wd = todoWeekdayIndex(new Date());
+            return ensureTodos().filter(t => isTodoScheduledOn(t, todayStr, wd));
+        }
+        function totalTodoCompletions() {
+            return ensureTodos().reduce((sum, t) => sum + Object.values(t.history || {}).filter(Boolean).length, 0);
+        }
+        function overdueTodoList() {
+            const todayStr = getISODateString(new Date());
+            const out = [];
+            ensureTodos().forEach(t => {
+                if (t.recur === 'once') {
+                    if (t.date && t.date < todayStr && !isTodoDoneOn(t, t.date)) out.push(t);
+                } else {
+                    const y = new Date(); y.setDate(y.getDate() - 1);
+                    const yStr = getISODateString(y);
+                    if (isTodoScheduledOn(t, yStr, todoWeekdayIndex(y)) && !isTodoDoneOn(t, yStr)) out.push(t);
+                }
+            });
+            return out;
+        }
+        function computeTodoStats() {
+            const todos = ensureTodos();
+            const todayStr = getISODateString(new Date());
+            let completed = 0, missed = 0, dueToday = 0, doneToday = 0;
+            const WINDOW = 14;
+            todos.forEach(t => {
+                completed += Object.values(t.history || {}).filter(Boolean).length;
+                if (t.recur === 'once') {
+                    if (t.date === todayStr) { dueToday++; if (isTodoDoneOn(t, t.date)) doneToday++; }
+                    else if (t.date && t.date < todayStr && !isTodoDoneOn(t, t.date)) missed++;
+                } else {
+                    for (let i = 0; i <= WINDOW; i++) {
+                        const d = new Date(); d.setDate(d.getDate() - i);
+                        const ds = getISODateString(d);
+                        if (!isTodoScheduledOn(t, ds, todoWeekdayIndex(d))) continue;
+                        if (ds === todayStr) { dueToday++; if (isTodoDoneOn(t, ds)) doneToday++; }
+                        else if (!isTodoDoneOn(t, ds)) missed++;
+                    }
+                }
+            });
+            const openToday = Math.max(0, dueToday - doneToday);
+            return { completed, missed, dueToday, doneToday, overdue: missed, openToday };
+        }
+
+        function setTodoRecur(mode) {
+            todoFormRecur = mode;
+            document.querySelectorAll('.todo-recur-btn').forEach(btn => {
+                const active = btn.getAttribute('data-recur') === mode;
+                btn.className = 'todo-recur-btn rounded-lg border px-2 py-2 text-xs font-bold transition cursor-pointer ' + (active ? 'border-sky-500 bg-sky-600 text-white shadow-md' : 'border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500');
+            });
+            const dateWrap = document.getElementById('todoDateWrap');
+            const weekWrap = document.getElementById('todoWeekdayWrap');
+            if (dateWrap) dateWrap.classList.toggle('hidden', mode !== 'once');
+            if (weekWrap) weekWrap.classList.toggle('hidden', mode !== 'weekly');
+        }
+        function toggleTodoTimeInput() {
+            const cb = document.getElementById('todoHasTime');
+            const inp = document.getElementById('todoTime');
+            if (inp) inp.classList.toggle('hidden', !(cb && cb.checked));
+        }
+        function renderTodoWeekdayPicker() {
+            const wrap = document.getElementById('todoWeekdays');
+            if (!wrap) return;
+            wrap.innerHTML = TODO_WEEKDAYS.map((lbl, idx) => {
+                const active = todoFormDays.includes(idx);
+                return `<button type="button" onclick="toggleTodoFormDay(${idx})" class="rounded-lg border px-0 py-2 text-[10px] font-bold transition cursor-pointer ${active ? 'border-sky-500 bg-sky-600 text-white' : 'border-slate-700 bg-slate-900 text-slate-400 hover:border-slate-500'}">${lbl}</button>`;
+            }).join('');
+        }
+        function toggleTodoFormDay(idx) {
+            const i = todoFormDays.indexOf(idx);
+            if (i >= 0) todoFormDays.splice(i, 1); else todoFormDays.push(idx);
+            renderTodoWeekdayPicker();
+        }
+        function initTodoForm() {
+            const dateEl = document.getElementById('todoDate');
+            if (dateEl && !dateEl.value) dateEl.value = getISODateString(new Date());
+            setTodoRecur('once');
+            renderTodoWeekdayPicker();
+        }
+        function addTodo() {
+            const titleEl = document.getElementById('todoTitle');
+            const title = (titleEl.value || '').trim();
+            if (!title) { showToast('Enter a task name.', 'error'); return; }
+            const hasTime = document.getElementById('todoHasTime').checked;
+            const time = document.getElementById('todoTime').value;
+            const todayStr = getISODateString(new Date());
+            const todo = {
+                id: 'todo_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+                title: title,
+                recur: todoFormRecur,
+                date: todoFormRecur === 'once' ? (document.getElementById('todoDate').value || todayStr) : null,
+                days: todoFormRecur === 'weekly' ? [...todoFormDays] : [],
+                hasTime: !!hasTime,
+                time: hasTime ? time : '',
+                createdAt: todayStr,
+                history: {}
+            };
+            if (todo.recur === 'weekly' && todo.days.length === 0) { showToast('Pick at least one weekday.', 'error'); return; }
+            ensureTodos().unshift(todo);
+            titleEl.value = '';
+            document.getElementById('todoHasTime').checked = false;
+            document.getElementById('todoTime').value = '';
+            document.getElementById('todoTime').classList.add('hidden');
+            todoFormDays = [];
+            renderTodoWeekdayPicker();
+            saveTodos();
+            renderTodos();
+            showToast('Task added.');
+        }
+        function toggleTodoDone(id, dateStr) {
+            const t = ensureTodos().find(x => x.id === id);
+            if (!t) return;
+            const ds = dateStr || getISODateString(new Date());
+            if (!t.history) t.history = {};
+            if (t.history[ds]) delete t.history[ds]; else t.history[ds] = true;
+            saveTodos();
+            renderTodos();
+        }
+        function deleteTodo(id) {
+            const arr = ensureTodos();
+            const i = arr.findIndex(x => x.id === id);
+            if (i >= 0) arr.splice(i, 1);
+            saveTodos();
+            renderTodos();
+        }
+        function saveTodos() {
+            localStorage.setItem('quantum_sync_todos', JSON.stringify(state.todos || []));
+            if (typeof cloudSave === 'function') cloudSave();
+        }
+        function todoRecurLabel(t) {
+            if (t.recur === 'once') return t.date ? ('Once \u00b7 ' + t.date) : 'Once';
+            if (t.recur === 'weekly') return 'Weekly \u00b7 ' + (t.days || []).map(d => TODO_WEEKDAYS[d]).join(' ');
+            return 'Daily';
+        }
+        function renderTodos() {
+            const stats = computeTodoStats();
+            const setText = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+            setText('todoDueCount', stats.dueToday);
+            setText('todoDoneCount', stats.doneToday);
+            setText('todoOverdueCount', stats.missed);
+            setText('todoTodayBadge', `${stats.openToday} due`);
+            setText('todoAllBadge', `${ensureTodos().length} tasks`);
+
+            const today = getISODateString(new Date());
+            const todayList = document.getElementById('todoTodayList');
+            if (todayList) {
+                const due = todaysTodos();
+                todayList.innerHTML = due.length ? due.map(t => {
+                    const done = isTodoDoneOn(t, today);
+                    return `<div class="flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
+                        <label class="flex min-w-0 items-center gap-3 cursor-pointer">
+                            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTodoDone('${t.id}')" class="h-5 w-5 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" />
+                            <span class="min-w-0"><span class="block truncate text-sm font-semibold ${done ? 'text-slate-500 line-through' : 'text-white'}">${escapeHTML(t.title)}</span><span class="block text-[10px] text-slate-500">${todoRecurLabel(t)}${t.hasTime && t.time ? ' \u00b7 ' + escapeHTML(t.time) : ''}</span></span>
+                        </label>
+                        <button onclick="deleteTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-rose-300 hover:border-rose-500/40 transition cursor-pointer" title="Delete"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>
+                    </div>`;
+                }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">Nothing scheduled today. Enjoy or add a task.</div>`;
+            }
+
+            const allList = document.getElementById('todoAllList');
+            if (allList) {
+                const overdueIds = new Set(overdueTodoList().map(t => t.id));
+                const arr = ensureTodos();
+                allList.innerHTML = arr.length ? arr.map(t => {
+                    const overdue = overdueIds.has(t.id);
+                    const recurColor = t.recur === 'once' ? 'text-indigo-300 border-indigo-500/30 bg-indigo-500/10' : (t.recur === 'weekly' ? 'text-violet-300 border-violet-500/30 bg-violet-500/10' : 'text-sky-300 border-sky-500/30 bg-sky-500/10');
+                    return `<div class="flex items-center justify-between gap-3 rounded-xl border ${overdue ? 'border-rose-500/30 bg-rose-950/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
+                        <div class="flex min-w-0 items-center gap-2">
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${overdue ? 'bg-rose-500/15 text-rose-300' : 'bg-slate-800 text-slate-400'}"><i data-lucide="${t.recur === 'once' ? 'calendar' : (t.recur === 'weekly' ? 'calendar-days' : 'repeat')}" class="h-4 w-4"></i></div>
+                            <div class="min-w-0">
+                                <div class="truncate text-sm font-semibold text-white">${escapeHTML(t.title)}</div>
+                                <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
+                                    <span class="rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${recurColor}">${todoRecurLabel(t)}</span>
+                                    ${t.hasTime && t.time ? `<span class="inline-flex items-center gap-1 rounded-md border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-[9px] font-bold text-slate-300"><i data-lucide="clock" class="h-2.5 w-2.5"></i>${escapeHTML(t.time)}</span>` : ''}
+                                    ${overdue ? '<span class="rounded-md border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">OVERDUE</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-rose-300 hover:border-rose-500/40 transition cursor-pointer" title="Delete"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>
+                    </div>`;
+                }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">No tasks yet. Create one to get started.</div>`;
+            }
+
+            if (typeof renderGameSection === 'function') { const gs = document.getElementById('section-game'); if (gs && gs.classList.contains('active')) renderGameSection(); }
+            if (window.lucide) lucide.createIcons();
+        }
+
         function renderGameSection() {
             const today = getISODateString(new Date());
             const habits = state.habits || [];
@@ -5080,8 +5397,11 @@
                 const isScheduled = isTargetedScheduleMode(h.scheduleMode) ? (h.specificDays || []).includes(todayIndex) : true;
                 return isScheduled && !(h.history && h.history[today] === true);
             });
-            const totalCompleted = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(Boolean).length, 0);
-            const explicitMisses = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(v => v === false).length, 0);
+            const habitCompleted = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(Boolean).length, 0);
+            const habitMisses = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(v => v === false).length, 0);
+            const todoStats = (typeof computeTodoStats === 'function') ? computeTodoStats() : { completed: 0, missed: 0, dueToday: 0, doneToday: 0, overdue: 0, openToday: 0 };
+            const totalCompleted = habitCompleted + todoStats.completed;
+            const explicitMisses = habitMisses + todoStats.missed;
             const xpTotal = totalCompleted * 10;
             const level = Math.floor(xpTotal / 100) + 1;
             const xpIntoLevel = xpTotal % 100;
@@ -5097,8 +5417,8 @@
             setText('gameCoins', availableCoins);
             setText('gameHP', hp);
             setText('gameXpLabel', `${xpIntoLevel} / 100 XP · ${100 - xpIntoLevel} to next`);
-            setText('gameTodayScore', `${completedToday.length} done`);
-            setText('gameMissedScore', `${missedToday.length} not done`);
+            setText('gameTodayScore', `${completedToday.length + todoStats.doneToday} done`);
+            setText('gameMissedScore', `${missedToday.length + todoStats.openToday} not done`);
             setText('gameRank', `Rank ${rank.index} · ${rank.name}`);
             setText('gameCurrentStreak', `${currentStreak}d`);
             setText('gameBestStreak', `${bestStreak}d`);
@@ -5112,27 +5432,47 @@
 
             const questList = document.getElementById('gameQuestList');
             if(questList) {
-                questList.innerHTML = habits.length ? habits.map(h => {
+                const habitQuestHtml = habits.map(h => {
                     const done = h.history && h.history[today] === true;
-                    const color = h.color || legacyCatColors[h.category] || 'slate';
                     const icon = h.icon || 'activity';
                     return `<div class="flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
                         <div class="flex min-w-0 items-center gap-2">
                             <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-500'}"><i data-lucide="${done ? 'check' : icon}" class="h-4 w-4"></i></div>
-                            <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(h.name)}</div><div class="text-[10px] text-slate-500">${done ? '+10 XP / +5 coins' : 'Quest available today'}</div></div>
+                            <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(h.name)}</div><div class="text-[10px] text-slate-500">${done ? '+10 XP / +5 coins' : 'Habit quest today'}</div></div>
                         </div>
                         <span class="shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold ${done ? 'border-emerald-500/30 text-emerald-300' : 'border-slate-700 text-slate-400'}">${done ? 'CLEARED' : 'OPEN'}</span>
                     </div>`;
-                }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">Create habits to generate quests.</div>`;
+                }).join('');
+                const dueTodos = (typeof todaysTodos === 'function') ? todaysTodos() : [];
+                const todoQuestHtml = dueTodos.map(t => {
+                    const done = isTodoDoneOn(t, today);
+                    return `<div class="flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-sky-500/20 bg-sky-950/20'} px-3 py-2.5">
+                        <div class="flex min-w-0 items-center gap-2">
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-sky-500/15 text-sky-300'}"><i data-lucide="${done ? 'check' : 'list-checks'}" class="h-4 w-4"></i></div>
+                            <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(t.title)}</div><div class="text-[10px] text-slate-500">${done ? '+10 XP / +5 coins' : 'To-do'}${t.hasTime && t.time ? ' \u00b7 ' + escapeHTML(t.time) : ''}</div></div>
+                        </div>
+                        <span class="shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold ${done ? 'border-emerald-500/30 text-emerald-300' : 'border-sky-500/30 text-sky-300'}">${done ? 'CLEARED' : 'TO-DO'}</span>
+                    </div>`;
+                }).join('');
+                const combinedQuests = habitQuestHtml + todoQuestHtml;
+                questList.innerHTML = combinedQuests || `<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">Create habits or tasks to generate quests.</div>`;
             }
 
             const penaltyList = document.getElementById('gamePenaltyList');
             if(penaltyList) {
-                penaltyList.innerHTML = missedToday.length ? missedToday.map(h => `
+                const habitPenaltyHtml = missedToday.map(h => `
                     <div class="flex items-center justify-between gap-3 rounded-xl border border-rose-500/20 bg-rose-950/10 px-3 py-2.5">
                         <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(h.name)}</div><div class="text-[10px] text-slate-500">Recovery: complete it next session to restore momentum.</div></div>
                         <span class="shrink-0 rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[10px] font-bold text-rose-300">-5 HP</span>
-                    </div>`).join('') : `<div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 py-8 text-center text-xs font-semibold text-emerald-300">Perfect run. No recovery quests today.</div>`;
+                    </div>`).join('');
+                const overdueTodos = (typeof overdueTodoList === 'function') ? overdueTodoList() : [];
+                const todoPenaltyHtml = overdueTodos.map(t => `
+                    <div class="flex items-center justify-between gap-3 rounded-xl border border-rose-500/20 bg-rose-950/10 px-3 py-2.5">
+                        <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(t.title)}</div><div class="text-[10px] text-slate-500">Overdue task${t.recur === 'once' && t.date ? ' \u00b7 was due ' + escapeHTML(t.date) : ''}. Complete it to recover.</div></div>
+                        <span class="shrink-0 rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[10px] font-bold text-rose-300">-5 HP</span>
+                    </div>`).join('');
+                const combinedPenalty = habitPenaltyHtml + todoPenaltyHtml;
+                penaltyList.innerHTML = combinedPenalty || `<div class="rounded-xl border border-emerald-500/20 bg-emerald-500/10 py-8 text-center text-xs font-semibold text-emerald-300">Perfect run. No recovery quests today.</div>`;
             }
 
             renderRewardShop(availableCoins);
@@ -5237,7 +5577,7 @@
 
         // --- System Data Engine ---
         function getPayloadString() {
-            const data = JSON.stringify({ habits: state.habits, categories: state.categories });
+            const data = JSON.stringify({ habits: state.habits, categories: state.categories, todos: state.todos || [] });
             return data.replace(/</g, '\\u003c');
         }
 
@@ -5411,6 +5751,7 @@
                         habits: state.habits,
                         categories: state.categories,
                         game: state.game || {},
+                        todos: state.todos || [],
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                         client: 'quantum-web'
                     }, { merge: true });
@@ -5428,12 +5769,15 @@
                 if (Array.isArray(data.habits)) state.habits = data.habits;
                 if (Array.isArray(data.categories)) state.categories = data.categories;
                 if (data.game && typeof data.game === 'object') state.game = Object.assign({ spentCoins: 0, redeemed: [], unlockedBadges: [], customRewards: [] }, data.game);
+                if (Array.isArray(data.todos)) state.todos = data.todos;
                 state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
                 localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits));
                 localStorage.setItem('quantum_sync_categories', JSON.stringify(state.categories));
                 localStorage.setItem('quantum_sync_game', JSON.stringify(state.game || {}));
+                localStorage.setItem('quantum_sync_todos', JSON.stringify(state.todos || []));
                 renderCategories();
                 updateDashboard();
+                if (typeof renderTodos === 'function') renderTodos();
                 if (document.getElementById('section-calendar').classList.contains('active')) renderFullCalendarTab();
                 if (window.lucide && lucide.createIcons) lucide.createIcons();
             } finally {
@@ -5506,6 +5850,8 @@
             renderCategories();
             setupSpecificDaysListeners();
             updateDashboard();
+            initTodoForm();
+            renderTodos();
             setMobileTabActive('system');
             lucide.createIcons();
         });
