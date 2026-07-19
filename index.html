@@ -2503,9 +2503,14 @@
         /* Responsive nav hard rules. Keeps desktop menu unchanged even without Tailwind media helpers. */
         #mobileMenuToggle { display: none; }
         #mainNav { display: flex; }
-        @media (max-width: 767px) {
+        @media (max-width: 1023px) {
             #mobileMenuToggle { display: flex; }
             #mainNav { display: none; }
+        }
+        /* Desktop nav: fit every tab without horizontal scrolling */
+        @media (min-width: 1024px) {
+            #mainNav { overflow: visible !important; flex-wrap: wrap; justify-content: flex-end; row-gap: 4px; }
+            #mainNav button { flex: 0 0 auto; }
         }
 
         /* Node iconography pagination */
@@ -3162,7 +3167,7 @@
 
                 <style>
                     #mobileAccountPanel { display: none; }
-                    @media (max-width: 767px) {
+                    @media (max-width: 1023px) {
                         #mobileAccountPanel { display: flex; flex-direction: column; }
                         #accountBox { display: none !important; }
                         header p { display: none !important; }
@@ -3677,7 +3682,7 @@
     <!-- ============ MOBILE NAVIGATION BAR ============ -->
     <style>
         #mobileTabBar { display: none; }
-        @media (max-width: 767px) {
+        @media (max-width: 1023px) {
             #mobileTabBar {
                 display: flex;
                 position: fixed;
