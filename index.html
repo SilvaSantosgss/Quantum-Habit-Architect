@@ -5109,6 +5109,7 @@
             const container = document.getElementById('reportYearHeatmap');
             if (!container) return;
             function _hmParse(s){ const p = String(s).split('-'); return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10)); }
+            function _hmRgba(hex, a){ let h = String(hex).replace('#',''); if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16); return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')'; }
             const today = new Date(); today.setHours(0, 0, 0, 0);
             let endDate = new Date(today);
             let start = new Date(today);
@@ -5137,8 +5138,13 @@
                     const ds = getISODateString(cur);
                     const future = cur > today;
                     const done = !future && habit.history[ds] === true;
+                    let level = 0, windowCount = 0;
+                    if (done) {
+                        for (let k = 0; k < 7; k++) { const dd = new Date(cur); dd.setDate(dd.getDate() - k); if (habit.history[getISODateString(dd)] === true) windowCount++; }
+                        level = windowCount <= 2 ? 0 : (windowCount <= 4 ? 1 : (windowCount <= 6 ? 2 : 3));
+                    }
                     if (done) doneCount++;
-                    col.push({ ds, future, done });
+                    col.push({ ds, future, done, level, windowCount });
                     cur.setDate(cur.getDate() + 1);
                 }
                 weeks.push(col);
@@ -5155,14 +5161,16 @@
             html += '</div>';
             weeks.forEach(function(col) {
                 html += '<div class="flex flex-col gap-1">';
+                const _alphas = [0.4, 0.6, 0.8, 1];
                 col.forEach(function(c) {
                     if (c.future) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3"></div>'; return; }
-                    const style = c.done ? ('background:' + onHex) : 'background:rgba(148,163,184,0.08)';
-                    html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] ' + (c.done ? '' : 'border border-slate-800/60') + '" style="' + style + '" title="' + c.ds + (c.done ? ' \u2713' : '') + '"></div>';
+                    const style = c.done ? ('background:' + _hmRgba(onHex, _alphas[c.level])) : 'background:rgba(148,163,184,0.08)';
+                    html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] ' + (c.done ? '' : 'border border-slate-800/60') + '" style="' + style + '" title="' + c.ds + (c.done ? ' \u2713 (' + c.windowCount + '/7)' : '') + '"></div>';
                 });
                 html += '</div>';
             });
             html += '</div></div>';
+            html += '<div class="flex items-center gap-1 mt-2 text-[8px] sm:text-[9px] text-slate-500 font-mono"><span class="mr-0.5">Less</span>' + [0.4, 0.6, 0.8, 1].map(function(a){ return '<span class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] inline-block align-middle" style="background:' + _hmRgba(onHex, a) + '"></span>'; }).join('') + '<span class="ml-0.5">More</span></div>';
             container.innerHTML = html;
             const cntEl = document.getElementById('reportYearHeatmapCount');
             const _rangeLabel = heatmapMode === 'month' ? 'month' : (heatmapMode === 'custom' ? 'custom' : '12 mo');
