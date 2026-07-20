@@ -3795,6 +3795,14 @@
                     <button type="button" id="createTypeTaskBtn" onclick="setCreateType('task')" class="rounded-lg px-3 py-2 text-xs font-bold transition cursor-pointer">Task</button>
                 </div>
                 <div id="createHabitBody" class="space-y-4 sm:space-y-6">
+                <div>
+                    <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Habit Type</label>
+                    <div class="grid grid-cols-2 gap-2 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                        <button type="button" id="habitTypeBuildBtn" onclick="setHabitType('build')" class="rounded-lg px-3 py-2 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i>Build (do it)</button>
+                        <button type="button" id="habitTypeAvoidBtn" onclick="setHabitType('avoid')" class="rounded-lg px-3 py-2 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5"><i data-lucide="shield-off" class="w-3.5 h-3.5"></i>Avoid (quit it)</button>
+                    </div>
+                    <p id="habitTypeHint" class="mt-1.5 text-[9px] sm:text-[10px] text-slate-500 leading-relaxed"></p>
+                </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Node Designation</label>
@@ -4685,6 +4693,16 @@
                 if (btnEl) btnEl.innerText = 'Inject Node to Matrix';
             }
         }
+        function setHabitType(type) {
+            advCreateState.habitType = (type === 'avoid') ? 'avoid' : 'build';
+            const bBtn = document.getElementById('habitTypeBuildBtn');
+            const aBtn = document.getElementById('habitTypeAvoidBtn');
+            const hint = document.getElementById('habitTypeHint');
+            if (bBtn) bBtn.className = 'rounded-lg px-3 py-2 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ' + (advCreateState.habitType === 'build' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white');
+            if (aBtn) aBtn.className = 'rounded-lg px-3 py-2 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ' + (advCreateState.habitType === 'avoid' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-white');
+            if (hint) hint.innerText = advCreateState.habitType === 'avoid' ? 'Avoid mode: every clean day (unmarked) builds your streak and earns XP/coins. Marking a day = a slip, which resets the streak and removes XP/coins.' : 'Build mode: mark the day done to build your streak and earn XP/coins.';
+            if (window.lucide) lucide.createIcons();
+        }
         function setCreateTaskRecur(mode) {
             createTaskRecur = mode;
             document.querySelectorAll('.create-recur-btn').forEach(btn => {
@@ -4803,12 +4821,12 @@
             document.getElementById('advHabitTime').value = 'Anytime';
             document.getElementById('advHabitSpecificTime').value = '';
             
-            advCreateState = { color: 'indigo', icon: 'activity', mode: 'flexible', specificDays: [] };
+            advCreateState = { color: 'indigo', icon: 'activity', mode: 'flexible', specificDays: [], habitType: 'build' };
             iconPickerPage = 0;
             toggleCategoryInput(false);
             if(state.categories.length > 0) document.getElementById('advHabitCategory').value = state.categories[0];
             
-            initPickers(); setScheduleMode('flexible');
+            initPickers(); setScheduleMode('flexible'); setHabitType('build');
             document.querySelectorAll('.specific-day-btn').forEach(btn => { btn.className = 'specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer'; });
             document.getElementById('createTypeToggle').classList.remove('hidden');
             applyCreateBody('habit');
@@ -4840,12 +4858,14 @@
                 color: habit.color || legacyCatColors[habit.category] || 'indigo', 
                 icon: habit.icon || 'activity', 
                 mode: habit.scheduleMode || 'flexible', 
-                specificDays: [...(habit.specificDays || [])] 
+                specificDays: [...(habit.specificDays || [])], 
+                habitType: habit.habitType || 'build' 
             };
             setIconPageForIcon(advCreateState.icon);
             
             initPickers();
             setScheduleMode(advCreateState.mode);
+            setHabitType(advCreateState.habitType);
             
             document.querySelectorAll('.specific-day-btn').forEach(btn => {
                 const dayNum = parseInt(btn.getAttribute('data-day'));
@@ -4889,7 +4909,8 @@
                         ...state.habits[habitIndex],
                         name, category, color: advCreateState.color, icon: advCreateState.icon,
                         scheduleMode: advCreateState.mode, specificDays: [...advCreateState.specificDays], 
-                        frequency, timeOfDay: time, specificTime: specificTime, goal
+                        frequency, timeOfDay: time, specificTime: specificTime, goal,
+                        habitType: advCreateState.habitType || 'build'
                     };
                     showToast('Habit Node Updated.', 'success');
                 }
@@ -4899,7 +4920,9 @@
                     id: 'hab_' + Date.now() + Math.random().toString(36).substr(2, 5),
                     name, category, color: advCreateState.color, icon: advCreateState.icon,
                     scheduleMode: advCreateState.mode, specificDays: [...advCreateState.specificDays], 
-                    frequency, timeOfDay: time, specificTime: specificTime, goal, history: {}, journal: {}
+                    frequency, timeOfDay: time, specificTime: specificTime, goal,
+                    habitType: advCreateState.habitType || 'build', createdAt: getISODateString(new Date()),
+                    history: {}, journal: {}
                 });
                 showToast('New Habit Node Initiated.', 'success');
             }
@@ -4911,7 +4934,14 @@
         // --- Interaction Logic ---
         function toggleDay(habitId, dateStr) {
             const habit = state.habits.find(h => h.id === habitId);
-            if (habit) { habit.history[dateStr] = !habit.history[dateStr]; saveToStorage(); }
+            if (habit) {
+                habit.history[dateStr] = !habit.history[dateStr];
+                if (isAvoidHabit(habit)) {
+                    if (habit.history[dateStr] === true) { if (typeof showToast === 'function') showToast('Slip logged \u2014 clean streak reset, XP & coins lost.', 'error'); }
+                    else { if (typeof showToast === 'function') showToast('Slip cleared \u2014 day counts as clean again.', 'success'); }
+                }
+                saveToStorage();
+            }
         }
 
         function moveHabit(habitId, dir, event) {
@@ -4942,7 +4972,43 @@
 
         function changeWeek(offset) { state.currentDate.setDate(state.currentDate.getDate() + (offset * 7)); updateDashboard(); }
 
+        // --- Avoid / break-habit helpers ---
+        function isAvoidHabit(h) { return !!(h && h.habitType === 'avoid'); }
+        function habitStartDate(h) {
+            if (h && h.createdAt) { const d = new Date(h.createdAt + 'T00:00:00'); if (!isNaN(d.getTime())) return d; }
+            const keys = Object.keys((h && h.history) || {}).sort();
+            if (keys.length) { const d = new Date(keys[0] + 'T00:00:00'); if (!isNaN(d.getTime())) return d; }
+            const t = new Date(); t.setHours(0, 0, 0, 0); return t;
+        }
+        function habitSlipCount(h) { return Object.values((h && h.history) || {}).filter(v => v === true).length; }
+        function habitCleanCount(h) {
+            const start = habitStartDate(h); const today = new Date(); today.setHours(0, 0, 0, 0);
+            let clean = 0;
+            for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) { if (h.history[getISODateString(d)] !== true) clean++; }
+            return clean;
+        }
+        function habitSuccessCount(h) { return isAvoidHabit(h) ? habitCleanCount(h) : Object.values((h && h.history) || {}).filter(Boolean).length; }
+        function isDaySuccess(h, ds) {
+            if (isAvoidHabit(h)) {
+                const today = new Date(); today.setHours(0, 0, 0, 0);
+                const d = new Date(ds + 'T00:00:00');
+                if (d > today) return false;
+                if (d < habitStartDate(h)) return false;
+                return h.history[ds] !== true;
+            }
+            return h.history[ds] === true;
+        }
+
         function computeStreak(habit) {
+            if (isAvoidHabit(habit)) {
+                let s = 0; const start = habitStartDate(habit);
+                let d = new Date(); d.setHours(0, 0, 0, 0);
+                while (d >= start) {
+                    if (habit.history[getISODateString(d)] === true) break;
+                    s++; d.setDate(d.getDate() - 1);
+                }
+                return s;
+            }
             let currentStreak = 0, checkDate = new Date();
             while (true) {
                 const dateStr = getISODateString(checkDate);
@@ -4953,6 +5019,15 @@
         }
 
         function computeBestStreak(habit) {
+            if (isAvoidHabit(habit)) {
+                const start = habitStartDate(habit); const today = new Date(); today.setHours(0, 0, 0, 0);
+                let best = 0, run = 0;
+                for (let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)) {
+                    if (habit.history[getISODateString(d)] === true) { run = 0; }
+                    else { run++; if (run > best) best = run; }
+                }
+                return best;
+            }
             const days = Object.keys(habit.history || {}).filter(k => habit.history[k]).sort();
             let best = 0, run = 0, prev = null;
             for (const d of days) {
@@ -4975,7 +5050,7 @@
             let streak = 0, checkDate = new Date();
             while (true) {
                 const dateStr = getISODateString(checkDate);
-                if(activeHabits().some(h => h.history[dateStr] === true)) { streak++; checkDate.setDate(checkDate.getDate() - 1); } 
+                if(activeHabits().some(h => !isAvoidHabit(h) && h.history[dateStr] === true)) { streak++; checkDate.setDate(checkDate.getDate() - 1); } 
                 else { if(streak === 0 && dateStr === getISODateString(new Date())) { checkDate.setDate(checkDate.getDate() - 1); continue; } break; }
             }
             return streak;
@@ -5006,21 +5081,38 @@
                 const cColor = habit.color || legacyCatColors[habit.category] || 'slate';
                 const styleDef = palette[cColor] || palette['slate'];
                 const streak = computeStreak(habit);
+                const isAvoid = isAvoidHabit(habit);
+                const _todayMid = new Date(); _todayMid.setHours(0, 0, 0, 0);
                 const isSelected = state.selectedReportHabitId === habit.id ? `border-${cColor}-500/50 bg-${cColor}-950/30 shadow-md` : 'border-slate-800/80 bg-slate-900/40 hover:border-slate-700';
 
                 const currentWeekLogsCount = weekDays.filter(day => habit.history[getISODateString(day)] === true).length;
+                const slipsThisWeek = currentWeekLogsCount;
                 let targetMet = false;
-                if(isTargetedScheduleMode(habit.scheduleMode)) {
+                if(isAvoid) {
+                    targetMet = slipsThisWeek === 0;
+                } else if(isTargetedScheduleMode(habit.scheduleMode)) {
                     let allMet = true;
                     weekDays.forEach((d, idx) => { if((habit.specificDays || []).includes(idx) && !habit.history[getISODateString(d)]) allMet = false; });
                     targetMet = (habit.specificDays || []).length > 0 && allMet;
                 } else { targetMet = currentWeekLogsCount >= habit.frequency; }
-                const progressStyle = targetMet ? `text-${cColor}-400 border-${cColor}-500/40 bg-${cColor}-500/10` : 'text-slate-400 border-slate-800 bg-slate-950/40';
+                const progressStyle = isAvoid
+                    ? (targetMet ? 'text-emerald-400 border-emerald-500/40 bg-emerald-500/10' : 'text-rose-400 border-rose-500/40 bg-rose-500/10')
+                    : (targetMet ? `text-${cColor}-400 border-${cColor}-500/40 bg-${cColor}-500/10` : 'text-slate-400 border-slate-800 bg-slate-950/40');
 
                 const matrixHtml = weekDays.map((day, idx) => {
                     const dateStr = getISODateString(day);
                     const isChecked = !!habit.history[dateStr];
                     const isScheduledDay = isTargetedScheduleMode(habit.scheduleMode) ? (habit.specificDays || []).includes(idx) : true;
+                    if(isAvoid) {
+                        const dMid = new Date(day); dMid.setHours(0, 0, 0, 0);
+                        const isFuture = dMid > _todayMid;
+                        const slip = isChecked;
+                        let avBg, avIcon;
+                        if(slip) { avBg = 'border-rose-500/60 bg-rose-500/20 text-rose-300'; avIcon = 'x'; }
+                        else if(!isFuture) { avBg = 'border-emerald-700/50 bg-emerald-950/40 text-emerald-400'; avIcon = 'shield-check'; }
+                        else { avBg = 'border-slate-800 bg-slate-950/50 text-slate-600 hover:border-slate-600'; avIcon = 'minus'; }
+                        return `<button onclick="event.stopPropagation(); toggleDay('${habit.id}', '${dateStr}')" class="w-full aspect-square rounded-lg sm:rounded-xl flex flex-col items-center justify-center border transition relative text-xs font-semibold cursor-pointer ${avBg}"><span class="sm:hidden text-[8px] sm:text-[9px] mb-0.5 opacity-60 font-mono">${daysShort[idx]}</span><i data-lucide="${avIcon}" class="w-3 h-3 sm:w-3.5 sm:h-3.5 ${slip ? 'stroke-[3]' : (isFuture ? 'opacity-20' : '')}"></i></button>`;
+                    }
                     
                     let bgClasses = isChecked ? styleDef.tailwindActive : 'border-slate-800 bg-slate-950/50 text-slate-600 hover:border-slate-600';
                     if(!isChecked && isTargetedScheduleMode(habit.scheduleMode) && isScheduledDay && day < new Date()) {
@@ -5048,12 +5140,13 @@
                                             <span class="truncate">${escapeHTML(habit.name)}</span>
                                         </h4>
                                         <span class="text-[8px] sm:text-[9px] font-mono font-bold px-1.5 sm:px-2 py-0.5 border rounded-md whitespace-nowrap shrink-0 ${progressStyle}">
-                                            ${currentWeekLogsCount}/${habit.frequency} Target
+                                            ${isAvoid ? (slipsThisWeek + ' slip' + (slipsThisWeek === 1 ? '' : 's') + ' this wk') : (currentWeekLogsCount + '/' + habit.frequency + ' Target')}
                                         </span>
                                     </div>
                                     ${goalHtml}
                                     <div class="flex items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2 flex-wrap">
                                         <span class="text-[8px] sm:text-[9px] font-bold tracking-wider uppercase border rounded-full px-1.5 sm:px-2 py-0.5 ${styleDef.tailwindBadge}">${escapeHTML(habit.category)}</span>
+                                        ${isAvoid ? '<span class="text-[8px] sm:text-[9px] font-bold tracking-wider uppercase border border-rose-500/40 text-rose-300 bg-rose-500/10 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="shield-off" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>Avoid</span>' : ''}
                                         ${timeHtml}
                                         <span class="text-[9px] sm:text-[11px] text-slate-500 flex items-center gap-0.5 font-mono ml-auto sm:ml-0"><i data-lucide="flame" class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-500"></i>${streak}d</span>
                                     </div>
@@ -5110,7 +5203,7 @@
             const todayStr = getISODateString(new Date());
             const total = habits.length;
             let done = 0;
-            habits.forEach(function(h){ if (h.history && h.history[todayStr] === true) done++; });
+            habits.forEach(function(h){ if (isDaySuccess(h, todayStr)) done++; });
             const pct = total > 0 ? Math.round((done / total) * 100) : 0;
             const C = 106.81;
             arc.style.strokeDashoffset = String(C - (C * Math.min(pct, 100) / 100));
@@ -5142,6 +5235,9 @@
             start.setDate(start.getDate() - startIdx);
             const cColor = habit.color || legacyCatColors[habit.category] || 'indigo';
             const onHex = palette[cColor] ? palette[cColor].hex : '#6366f1';
+            const isAvoid = isAvoidHabit(habit);
+            const startClean = habitStartDate(habit);
+            const avHex = '#22c55e';
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const weeks = [], monthLabels = [];
             let cur = new Date(start), lastMonth = -1, doneCount = 0;
@@ -5151,14 +5247,25 @@
                 for (let d = 0; d < 7; d++) {
                     const ds = getISODateString(cur);
                     const future = cur > today;
-                    const done = !future && habit.history[ds] === true;
-                    let level = 0, windowCount = 0;
-                    if (done) {
-                        for (let k = 0; k < 7; k++) { const dd = new Date(cur); dd.setDate(dd.getDate() - k); if (habit.history[getISODateString(dd)] === true) windowCount++; }
-                        level = windowCount <= 2 ? 0 : (windowCount <= 4 ? 1 : (windowCount <= 6 ? 2 : 3));
+                    let done, level = 0, windowCount = 0, slip = false;
+                    if (isAvoid) {
+                        const dMid = new Date(cur); dMid.setHours(0, 0, 0, 0);
+                        slip = !future && habit.history[ds] === true;
+                        const inRange = !future && dMid >= startClean;
+                        done = inRange && !slip;
+                        if (done) {
+                            for (let k = 0; k < 7; k++) { const dd = new Date(cur); dd.setHours(0, 0, 0, 0); dd.setDate(dd.getDate() - k); if (dd >= startClean && dd <= today && habit.history[getISODateString(dd)] !== true) windowCount++; }
+                            level = windowCount <= 2 ? 0 : (windowCount <= 4 ? 1 : (windowCount <= 6 ? 2 : 3));
+                        }
+                    } else {
+                        done = !future && habit.history[ds] === true;
+                        if (done) {
+                            for (let k = 0; k < 7; k++) { const dd = new Date(cur); dd.setDate(dd.getDate() - k); if (habit.history[getISODateString(dd)] === true) windowCount++; }
+                            level = windowCount <= 2 ? 0 : (windowCount <= 4 ? 1 : (windowCount <= 6 ? 2 : 3));
+                        }
                     }
                     if (done) doneCount++;
-                    col.push({ ds, future, done, level, windowCount });
+                    col.push({ ds, future, done, level, windowCount, slip });
                     cur.setDate(cur.getDate() + 1);
                 }
                 weeks.push(col);
@@ -5178,17 +5285,20 @@
                 const _alphas = [0.4, 0.6, 0.8, 1];
                 col.forEach(function(c) {
                     if (c.future) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3"></div>'; return; }
-                    const style = c.done ? ('background:' + _hmRgba(onHex, _alphas[c.level])) : 'background:rgba(148,163,184,0.08)';
-                    html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] ' + (c.done ? '' : 'border border-slate-800/60') + '" style="' + style + '" title="' + c.ds + (c.done ? ' \u2713 (' + c.windowCount + '/7)' : '') + '"></div>';
+                    if (c.slip) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px]" style="background:rgba(244,63,94,0.85)" title="' + c.ds + ' \u2717 slip"></div>'; return; }
+                    const _hex = isAvoid ? avHex : onHex;
+                    const style = c.done ? ('background:' + _hmRgba(_hex, _alphas[c.level])) : 'background:rgba(148,163,184,0.08)';
+                    html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] ' + (c.done ? '' : 'border border-slate-800/60') + '" style="' + style + '" title="' + c.ds + (c.done ? (isAvoid ? ' clean (' + c.windowCount + '/7)' : ' \u2713 (' + c.windowCount + '/7)') : '') + '"></div>';
                 });
                 html += '</div>';
             });
             html += '</div></div>';
-            html += '<div class="flex items-center gap-1 mt-2 text-[8px] sm:text-[9px] text-slate-500 font-mono"><span class="mr-0.5">Less</span>' + [0.4, 0.6, 0.8, 1].map(function(a){ return '<span class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] inline-block align-middle" style="background:' + _hmRgba(onHex, a) + '"></span>'; }).join('') + '<span class="ml-0.5">More</span></div>';
+            const _legHex = isAvoid ? avHex : onHex;
+            html += '<div class="flex items-center gap-1 mt-2 text-[8px] sm:text-[9px] text-slate-500 font-mono"><span class="mr-0.5">Less</span>' + [0.4, 0.6, 0.8, 1].map(function(a){ return '<span class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] inline-block align-middle" style="background:' + _hmRgba(_legHex, a) + '"></span>'; }).join('') + '<span class="ml-0.5">More</span>' + (isAvoid ? '<span class="ml-2 flex items-center gap-1"><span class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] inline-block align-middle" style="background:rgba(244,63,94,0.85)"></span>Slip</span>' : '') + '</div>';
             container.innerHTML = html;
             const cntEl = document.getElementById('reportYearHeatmapCount');
             const _rangeLabel = heatmapMode === 'month' ? 'month' : (heatmapMode === 'custom' ? 'custom' : '12 mo');
-            if (cntEl) cntEl.innerText = doneCount + ' completions \u00b7 ' + _rangeLabel;
+            if (cntEl) cntEl.innerText = doneCount + (isAvoid ? ' clean days \u00b7 ' : ' completions \u00b7 ') + _rangeLabel;
             ['month','year','custom'].forEach(function(m){ const b=document.getElementById('heatmapBtn-'+m); if(b) b.className = _heatmapBtnClass(m===heatmapMode); });
             const _cw=document.getElementById('heatmapCustomWrap'); if(_cw) _cw.style.display=(heatmapMode==='custom')?'flex':'none';
         }
@@ -5205,27 +5315,42 @@
             const todayStr = getISODateString(new Date());
             document.getElementById('habitJournalInput').value = (habit.journal && habit.journal[todayStr]) ? unescapeHTML(habit.journal[todayStr]) : '';
 
-            const totalDone = Object.keys(habit.history).filter(k => habit.history[k]).length;
+            const _isAvoid = isAvoidHabit(habit);
+            const _startMid = habitStartDate(habit); const _todayMid = new Date(); _todayMid.setHours(0, 0, 0, 0);
+            const _elapsedDays = Math.max(1, Math.round((_todayMid.getTime() - _startMid.getTime()) / 86400000) + 1);
+            const totalDone = _isAvoid ? habitCleanCount(habit) : Object.keys(habit.history).filter(k => habit.history[k]).length;
             document.getElementById('reportTotalDone').innerText = totalDone;
-            const totalTrackedDays = Math.max(Object.keys(habit.history).length, 1);
+            const totalTrackedDays = _isAvoid ? _elapsedDays : Math.max(Object.keys(habit.history).length, 1);
             document.getElementById('reportConsistencyRate').innerText = `${Math.round((totalDone / totalTrackedDays) * 100)}%`;
 
             // --- Enhanced inspector metrics ---
             document.getElementById('reportCurrentStreak').innerText = computeStreak(habit) + 'd';
             document.getElementById('reportBestStreak').innerText = computeBestStreak(habit) + 'd';
             const _wk = getWeekDays(state.currentDate);
-            const _wkDone = _wk.filter(d => habit.history[getISODateString(d)] === true).length;
-            let _wkTarget = habit.frequency || 7;
-            if (isTargetedScheduleMode(habit.scheduleMode)) { _wkTarget = (habit.specificDays || []).length || _wkTarget; }
+            const _wkDone = _isAvoid
+                ? _wk.filter(d => { const dm = new Date(d); dm.setHours(0, 0, 0, 0); return dm <= _todayMid && dm >= _startMid && habit.history[getISODateString(d)] !== true; }).length
+                : _wk.filter(d => habit.history[getISODateString(d)] === true).length;
+            let _wkTarget = _isAvoid ? 7 : (habit.frequency || 7);
+            if (!_isAvoid && isTargetedScheduleMode(habit.scheduleMode)) { _wkTarget = (habit.specificDays || []).length || _wkTarget; }
             document.getElementById('reportWeekProgress').innerText = _wkDone + '/' + _wkTarget;
             const _now = new Date();
             const _mPrefix = _now.getFullYear() + '-' + String(_now.getMonth() + 1).padStart(2, '0');
-            document.getElementById('reportMonthCount').innerText = Object.keys(habit.history).filter(k => habit.history[k] && k.startsWith(_mPrefix)).length;
+            if (_isAvoid) {
+                let _mClean = 0; const _mStart = new Date(_now.getFullYear(), _now.getMonth(), 1); _mStart.setHours(0, 0, 0, 0);
+                const _mStartEff = _mStart < _startMid ? new Date(_startMid) : _mStart;
+                for (let d = new Date(_mStartEff); d <= _todayMid; d.setDate(d.getDate() + 1)) { if (habit.history[getISODateString(d)] !== true) _mClean++; }
+                document.getElementById('reportMonthCount').innerText = _mClean;
+            } else {
+                document.getElementById('reportMonthCount').innerText = Object.keys(habit.history).filter(k => habit.history[k] && k.startsWith(_mPrefix)).length;
+            }
             const _todayDone = !!habit.history[todayStr];
             const _btn = document.getElementById('reportCompleteTodayBtn');
             const _lbl = document.getElementById('reportCompleteTodayLabel');
             if (_btn && _lbl) {
-                if (_todayDone) { _btn.className = 'w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25'; _lbl.innerText = 'Completed Today ✓'; }
+                if (_isAvoid) {
+                    if (_todayDone) { _btn.className = 'w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-rose-500/15 border-rose-500/40 text-rose-300 hover:bg-rose-500/25'; _lbl.innerText = 'Slipped Today ✗'; }
+                    else { _btn.className = 'w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-rose-600 hover:border-rose-500 hover:text-white'; _lbl.innerText = 'Log a Slip Today'; }
+                } else if (_todayDone) { _btn.className = 'w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25'; _lbl.innerText = 'Completed Today ✓'; }
                 else { _btn.className = 'w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white'; _lbl.innerText = 'Mark Today Complete'; }
             }
             const _chips = document.getElementById('reportMetaChips');
@@ -5237,6 +5362,7 @@
                 const _timeTxt = habit.specificTime || habit.timeOfDay || 'Anytime';
                 const _chip = (icon, text) => `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border border-slate-700 bg-slate-900/70 text-slate-300 rounded-full px-2 py-1"><i data-lucide="${icon}" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i>${escapeHTML(text)}</span>`;
                 let _chipsHtml = `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border rounded-full px-2 py-1 ${_sd.tailwindBadge}"><i data-lucide="${habit.icon || 'activity'}" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i>${escapeHTML(habit.category || 'Uncategorized')}</span>`;
+                if (_isAvoid) _chipsHtml += `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border border-rose-500/40 bg-rose-500/10 text-rose-300 rounded-full px-2 py-1"><i data-lucide="shield-off" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i>Avoid</span>`;
                 _chipsHtml += _chip('repeat', _schedTxt);
                 _chipsHtml += _chip('calendar-check', (habit.frequency || 0) + 'x / week');
                 if (_timeTxt && _timeTxt !== 'Anytime') _chipsHtml += _chip('clock', _timeTxt);
@@ -5258,15 +5384,15 @@
             for(let i=0; i<14; i++) {
                 const dStr = getISODateString(tempDate);
                 labels.push(tempDate.toLocaleDateString('en-US', {month: 'numeric', day: 'numeric'}));
-                chartData.push(habit.history[dStr] ? 1 : 0);
+                chartData.push(isDaySuccess(habit, dStr) ? 1 : 0);
                 tempDate.setDate(tempDate.getDate() + 1);
             }
 
             const ctx = document.getElementById('detailedReportChart').getContext('2d');
             if (reportChartInstance) reportChartInstance.destroy();
             reportChartInstance = new Chart(ctx, {
-                type: 'line', data: { labels, datasets: [{ data: chartData, borderColor: hexLine, backgroundColor: hexLine + '15', fill: true, stepped: true, pointRadius: 2 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 1, ticks: { stepSize: 1, callback: v => v===1 ? 'DONE' : '' }, grid: { color: 'rgba(255,255,255,0.02)' } }, x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } } } }
+                type: 'line', data: { labels, datasets: [{ data: chartData, borderColor: _isAvoid ? '#22c55e' : hexLine, backgroundColor: (_isAvoid ? '#22c55e' : hexLine) + '15', fill: true, stepped: true, pointRadius: 2 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 1, ticks: { stepSize: 1, callback: v => v===1 ? (_isAvoid ? 'CLEAN' : 'DONE') : '' }, grid: { color: 'rgba(255,255,255,0.02)' } }, x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } } } }
             });
 
             renderReportYearHeatmap(habit);
@@ -5315,7 +5441,8 @@
             for(let day=1; day<=lastDay.getDate(); day++) {
                 const currentD = new Date(year, month, day);
                 const dStr = getISODateString(currentD);
-                const completedHabits = activeHabits().filter(h => h.history[dStr]);
+                const completedHabits = activeHabits().filter(h => !isAvoidHabit(h) && h.history[dStr]);
+                const slipHabits = activeHabits().filter(h => isAvoidHabit(h) && h.history[dStr] === true);
                 
                 let dotsHtml = '';
                 if(completedHabits.length > 0) {
@@ -5328,6 +5455,7 @@
                     }
                     if(completedHabits.length > 4) dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-slate-500 text-[5px] font-bold text-white flex items-center justify-center">+</div>`;
                 }
+                for(let j=0; j<Math.min(slipHabits.length, 4); j++) { dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-sm shadow-black/50" title="Slip"></div>`; }
                 const _cwd = currentD.getDay() === 0 ? 6 : currentD.getDay() - 1;
                 if(activeTodos().some(t => isTodoScheduledOn(t, dStr, _cwd))) dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-sm shadow-black/50 ring-1 ring-sky-300/40"></div>`;
 
@@ -5348,10 +5476,11 @@
             
             document.getElementById('calendarSelectedDateLabel').innerText = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
-            const completed = activeHabits().filter(h => h.history[selectedCalendarDateStr]);
+            const completed = activeHabits().filter(h => !isAvoidHabit(h) && h.history[selectedCalendarDateStr]);
             const dayIndex = dateObj.getDay() === 0 ? 6 : dateObj.getDay() - 1;
             
             const missedSpecific = activeHabits().filter(h => {
+                if(isAvoidHabit(h)) { return h.history[selectedCalendarDateStr] === true; }
                 if(isTargetedScheduleMode(h.scheduleMode)) { return (h.specificDays || []).includes(dayIndex) && !h.history[selectedCalendarDateStr]; }
                 return false;
             });
@@ -5401,7 +5530,7 @@
 
             for(let i=0; i<28; i++) {
                 const dateStr = getISODateString(runnerDate);
-                const totalActive = activeHabits().filter(h => h.history[dateStr] === true).length;
+                const totalActive = activeHabits().filter(h => !isAvoidHabit(h) && h.history[dateStr] === true).length;
                 let opacityStyle = 'bg-slate-900 border border-slate-900/60 text-slate-500';
                 if(totalActive > 0) opacityStyle = totalActive >= 3 ? 'bg-indigo-500 text-white font-bold shadow-md shadow-indigo-500/20' : totalActive >= 2 ? 'bg-indigo-600/70 text-slate-200' : 'bg-indigo-800/40 text-slate-300';
                 
@@ -5428,6 +5557,17 @@
             const runner = new Date();
             runner.setDate(runner.getDate() - (days - 1));
             const today = new Date();
+            if(isAvoidHabit(habit)) {
+                const start = habitStartDate(habit); const tMid = new Date(); tMid.setHours(0, 0, 0, 0);
+                for(let r = new Date(runner); r <= today; r.setDate(r.getDate() + 1)) {
+                    const rm = new Date(r); rm.setHours(0, 0, 0, 0);
+                    if(rm < start || rm > tMid) continue;
+                    possibleDays++;
+                    if(!(habit.history && habit.history[getISODateString(r)] === true)) doneCount++;
+                }
+                if(possibleDays === 0) possibleDays = 1;
+                return { doneCount, possibleDays, rate: Math.min(100, Math.round((doneCount / possibleDays) * 100)) };
+            }
             while(runner <= today) {
                 const ds = getISODateString(runner);
                 if(isHabitScheduledForDate(habit, runner)) {
@@ -5462,15 +5602,16 @@
                 const modeLabel = habit.scheduleMode ? habit.scheduleMode.charAt(0).toUpperCase() + habit.scheduleMode.slice(1) : 'Flexible';
                 scheduleCounts[modeLabel] = (scheduleCounts[modeLabel] || 0) + 1;
 
+                const _av = isAvoidHabit(habit);
                 let weeklyDone = 0;
-                let weeklyTarget = habit.frequency || 1;
+                let weeklyTarget = _av ? 7 : (habit.frequency || 1);
                 weekDays.forEach((day, index) => {
                     const ds = getISODateString(day);
                     const scheduled = isHabitScheduledForDate(habit, day);
                     if(scheduled) scheduledByDay[index]++;
-                    if(habit.history && habit.history[ds]) { completions[index]++; weeklyDone++; }
+                    if(isDaySuccess(habit, ds)) { completions[index]++; weeklyDone++; }
                 });
-                if(isTargetedScheduleMode(habit.scheduleMode)) weeklyTarget = (habit.specificDays || []).length || weeklyTarget;
+                if(!_av && isTargetedScheduleMode(habit.scheduleMode)) weeklyTarget = (habit.specificDays || []).length || weeklyTarget;
                 if(weeklyDone >= weeklyTarget && weeklyTarget > 0) targetsHit++;
 
                 const perf = getRecentHabitPerformance(habit, 30);
@@ -5491,7 +5632,7 @@
                 for(let i=0; i<14; i++) {
                     const ds = getISODateString(runner);
                     let dayDone = 0, dayPossible = 0;
-                    activeHabits().forEach(h => { if(isHabitScheduledForDate(h, runner)) { dayPossible++; if(h.history && h.history[ds]) dayDone++; } });
+                    activeHabits().forEach(h => { if(isHabitScheduledForDate(h, runner)) { dayPossible++; if(isDaySuccess(h, ds)) dayDone++; } });
                     trendLabels.push(`${runner.getMonth()+1}/${runner.getDate()}`);
                     trendRates.push(dayPossible ? Math.round((dayDone / dayPossible) * 100) : 0);
                     runner.setDate(runner.getDate() + 1);
@@ -5585,7 +5726,7 @@
 
         function computeBestGlobalStreak() {
             const days = new Set();
-            activeHabits().forEach(h => Object.keys(h.history || {}).forEach(d => { if (h.history[d] === true) days.add(d); }));
+            activeHabits().filter(h => !isAvoidHabit(h)).forEach(h => Object.keys(h.history || {}).forEach(d => { if (h.history[d] === true) days.add(d); }));
             if (!days.size) return 0;
             const sorted = Array.from(days).sort();
             let best = 1, cur = 1;
@@ -5627,7 +5768,7 @@
 
         function currentAvailableCoins() {
             const habits = activeHabits();
-            const habitCompleted = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(Boolean).length, 0);
+            const habitCompleted = habits.reduce((sum, h) => sum + habitSuccessCount(h), 0);
             const todoCompleted = (typeof totalTodoCompletions === 'function') ? totalTodoCompletions() : 0;
             return Math.max(0, (habitCompleted + todoCompleted) * 5 - ensureGameState().spentCoins);
         }
@@ -6158,14 +6299,15 @@
             const today = getISODateString(new Date());
             const habits = activeHabits();
             const g = ensureGameState();
-            const completedToday = habits.filter(h => h.history && h.history[today] === true);
+            const completedToday = habits.filter(h => isAvoidHabit(h) ? !(h.history && h.history[today] === true) : (h.history && h.history[today] === true));
             const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
             const missedToday = habits.filter(h => {
+                if (isAvoidHabit(h)) return h.history && h.history[today] === true;
                 const isScheduled = isTargetedScheduleMode(h.scheduleMode) ? (h.specificDays || []).includes(todayIndex) : true;
                 return isScheduled && !(h.history && h.history[today] === true);
             });
-            const habitCompleted = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(Boolean).length, 0);
-            const habitMisses = habits.reduce((sum, h) => sum + Object.values(h.history || {}).filter(v => v === false).length, 0);
+            const habitCompleted = habits.reduce((sum, h) => sum + habitSuccessCount(h), 0);
+            const habitMisses = habits.reduce((sum, h) => sum + (isAvoidHabit(h) ? habitSlipCount(h) : Object.values(h.history || {}).filter(v => v === false).length), 0);
             const todoStats = (typeof computeTodoStats === 'function') ? computeTodoStats() : { completed: 0, missed: 0, dueToday: 0, doneToday: 0, overdue: 0, openToday: 0 };
             const totalCompleted = habitCompleted + todoStats.completed;
             const explicitMisses = habitMisses + todoStats.missed;
@@ -6200,12 +6342,13 @@
             const questList = document.getElementById('gameQuestList');
             if(questList) {
                 const habitQuestHtml = habits.map(h => {
-                    const done = h.history && h.history[today] === true;
+                    const _av = isAvoidHabit(h);
+                    const done = _av ? !(h.history && h.history[today] === true) : (h.history && h.history[today] === true);
                     const icon = h.icon || 'activity';
                     return `<div class="flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
                         <div class="flex min-w-0 items-center gap-2">
                             <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-500'}"><i data-lucide="${done ? 'check' : icon}" class="h-4 w-4"></i></div>
-                            <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(h.name)}</div><div class="text-[10px] text-slate-500">${done ? '+10 XP / +5 coins' : 'Habit quest today'}</div></div>
+                            <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(h.name)}</div><div class="text-[10px] text-slate-500">${done ? '+10 XP / +5 coins' : (_av ? 'Avoid quest \u2014 stay clean today' : 'Habit quest today')}</div></div>
                         </div>
                         <span class="shrink-0 rounded-md border px-2 py-1 text-[10px] font-bold ${done ? 'border-emerald-500/30 text-emerald-300' : 'border-slate-700 text-slate-400'}">${done ? 'CLEARED' : 'OPEN'}</span>
                     </div>`;
