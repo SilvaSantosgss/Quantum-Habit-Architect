@@ -2735,12 +2735,12 @@
                         </h1>
                         <p class="text-slate-400 text-[10px] sm:text-sm mt-1">Professional habit lifecycle management.</p>
                     </div>
-                    <button id="headerDayRing" type="button" onclick="switchTab('tracker')" class="md:hidden relative flex shrink-0 items-center justify-center" style="width:44px;height:44px" aria-label="Daily progress" title="Daily progress">
-                        <svg width="44" height="44" viewBox="0 0 36 36" style="transform:rotate(-90deg)">
-                            <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(148,163,184,0.20)" stroke-width="3.2"></circle>
-                            <circle id="headerDayRingArc" cx="18" cy="18" r="15.5" fill="none" stroke="#6366f1" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="97.39" stroke-dashoffset="97.39" style="transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease"></circle>
+                    <button id="headerDayRing" type="button" onclick="switchTab('tracker')" class="md:hidden relative flex shrink-0 items-center justify-center self-center" style="width:48px;height:48px" aria-label="Daily progress" title="Daily progress">
+                        <svg width="48" height="48" viewBox="0 0 40 40" style="transform:rotate(-90deg)">
+                            <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(148,163,184,0.20)" stroke-width="3.5"></circle>
+                            <circle id="headerDayRingArc" cx="20" cy="20" r="17" fill="none" stroke="#6366f1" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="106.81" stroke-dashoffset="106.81" style="transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease"></circle>
                         </svg>
-                        <span id="headerDayRingLabel" class="absolute font-bold text-white leading-none" style="font-size:9px">0%</span>
+                        <span id="headerDayRingLabel" class="absolute inset-0 flex items-center justify-center font-bold text-white leading-none" style="font-size:10px">0%</span>
                     </button>
                 </div>
                 
@@ -3566,10 +3566,20 @@
                 </div>
 
                 <div class="bg-slate-950/60 border border-slate-900 rounded-xl p-3 sm:p-4 shadow-inner">
-                    <div class="flex items-center justify-between mb-2 sm:mb-3">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="grid-3x3" class="w-3 h-3 text-indigo-400"></i>Yearly Activity Matrix</span>
-                        <span id="reportYearHeatmapCount" class="text-[9px] sm:text-[10px] font-mono text-slate-500"></span>
+                    <div class="flex items-center justify-between mb-2 sm:mb-3 gap-2 flex-wrap">
+                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="grid-3x3" class="w-3 h-3 text-indigo-400"></i>Activity Matrix</span>
+                        <div class="flex items-center gap-0.5 bg-slate-900/70 rounded-lg p-0.5 border border-slate-800">
+                            <button id="heatmapBtn-month" type="button" onclick="setHeatmapMode('month')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Month</button>
+                            <button id="heatmapBtn-year" type="button" onclick="setHeatmapMode('year')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Year</button>
+                            <button id="heatmapBtn-custom" type="button" onclick="setHeatmapMode('custom')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Custom</button>
+                        </div>
                     </div>
+                    <div id="heatmapCustomWrap" style="display:none" class="flex items-center gap-2 mb-2 sm:mb-3 flex-wrap">
+                        <input id="heatmapCustomStartInput" type="date" onchange="applyHeatmapCustom()" class="bg-slate-900 border border-slate-800 rounded-md px-2 py-1 text-[10px] text-slate-300 outline-none focus:border-indigo-500/50">
+                        <span class="text-slate-500 text-[10px]">to</span>
+                        <input id="heatmapCustomEndInput" type="date" onchange="applyHeatmapCustom()" class="bg-slate-900 border border-slate-800 rounded-md px-2 py-1 text-[10px] text-slate-300 outline-none focus:border-indigo-500/50">
+                    </div>
+                    <div class="mb-1"><span id="reportYearHeatmapCount" class="text-[9px] sm:text-[10px] font-mono text-slate-500"></span></div>
                     <div id="reportYearHeatmap" class="overflow-x-auto scrollbar-hide"></div>
                 </div>
 
@@ -5051,6 +5061,33 @@
         }
 
         // --- Inline Report Inspector Modal ---
+        let heatmapMode = 'year';
+        let heatmapCustomStart = null;
+        let heatmapCustomEnd = null;
+        function _heatmapBtnClass(active){ return 'px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer ' + (active ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40' : 'text-slate-400 border border-transparent hover:text-slate-200'); }
+        function setHeatmapMode(mode){
+            heatmapMode = mode;
+            if (mode === 'custom'){
+                const s=document.getElementById('heatmapCustomStartInput');
+                const e=document.getElementById('heatmapCustomEndInput');
+                const td=getISODateString(new Date());
+                if (e && !e.value) e.value = td;
+                if (s && !s.value){ const d=new Date(); d.setDate(d.getDate()-89); s.value=getISODateString(d); }
+                heatmapCustomStart = s ? s.value : null;
+                heatmapCustomEnd = e ? e.value : null;
+            }
+            const habit = state.habits.find(function(h){ return h.id === state.selectedReportHabitId; });
+            if (habit) renderReportYearHeatmap(habit);
+        }
+        function applyHeatmapCustom(){
+            const s=document.getElementById('heatmapCustomStartInput');
+            const e=document.getElementById('heatmapCustomEndInput');
+            heatmapCustomStart = s && s.value ? s.value : null;
+            heatmapCustomEnd = e && e.value ? e.value : null;
+            heatmapMode = 'custom';
+            const habit = state.habits.find(function(h){ return h.id === state.selectedReportHabitId; });
+            if (habit) renderReportYearHeatmap(habit);
+        }
         function renderHeaderDayRing() {
             const arc = document.getElementById('headerDayRingArc');
             const label = document.getElementById('headerDayRingLabel');
@@ -5061,7 +5098,7 @@
             let done = 0;
             habits.forEach(function(h){ if (h.history && h.history[todayStr] === true) done++; });
             const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-            const C = 97.39;
+            const C = 106.81;
             arc.style.strokeDashoffset = String(C - (C * Math.min(pct, 100) / 100));
             arc.style.stroke = pct >= 100 ? '#22c55e' : (pct >= 50 ? '#6366f1' : '#818cf8');
             label.innerText = pct + '%';
@@ -5071,8 +5108,21 @@
         function renderReportYearHeatmap(habit) {
             const container = document.getElementById('reportYearHeatmap');
             if (!container) return;
+            function _hmParse(s){ const p = String(s).split('-'); return new Date(parseInt(p[0],10), parseInt(p[1],10)-1, parseInt(p[2],10)); }
             const today = new Date(); today.setHours(0, 0, 0, 0);
-            const start = new Date(today); start.setDate(start.getDate() - 370);
+            let endDate = new Date(today);
+            let start = new Date(today);
+            if (heatmapMode === 'month') {
+                start.setDate(start.getDate() - 34);
+            } else if (heatmapMode === 'custom' && heatmapCustomStart) {
+                start = _hmParse(heatmapCustomStart);
+                endDate = heatmapCustomEnd ? _hmParse(heatmapCustomEnd) : new Date(today);
+                if (start > endDate) { const _t = start; start = endDate; endDate = _t; }
+                const _maxDays = 366 * 2;
+                if ((endDate - start) / 86400000 > _maxDays) { start = new Date(endDate); start.setDate(start.getDate() - _maxDays); }
+            } else {
+                start.setDate(start.getDate() - 370);
+            }
             const startIdx = (start.getDay() === 0 ? 6 : start.getDay() - 1);
             start.setDate(start.getDate() - startIdx);
             const cColor = habit.color || legacyCatColors[habit.category] || 'indigo';
@@ -5080,7 +5130,7 @@
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const weeks = [], monthLabels = [];
             let cur = new Date(start), lastMonth = -1, doneCount = 0;
-            while (cur <= today) {
+            while (cur <= endDate) {
                 const col = [];
                 const colMonth = cur.getMonth();
                 for (let d = 0; d < 7; d++) {
@@ -5115,7 +5165,10 @@
             html += '</div></div>';
             container.innerHTML = html;
             const cntEl = document.getElementById('reportYearHeatmapCount');
-            if (cntEl) cntEl.innerText = doneCount + ' completions \u00b7 12 mo';
+            const _rangeLabel = heatmapMode === 'month' ? 'month' : (heatmapMode === 'custom' ? 'custom' : '12 mo');
+            if (cntEl) cntEl.innerText = doneCount + ' completions \u00b7 ' + _rangeLabel;
+            ['month','year','custom'].forEach(function(m){ const b=document.getElementById('heatmapBtn-'+m); if(b) b.className = _heatmapBtnClass(m===heatmapMode); });
+            const _cw=document.getElementById('heatmapCustomWrap'); if(_cw) _cw.style.display=(heatmapMode==='custom')?'flex':'none';
         }
         function openReportInspector(habitId) {
             const habit = state.habits.find(h => h.id === habitId);
