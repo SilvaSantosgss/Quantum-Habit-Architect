@@ -4218,6 +4218,7 @@
         state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
 
         hydrateCustomAuras();
+        try { if (fixTimezoneShiftedDates() > 0) saveToStorage(); } catch (e) {}
 
         let calendarRenderDate = new Date();
         let selectedCalendarDateStr = getISODateString(new Date());
@@ -4418,7 +4419,39 @@
             setTimeout(() => updateDashboard(), 250); 
         }
 
-        function getISODateString(date) { return date.toISOString().split('T')[0]; }
+        function getISODateString(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+        // One-time safe repair for records mis-dated by the old UTC timezone bug.
+        // Only shifts entries dated in the FUTURE (impossible completions) back one day.
+        // Idempotent: after repair no future entries remain, so re-running is a no-op.
+        function fixDateMap(map, todayStr) {
+            if (!map || typeof map !== 'object') return 0;
+            let n = 0;
+            Object.keys(map).forEach(function(dateStr) {
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
+                if (map[dateStr] && dateStr > todayStr) {
+                    const p = dateStr.split('-');
+                    const dt = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+                    dt.setDate(dt.getDate() - 1);
+                    const nd = getISODateString(dt);
+                    if (!map[nd]) map[nd] = map[dateStr];
+                    delete map[dateStr];
+                    n++;
+                }
+            });
+            return n;
+        }
+        function fixTimezoneShiftedDates() {
+            const todayStr = getISODateString(new Date());
+            let moved = 0;
+            (state.habits || []).forEach(function(h) { moved += fixDateMap(h.history, todayStr); moved += fixDateMap(h.journal, todayStr); });
+            (state.todos || []).forEach(function(t) { moved += fixDateMap(t.history, todayStr); });
+            return moved;
+        }
         function getWeekDays(currentDate) {
             const currentDay = currentDate.getDay();
             const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay;
@@ -5254,6 +5287,7 @@
         }
 
         function updateStatsAndCharts(weekDays) {
+            if (!Array.isArray(weekDays)) weekDays = (typeof getWeekDays === 'function') ? getWeekDays(state.currentDate) : [];
             const totalHabitsEl = document.getElementById('statTotalHabits');
             if(!totalHabitsEl) return;
             totalHabitsEl.innerText = activeHabits().length;
@@ -6342,11 +6376,13 @@
 
         function applyRemoteData(data) {
             applyingRemote = true;
+            let _tzMoved = 0;
             try {
                 if (Array.isArray(data.habits)) state.habits = data.habits;
                 if (Array.isArray(data.categories)) state.categories = data.categories;
                 if (data.game && typeof data.game === 'object') state.game = Object.assign({ spentCoins: 0, redeemed: [], unlockedBadges: [], customRewards: [] }, data.game);
                 if (Array.isArray(data.todos)) state.todos = data.todos;
+                _tzMoved = fixTimezoneShiftedDates();
                 state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
                 localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits));
                 localStorage.setItem('quantum_sync_categories', JSON.stringify(state.categories));
@@ -6359,6 +6395,9 @@
                 if (window.lucide && lucide.createIcons) lucide.createIcons();
             } finally {
                 applyingRemote = false;
+            }
+            if (_tzMoved > 0) {
+                setTimeout(function() { if (typeof cloudSave === 'function') cloudSave(); if (typeof showToast === 'function') showToast('Corrigi ' + _tzMoved + ' registro(s) com data trocada pelo fuso.'); }, 400);
             }
         }
 
