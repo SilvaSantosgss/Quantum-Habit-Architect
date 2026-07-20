@@ -2700,6 +2700,26 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
+    <style id="gameDesktopSizing">
+    /* Desktop-only (PC) sizing tune-up for the Game tab. Mobile/tablet untouched. */
+    @media (min-width: 1024px) {
+      #section-game .text-\[9px\] { font-size: 0.6875rem; line-height: 1rem; }
+      #section-game .text-\[10px\] { font-size: 0.75rem; line-height: 1.15rem; }
+      #section-game .text-\[11px\] { font-size: 0.8125rem; line-height: 1.2rem; }
+      #section-game .text-xs { font-size: 0.8125rem; line-height: 1.2rem; }
+      #section-game .text-sm { font-size: 1rem; line-height: 1.5rem; }
+      #section-game .sm\:text-sm { font-size: 1.0625rem; line-height: 1.6rem; }
+      #section-game .sm\:text-2xl { font-size: 2rem; line-height: 2.25rem; }
+      #section-game .sm\:text-3xl { font-size: 2.75rem; line-height: 1.05; }
+      #section-game .h-4 { height: 1.2rem; }
+      #section-game .w-4 { width: 1.2rem; }
+      #section-game .h-8 { height: 2.5rem; }
+      #section-game .w-8 { width: 2.5rem; }
+      #section-game .h-9 { height: 2.75rem; }
+      #section-game .w-9 { width: 2.75rem; }
+      #section-game .h-3.overflow-hidden { height: 1rem; }
+    }
+    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-indigo-500/30">
 
@@ -5396,6 +5416,7 @@
             g.redeemed = g.redeemed || [];
             g.unlockedBadges = g.unlockedBadges || [];
             g.customRewards = g.customRewards || [];
+            g.rewardOverrides = g.rewardOverrides || {};
             return g;
         }
 
@@ -5406,7 +5427,12 @@
 
         function getAllRewards() {
             const g = ensureGameState();
-            return DEFAULT_REWARDS.concat(g.customRewards.map((r, i) => ({ id: 'custom_' + i, name: r.name, cost: r.cost, icon: 'sparkles', custom: true })));
+            const overrides = g.rewardOverrides || {};
+            const defaults = DEFAULT_REWARDS.map(r => {
+                const ov = overrides[r.id];
+                return { id: r.id, name: (ov && ov.name != null) ? ov.name : r.name, cost: (ov && ov.cost != null) ? ov.cost : r.cost, icon: r.icon, custom: false, overridden: !!ov };
+            });
+            return defaults.concat(g.customRewards.map((r, i) => ({ id: 'custom_' + i, name: r.name, cost: r.cost, icon: 'sparkles', custom: true })));
         }
 
         function currentAvailableCoins() {
@@ -5443,13 +5469,11 @@
             showToast('Custom reward added.');
         }
 
-        let editingRewardIdx = null;
+        let editingRewardId = null;
         function openEditReward(id) {
-            const idx = parseInt(String(id).replace('custom_', ''), 10);
-            if (isNaN(idx)) return;
-            const r = ensureGameState().customRewards[idx];
+            const r = getAllRewards().find(x => x.id === id);
             if (!r) return;
-            editingRewardIdx = idx;
+            editingRewardId = id;
             const nameEl = document.getElementById('editRewardName');
             const costEl = document.getElementById('editRewardCost');
             if (nameEl) nameEl.value = r.name || '';
@@ -5457,18 +5481,33 @@
             openModal('modalEditReward');
         }
         function saveRewardEdit() {
-            if (editingRewardIdx === null) return;
+            if (editingRewardId === null) return;
             const name = (document.getElementById('editRewardName').value || '').trim();
             const cost = parseInt(document.getElementById('editRewardCost').value, 10);
             if (!name) { showToast('Enter a reward name.', 'error'); return; }
             if (!cost || cost < 1) { showToast('Enter a valid coin cost.', 'error'); return; }
             const g = ensureGameState();
-            if (g.customRewards[editingRewardIdx]) g.customRewards[editingRewardIdx] = { name: name, cost: cost };
-            editingRewardIdx = null;
+            if (String(editingRewardId).startsWith('custom_')) {
+                const idx = parseInt(String(editingRewardId).replace('custom_', ''), 10);
+                if (!isNaN(idx) && g.customRewards[idx]) g.customRewards[idx] = { name: name, cost: cost };
+            } else {
+                g.rewardOverrides = g.rewardOverrides || {};
+                g.rewardOverrides[editingRewardId] = { name: name, cost: cost };
+            }
+            editingRewardId = null;
             saveGameState();
             renderGameSection();
             closeModals();
             showToast('Reward updated.');
+        }
+        function resetReward(id) {
+            const g = ensureGameState();
+            if (g.rewardOverrides && g.rewardOverrides[id]) {
+                delete g.rewardOverrides[id];
+                saveGameState();
+                renderGameSection();
+                showToast('Reward reset to default.');
+            }
         }
         function deleteCustomReward(id) {
             const idx = parseInt(String(id).replace('custom_', ''), 10);
@@ -5488,7 +5527,8 @@
                     <div class="flex shrink-0 items-center gap-2">
                         <span class="font-mono text-[11px] text-amber-300">${r.cost}</span>
                         <button onclick="redeemReward('${r.id}')" ${affordable ? '' : 'disabled'} class="rounded-md border px-2 py-1 text-[10px] font-bold transition ${affordable ? 'border-amber-500/40 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 cursor-pointer' : 'border-slate-800 text-slate-600 cursor-not-allowed'}">Redeem</button>
-                        ${r.custom ? `<button onclick="openEditReward('${r.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-sky-300 cursor-pointer" title="Edit"><i data-lucide="pencil" class="h-3 w-3"></i></button><button onclick="deleteCustomReward('${r.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-rose-300 cursor-pointer" title="Remove"><i data-lucide="trash-2" class="h-3 w-3"></i></button>` : ''}
+                        <button onclick="openEditReward('${r.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-sky-300 cursor-pointer" title="Edit"><i data-lucide="pencil" class="h-3 w-3"></i></button>
+                        ${r.custom ? `<button onclick="deleteCustomReward('${r.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-rose-300 cursor-pointer" title="Remove"><i data-lucide="trash-2" class="h-3 w-3"></i></button>` : (r.overridden ? `<button onclick="resetReward('${r.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-amber-300 cursor-pointer" title="Reset to default"><i data-lucide="rotate-ccw" class="h-3 w-3"></i></button>` : '')}
                     </div>
                 </div>`;
             }).join('');
