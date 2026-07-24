@@ -3503,6 +3503,30 @@
     <!-- ================= MODALS & POPUPS ================= -->
 
     <!-- 1. Diagnostic Matrix Report Modal -->
+    <div id="modalTimer" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+        <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-slate-800">
+                <div class="flex items-center gap-2 min-w-0">
+                    <div class="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg"><i data-lucide="timer" class="w-4 h-4 text-indigo-400"></i></div>
+                    <div class="min-w-0">
+                        <h3 class="text-sm font-bold text-white leading-tight">Cronômetro</h3>
+                        <p id="timerHabitName" class="text-[11px] text-slate-400 truncate">Hábito</p>
+                    </div>
+                </div>
+                <button onclick="closeTimerModal()" class="text-slate-500 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-5 sm:p-6 text-center">
+                <div id="timerDisplay" class="font-mono font-bold text-white tracking-tight tabular-nums" style="font-size:3.25rem;line-height:1">00:00:00</div>
+                <p id="timerTodayTotal" class="text-[11px] text-slate-500 mt-1">Hoje: 0s</p>
+                <div class="grid grid-cols-3 gap-2 sm:gap-3 mt-5">
+                    <button id="timerStartBtn" onclick="timerToggle()" class="col-span-1 flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer text-sm"><i data-lucide="play" class="w-4 h-4"></i><span id="timerStartLabel">Iniciar</span></button>
+                    <button onclick="timerReset()" class="col-span-1 flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl border border-slate-700/60 transition cursor-pointer text-sm"><i data-lucide="rotate-ccw" class="w-4 h-4"></i>Zerar</button>
+                    <button onclick="timerSave()" class="col-span-1 flex items-center justify-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold py-2.5 rounded-xl transition cursor-pointer text-sm"><i data-lucide="save" class="w-4 h-4"></i>Salvar</button>
+                </div>
+                <p class="text-[10px] text-slate-600 mt-3 leading-snug">Ao salvar, o tempo é somado ao total do dia e registrado no histórico.</p>
+            </div>
+        </div>
+    </div>
     <div id="modalReport" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3 sm:p-4">
         <!-- Strictly clamped mobile height to ensure scrolling works and buttons aren't lost -->
         <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl shadow-2xl relative flex flex-col max-h-[85vh] sm:max-h-[90vh]">
@@ -3567,6 +3591,18 @@
                             <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Daily Node Log</span>
                             <textarea id="habitJournalInput" placeholder="Add metrics, logs or notes for today..." class="w-full h-16 sm:h-24 bg-slate-900/50 border border-slate-800 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
                             <button onclick="saveJournalEntry()" class="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-[10px] sm:text-[11px] font-bold text-slate-200 hover:text-white py-1.5 sm:py-2 rounded-lg transition cursor-pointer">Commit Log</button>
+                        </div>
+
+                        <div id="reportTimeCard" class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="timer" class="w-3 h-3 text-indigo-400"></i>Tempo</span>
+                                <button onclick="openTimerModal(state.selectedReportHabitId)" class="text-[9px] sm:text-[10px] font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1 cursor-pointer"><i data-lucide="play" class="w-3 h-3"></i>Cronômetro</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Hoje</span><span id="reportTimeToday" class="text-sm font-bold font-mono text-indigo-300">0s</span></div>
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Total</span><span id="reportTimeTotal" class="text-sm font-bold font-mono text-white">0s</span></div>
+                            </div>
+                            <div id="reportTimeLog" class="max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
                         </div>
                     </div>
                     
@@ -3905,6 +3941,10 @@
                         <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Core Objective (Optional)</label>
                         <input type="text" id="advHabitGoal" placeholder="Why is this required?" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 sm:px-3 py-2 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500 transition outline-none">
                     </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-xs sm:text-sm text-slate-300 cursor-pointer"><input type="checkbox" id="advHabitTrackTime" class="accent-indigo-500 w-4 h-4"> <span class="flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-indigo-400"></i>Com tempo (ativar cronômetro)</span></label>
+                        <p class="text-[10px] text-slate-500 mt-1 ml-6">Registra o tempo por sessão e o total por dia no relatório do hábito.</p>
+                    </div>
                 </div>
                 </div>
                 <div id="createTaskBody" class="hidden space-y-4">
@@ -4069,6 +4109,7 @@
     <!-- ============ MOBILE NAVIGATION BAR ============ -->
     <style>
         #mobileTabBar { display: none; }
+        #mobileAddFab { display: none; }
         @media (max-width: 1023px) {
             #mobileTabBar {
                 display: flex;
@@ -4109,18 +4150,23 @@
             #mobileTabBar button svg { width: 20px; height: 20px; }
             #mobileTabBar button.active { color: #ffffff; background: rgba(99, 102, 241, 0.22); }
             #mobileTabBar button.active svg { color: #a5b4fc; }
-            #mnav-add { flex: 0 0 auto; }
-            #mnav-add .add-fab {
+            #mobileAddFab {
                 display: flex; align-items: center; justify-content: center;
-                width: 46px; height: 46px; margin-top: -20px; margin-bottom: 1px;
+                position: fixed;
+                right: 18px;
+                bottom: calc(86px + env(safe-area-inset-bottom, 0px));
+                z-index: 46;
+                width: 56px; height: 56px;
                 border-radius: 9999px;
                 background: linear-gradient(135deg, #6366f1, #4f46e5);
                 color: #ffffff;
-                box-shadow: 0 10px 22px rgba(79, 70, 229, 0.55);
-                border: 3px solid rgba(15, 23, 42, 0.85);
+                border: none;
+                box-shadow: 0 12px 26px rgba(79, 70, 229, 0.55);
+                cursor: pointer;
+                transition: transform .15s ease, box-shadow .15s ease;
             }
-            #mnav-add .add-fab svg { width: 24px; height: 24px; }
-            #mnav-add span:not(.add-fab) { color: #c7d2fe; }
+            #mobileAddFab:active { transform: scale(0.92); }
+            #mobileAddFab svg { width: 26px; height: 26px; }
             #mobileMenuToggle { display: none !important; }
             body { padding-bottom: 96px !important; }
             #toastContainer { bottom: 100px !important; }
@@ -4130,11 +4176,11 @@
         <button id="mnav-tracker" type="button" onclick="switchTab('tracker')"><i data-lucide="layout-grid"></i><span>Tracker</span></button>
         <button id="mnav-todo" type="button" onclick="switchTab('todo')"><i data-lucide="list-checks"></i><span>To-Do</span></button>
         <button id="mnav-game" type="button" onclick="switchTab('game')"><i data-lucide="gamepad-2"></i><span>Game</span></button>
-        <button id="mnav-add" type="button" onclick="openCreateModal()" aria-label="Add habit"><span class="add-fab"><i data-lucide="plus"></i></span><span>Add</span></button>
         <button id="mnav-calendar" type="button" onclick="switchTab('calendar')"><i data-lucide="calendar-days"></i><span>Calendar</span></button>
         <button id="mnav-analytics" type="button" onclick="switchTab('analytics')"><i data-lucide="pie-chart"></i><span>Analytics</span></button>
         <button id="mnav-system" type="button" onclick="switchTab('system')"><i data-lucide="settings"></i><span>System</span></button>
     </nav>
+    <button id="mobileAddFab" type="button" onclick="openCreateModal()" aria-label="Add habit"><i data-lucide="plus"></i></button>
 
     <!-- Script Application Logic -->
     <!-- ============ LOGIN / AUTH OVERLAY ============ -->
@@ -4834,6 +4880,7 @@
             document.getElementById('freqDisplay').innerText = '5 Days';
             document.getElementById('advHabitTime').value = 'Anytime';
             document.getElementById('advHabitSpecificTime').value = '';
+            document.getElementById('advHabitTrackTime').checked = false;
             
             advCreateState = { color: 'indigo', icon: 'activity', mode: 'flexible', specificDays: [], habitType: 'build' };
             iconPickerPage = 0;
@@ -4858,6 +4905,7 @@
             document.getElementById('advHabitGoal').value = unescapeHTML(habit.goal || '');
             document.getElementById('advHabitTime').value = unescapeHTML(habit.timeOfDay || 'Anytime');
             document.getElementById('advHabitSpecificTime').value = unescapeHTML(habit.specificTime || '');
+            document.getElementById('advHabitTrackTime').checked = !!habit.trackTime;
             document.getElementById('advHabitFreq').value = habit.frequency || 5;
             document.getElementById('freqDisplay').innerText = (habit.frequency || 5) + ' Days';
             
@@ -4908,6 +4956,7 @@
             const goal = escapeHTML(document.getElementById('advHabitGoal').value.trim());
             const time = escapeHTML(document.getElementById('advHabitTime').value);
             const specificTime = escapeHTML(document.getElementById('advHabitSpecificTime').value);
+            const trackTime = document.getElementById('advHabitTrackTime').checked;
             let frequency = parseInt(document.getElementById('advHabitFreq').value);
             if(isNaN(frequency)) frequency = 1;
 
@@ -4924,7 +4973,7 @@
                         name, category, color: advCreateState.color, icon: advCreateState.icon,
                         scheduleMode: advCreateState.mode, specificDays: [...advCreateState.specificDays], 
                         frequency, timeOfDay: time, specificTime: specificTime, goal,
-                        habitType: advCreateState.habitType || 'build'
+                        habitType: advCreateState.habitType || 'build', trackTime
                     };
                     showToast('Habit Node Updated.', 'success');
                 }
@@ -4935,7 +4984,7 @@
                     name, category, color: advCreateState.color, icon: advCreateState.icon,
                     scheduleMode: advCreateState.mode, specificDays: [...advCreateState.specificDays], 
                     frequency, timeOfDay: time, specificTime: specificTime, goal,
-                    habitType: advCreateState.habitType || 'build', createdAt: getISODateString(new Date()),
+                    habitType: advCreateState.habitType || 'build', trackTime, createdAt: getISODateString(new Date()),
                     history: {}, journal: {}
                 });
                 showToast('New Habit Node Initiated.', 'success');
@@ -5162,10 +5211,12 @@
                                         <span class="text-[8px] sm:text-[9px] font-bold tracking-wider uppercase border rounded-full px-1.5 sm:px-2 py-0.5 ${styleDef.tailwindBadge}">${escapeHTML(habit.category)}</span>
                                         ${isAvoid ? '<span class="text-[8px] sm:text-[9px] font-bold tracking-wider uppercase border border-rose-500/40 text-rose-300 bg-rose-500/10 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="shield-off" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>Avoid</span>' : ''}
                                         ${timeHtml}
+                                        ${(habit.trackTime && habit.timeLog && habit.timeLog[getISODateString(new Date())]) ? `<span class="text-[8px] sm:text-[9px] font-bold uppercase border border-indigo-500/40 text-indigo-300 bg-indigo-500/10 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="timer" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${formatDuration(habit.timeLog[getISODateString(new Date())])}</span>` : ''}
                                         <span class="text-[9px] sm:text-[11px] text-slate-500 flex items-center gap-0.5 font-mono ml-auto sm:ml-0"><i data-lucide="flame" class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-500"></i>${streak}d</span>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-0.5 shrink-0 self-center sm:self-start mt-0 sm:mt-2" onclick="event.stopPropagation()">
+                                    ${habit.trackTime ? `<button onclick="openTimerModal('${habit.id}')" class="text-slate-500 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-3.5 h-3.5"></i></button>` : ''}
                                     <button onclick="moveHabit('${habit.id}', 'up', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move up" aria-label="Move up"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button>
                                     <button onclick="moveHabit('${habit.id}', 'down', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move down" aria-label="Move down"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
                                     <button onclick="initiateDelete('${habit.id}', event)" class="text-slate-600 hover:text-rose-400 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Delete" aria-label="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
@@ -5316,6 +5367,142 @@
             ['month','year','custom'].forEach(function(m){ const b=document.getElementById('heatmapBtn-'+m); if(b) b.className = _heatmapBtnClass(m===heatmapMode); });
             const _cw=document.getElementById('heatmapCustomWrap'); if(_cw) _cw.style.display=(heatmapMode==='custom')?'flex':'none';
         }
+        // ===== Habit time tracking (stopwatch) =====
+        let _timerHabitId = null;
+        let _timerRunning = false;
+        let _timerAccumMs = 0;
+        let _timerStartTs = 0;
+        let _timerInterval = null;
+
+        function formatDuration(seconds) {
+            seconds = Math.max(0, Math.round(seconds));
+            const hrs = Math.floor(seconds / 3600);
+            const min = Math.floor((seconds % 3600) / 60);
+            const sec = seconds % 60;
+            if (hrs > 0) return hrs + 'h' + (min > 0 ? ' ' + min + 'm' : '');
+            if (min > 0) return min + 'm' + (sec > 0 ? ' ' + sec + 's' : '');
+            return sec + 's';
+        }
+        function _timerClock(seconds) {
+            seconds = Math.max(0, Math.floor(seconds));
+            const hrs = String(Math.floor(seconds / 3600)).padStart(2, '0');
+            const min = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+            const sec = String(seconds % 60).padStart(2, '0');
+            return hrs + ':' + min + ':' + sec;
+        }
+        function _timerElapsedMs() {
+            return _timerAccumMs + (_timerRunning ? (Date.now() - _timerStartTs) : 0);
+        }
+        function _timerRender() {
+            const disp = document.getElementById('timerDisplay');
+            if (disp) disp.innerText = _timerClock(_timerElapsedMs() / 1000);
+        }
+        function _timerSetStartLabel(running) {
+            const lbl = document.getElementById('timerStartLabel');
+            const btn = document.getElementById('timerStartBtn');
+            if (!lbl || !btn) return;
+            const icon = btn.querySelector('i');
+            if (running) {
+                lbl.innerText = 'Pausar';
+                btn.className = 'col-span-1 flex items-center justify-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold py-2.5 rounded-xl transition cursor-pointer text-sm';
+                if (icon) icon.setAttribute('data-lucide', 'pause');
+            } else {
+                lbl.innerText = _timerElapsedMs() > 0 ? 'Continuar' : 'Iniciar';
+                btn.className = 'col-span-1 flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer text-sm';
+                if (icon) icon.setAttribute('data-lucide', 'play');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+        function openTimerModal(habitId) {
+            const habit = state.habits.find(h => h.id === habitId);
+            if (!habit) return;
+            _timerHabitId = habitId;
+            _timerRunning = false;
+            _timerAccumMs = 0;
+            _timerStartTs = 0;
+            if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+            document.getElementById('timerHabitName').innerText = (typeof unescapeHTML === 'function' ? unescapeHTML(habit.name || '') : (habit.name || ''));
+            const todaySec = (habit.timeLog && habit.timeLog[getISODateString(new Date())]) || 0;
+            const tt = document.getElementById('timerTodayTotal');
+            if (tt) tt.innerText = 'Hoje: ' + formatDuration(todaySec);
+            _timerRender();
+            _timerSetStartLabel(false);
+            if (window.lucide) lucide.createIcons();
+            openModal('modalTimer');
+        }
+        function timerToggle() {
+            if (_timerRunning) {
+                _timerAccumMs += Date.now() - _timerStartTs;
+                _timerRunning = false;
+                if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+                _timerSetStartLabel(false);
+            } else {
+                _timerRunning = true;
+                _timerStartTs = Date.now();
+                _timerInterval = setInterval(_timerRender, 250);
+                _timerSetStartLabel(true);
+            }
+            _timerRender();
+        }
+        function timerReset() {
+            _timerRunning = false;
+            _timerAccumMs = 0;
+            _timerStartTs = 0;
+            if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+            _timerRender();
+            _timerSetStartLabel(false);
+        }
+        function timerSave() {
+            const totalSec = Math.round(_timerElapsedMs() / 1000);
+            if (totalSec < 1) { showToast('Nenhum tempo para salvar.', 'error'); return; }
+            const habit = state.habits.find(h => h.id === _timerHabitId);
+            if (!habit) return;
+            const ds = getISODateString(new Date());
+            if (!habit.timeLog) habit.timeLog = {};
+            if (!habit.timeSessions) habit.timeSessions = [];
+            habit.timeLog[ds] = (habit.timeLog[ds] || 0) + totalSec;
+            habit.timeSessions.push({ ds: ds, startedAt: new Date().toISOString(), seconds: totalSec });
+            saveToStorage();
+            const nm = (typeof unescapeHTML === 'function' ? unescapeHTML(habit.name || '') : (habit.name || ''));
+            showToast('Registrado: ' + formatDuration(totalSec) + ' de ' + nm + '.', 'success');
+            const openedId = _timerHabitId;
+            timerReset();
+            closeTimerModal();
+            if (state.selectedReportHabitId === openedId) openReportInspector(openedId);
+        }
+        function closeTimerModal() {
+            if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+            _timerRunning = false;
+            const modal = document.getElementById('modalTimer');
+            if (modal) {
+                const content = modal.children[0];
+                content.classList.remove('modal-enter');
+                content.classList.add('modal-exit');
+                setTimeout(() => modal.classList.add('hidden'), 200);
+            }
+        }
+        function renderHabitTimeLog(habit) {
+            const card = document.getElementById('reportTimeCard');
+            if (card) card.style.display = habit.trackTime ? '' : 'none';
+            if (!habit.trackTime) return;
+            const todayEl = document.getElementById('reportTimeToday');
+            const totalEl = document.getElementById('reportTimeTotal');
+            const listEl = document.getElementById('reportTimeLog');
+            const log = habit.timeLog || {};
+            const ds = getISODateString(new Date());
+            const totalSec = Object.keys(log).reduce((a, k) => a + (log[k] || 0), 0);
+            if (todayEl) todayEl.innerText = formatDuration(log[ds] || 0);
+            if (totalEl) totalEl.innerText = formatDuration(totalSec);
+            if (listEl) {
+                const keys = Object.keys(log).filter(k => log[k] > 0).sort().reverse();
+                if (keys.length === 0) {
+                    listEl.innerHTML = '<span class="text-slate-600 italic block py-1">Nenhum tempo registrado ainda.</span>';
+                } else {
+                    listEl.innerHTML = keys.map(k => '<div class="flex items-center justify-between border-b border-slate-900 pb-1 last:border-0"><span class="font-mono text-slate-500">' + escapeHTML(k) + '</span><span class="font-mono font-bold text-indigo-300">' + formatDuration(log[k]) + '</span></div>').join('');
+                }
+            }
+        }
+
         function openReportInspector(habitId) {
             const habit = state.habits.find(h => h.id === habitId);
             if(!habit) return;
@@ -5410,6 +5597,7 @@
             });
 
             renderReportYearHeatmap(habit);
+            renderHabitTimeLog(habit);
 
             if (window.WorkoutTracker) {
                 const hName = (typeof unescapeHTML === 'function' ? unescapeHTML(habit.name || '') : (habit.name || '')).trim().toLowerCase();
