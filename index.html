@@ -3503,7 +3503,7 @@
     <!-- ================= MODALS & POPUPS ================= -->
 
     <!-- 1. Diagnostic Matrix Report Modal -->
-    <div id="modalTimer" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
+    <div id="modalTimer" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4">
         <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
             <div class="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-slate-800">
                 <div class="flex items-center gap-2 min-w-0">
@@ -3593,16 +3593,16 @@
                             <button onclick="saveJournalEntry()" class="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-[10px] sm:text-[11px] font-bold text-slate-200 hover:text-white py-1.5 sm:py-2 rounded-lg transition cursor-pointer">Commit Log</button>
                         </div>
 
-                        <div id="reportTimeCard" class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner">
+                        <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner js-time-card lg:hidden">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="timer" class="w-3 h-3 text-indigo-400"></i>Tempo</span>
                                 <button onclick="openTimerModal(state.selectedReportHabitId)" class="text-[9px] sm:text-[10px] font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1 cursor-pointer"><i data-lucide="play" class="w-3 h-3"></i>Cronômetro</button>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
-                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Hoje</span><span id="reportTimeToday" class="text-sm font-bold font-mono text-indigo-300">0s</span></div>
-                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Total</span><span id="reportTimeTotal" class="text-sm font-bold font-mono text-white">0s</span></div>
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Hoje</span><span class="js-time-today text-sm font-bold font-mono text-indigo-300">0s</span></div>
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Total</span><span class="js-time-total text-sm font-bold font-mono text-white">0s</span></div>
                             </div>
-                            <div id="reportTimeLog" class="max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
+                            <div class="js-time-log max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
                         </div>
                     </div>
                     
@@ -3611,6 +3611,17 @@
                             <canvas id="detailedReportChart"></canvas>
                         </div>
                         <div id="journalLogsHistory" class="bg-slate-950/60 shadow-inner rounded-xl p-3 sm:p-4 border border-slate-900 max-h-32 sm:max-h-40 overflow-y-auto text-[10px] sm:text-xs space-y-2 flex-grow"></div>
+                        <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner js-time-card hidden lg:block">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="timer" class="w-3 h-3 text-indigo-400"></i>Tempo</span>
+                                <button onclick="openTimerModal(state.selectedReportHabitId)" class="text-[9px] sm:text-[10px] font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1 cursor-pointer"><i data-lucide="play" class="w-3 h-3"></i>Cronômetro</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Hoje</span><span class="js-time-today text-sm font-bold font-mono text-indigo-300">0s</span></div>
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Total</span><span class="js-time-total text-sm font-bold font-mono text-white">0s</span></div>
+                            </div>
+                            <div class="js-time-log max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -5349,7 +5360,7 @@
                 html += '<div class="flex flex-col gap-1">';
                 const _alphas = [0.4, 0.6, 0.8, 1];
                 col.forEach(function(c) {
-                    if (c.future) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3"></div>'; return; }
+                    if (c.future) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] border border-slate-800/40" style="background:rgba(148,163,184,0.03)" title="' + c.ds + ' \u00b7 futuro"></div>'; return; }
                     if (c.slip) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px]" style="background:rgba(244,63,94,0.85)" title="' + c.ds + ' \u2717 slip"></div>'; return; }
                     const _hex = isAvoid ? avHex : onHex;
                     const style = c.done ? ('background:' + _hmRgba(_hex, _alphas[c.level])) : 'background:rgba(148,163,184,0.08)';
@@ -5482,25 +5493,16 @@
             }
         }
         function renderHabitTimeLog(habit) {
-            const card = document.getElementById('reportTimeCard');
-            if (card) card.style.display = habit.trackTime ? '' : 'none';
+            document.querySelectorAll('.js-time-card').forEach(function(cardEl){ cardEl.style.display = habit.trackTime ? '' : 'none'; });
             if (!habit.trackTime) return;
-            const todayEl = document.getElementById('reportTimeToday');
-            const totalEl = document.getElementById('reportTimeTotal');
-            const listEl = document.getElementById('reportTimeLog');
             const log = habit.timeLog || {};
             const ds = getISODateString(new Date());
             const totalSec = Object.keys(log).reduce((a, k) => a + (log[k] || 0), 0);
-            if (todayEl) todayEl.innerText = formatDuration(log[ds] || 0);
-            if (totalEl) totalEl.innerText = formatDuration(totalSec);
-            if (listEl) {
-                const keys = Object.keys(log).filter(k => log[k] > 0).sort().reverse();
-                if (keys.length === 0) {
-                    listEl.innerHTML = '<span class="text-slate-600 italic block py-1">Nenhum tempo registrado ainda.</span>';
-                } else {
-                    listEl.innerHTML = keys.map(k => '<div class="flex items-center justify-between border-b border-slate-900 pb-1 last:border-0"><span class="font-mono text-slate-500">' + escapeHTML(k) + '</span><span class="font-mono font-bold text-indigo-300">' + formatDuration(log[k]) + '</span></div>').join('');
-                }
-            }
+            document.querySelectorAll('.js-time-today').forEach(function(e){ e.innerText = formatDuration(log[ds] || 0); });
+            document.querySelectorAll('.js-time-total').forEach(function(e){ e.innerText = formatDuration(totalSec); });
+            const keys = Object.keys(log).filter(k => log[k] > 0).sort().reverse();
+            const inner = keys.length === 0 ? '<span class="text-slate-600 italic block py-1">Nenhum tempo registrado ainda.</span>' : keys.map(function(k){ return '<div class="flex items-center justify-between border-b border-slate-900 pb-1 last:border-0"><span class="font-mono text-slate-500">' + escapeHTML(k) + '</span><span class="font-mono font-bold text-indigo-300">' + formatDuration(log[k]) + '</span></div>'; }).join('');
+            document.querySelectorAll('.js-time-log').forEach(function(e){ e.innerHTML = inner; });
         }
 
         function openReportInspector(habitId) {
