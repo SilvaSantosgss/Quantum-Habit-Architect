@@ -4805,8 +4805,17 @@
                 });
                 if(!items.length){ el.style.display = 'none'; track.innerHTML = ''; return; }
                 el.style.display = '';
-                var html = items.map(_dayMarqueeChip).join('');
-                track.innerHTML = html + html;
+                var baseHtml = items.map(_dayMarqueeChip).join('');
+                // Repeat the list enough times so one half fills the visible band,
+                // otherwise a short list leaves a gap and the loop looks non-infinite.
+                track.innerHTML = baseHtml;
+                if(window.lucide && lucide.createIcons) lucide.createIcons();
+                var oneCopy = track.scrollWidth || 0;
+                var bandWidth = el.clientWidth || 0;
+                var perHalf = (oneCopy > 0 && bandWidth > 0) ? Math.max(1, Math.ceil(bandWidth / oneCopy)) : 1;
+                var half = '';
+                for(var r = 0; r < perHalf; r++){ half += baseHtml; }
+                track.innerHTML = half + half;
                 if(window.lucide && lucide.createIcons) lucide.createIcons();
             } catch(err){ el.style.display = 'none'; }
         }
