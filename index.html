@@ -2735,12 +2735,24 @@
                         </h1>
                         <p class="text-slate-400 text-[10px] sm:text-sm mt-1">Professional habit lifecycle management.</p>
                     </div>
-                    <button id="headerDayRing" type="button" onclick="switchTab('tracker')" class="relative flex shrink-0 items-center justify-center self-center w-12 h-12 md:w-[72px] md:h-[72px]" aria-label="Daily progress" title="Daily progress">
-                        <svg class="w-full h-full block" viewBox="0 0 40 40" style="transform:rotate(-90deg)">
-                            <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(148,163,184,0.20)" stroke-width="3"></circle>
-                            <circle id="headerDayRingArc" cx="20" cy="20" r="17" fill="none" stroke="#6366f1" stroke-width="3" stroke-linecap="round" stroke-dasharray="106.81" stroke-dashoffset="106.81" style="transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease"></circle>
+                    <button id="headerDayRing" type="button" onclick="switchTab('tracker')" class="group relative flex shrink-0 items-center justify-center self-center w-14 h-14 md:w-[78px] md:h-[78px] transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none" aria-label="Daily progress" title="Daily progress">
+                        <svg class="w-full h-full block -rotate-90" viewBox="0 0 40 40">
+                            <defs>
+                                <linearGradient id="headerRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop id="headerRingStop1" offset="0%" stop-color="#a5b4fc"></stop>
+                                    <stop id="headerRingStop2" offset="100%" stop-color="#6366f1"></stop>
+                                </linearGradient>
+                                <filter id="headerRingGlow" x="-60%" y="-60%" width="220%" height="220%">
+                                    <feDropShadow id="headerRingGlowShadow" dx="0" dy="0" stdDeviation="1.1" flood-color="#6366f1" flood-opacity="0.65"></feDropShadow>
+                                </filter>
+                            </defs>
+                            <circle cx="20" cy="20" r="16.5" fill="none" stroke="rgba(148,163,184,0.14)" stroke-width="3.5"></circle>
+                            <circle id="headerDayRingArc" cx="20" cy="20" r="16.5" fill="none" stroke="url(#headerRingGrad)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="103.67" stroke-dashoffset="103.67" filter="url(#headerRingGlow)" style="transition: stroke-dashoffset 0.7s cubic-bezier(0.22,1,0.36,1)"></circle>
                         </svg>
-                        <span id="headerDayRingLabel" class="absolute inset-0 flex items-center justify-center font-bold text-white leading-none text-[10px] md:text-sm">0%</span>
+                        <span class="absolute inset-0 flex flex-col items-center justify-center leading-none pointer-events-none">
+                            <span id="headerDayRingLabel" class="font-extrabold text-white text-[12px] md:text-lg tracking-tight tabular-nums">0%</span>
+                            <span class="hidden md:block text-[7px] font-bold uppercase tracking-[0.18em] text-slate-500 mt-0.5">Hoje</span>
+                        </span>
                     </button>
                 </div>
                 
@@ -5426,10 +5438,21 @@
             let done = 0;
             habits.forEach(function(h){ if (isDaySuccess(h, todayStr)) done++; });
             const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-            const C = 106.81;
+            const C = 103.67;
             arc.style.strokeDashoffset = String(C - (C * Math.min(pct, 100) / 100));
-            arc.style.stroke = pct >= 100 ? '#22c55e' : (pct >= 50 ? '#6366f1' : '#818cf8');
+            let c1, c2, glow;
+            if (pct >= 100) { c1 = '#34d399'; c2 = '#059669'; glow = '#10b981'; }
+            else if (pct >= 50) { c1 = '#818cf8'; c2 = '#6366f1'; glow = '#6366f1'; }
+            else if (pct > 0) { c1 = '#a5b4fc'; c2 = '#818cf8'; glow = '#818cf8'; }
+            else { c1 = '#64748b'; c2 = '#475569'; glow = '#334155'; }
+            const s1 = document.getElementById('headerRingStop1');
+            const s2 = document.getElementById('headerRingStop2');
+            if (s1) s1.setAttribute('stop-color', c1);
+            if (s2) s2.setAttribute('stop-color', c2);
+            const gl = document.getElementById('headerRingGlowShadow');
+            if (gl) { gl.setAttribute('flood-color', glow); gl.setAttribute('flood-opacity', pct > 0 ? (pct >= 100 ? '0.9' : '0.6') : '0'); }
             label.innerText = pct + '%';
+            label.style.color = pct >= 100 ? '#6ee7b7' : '#ffffff';
             const btn = document.getElementById('headerDayRing');
             if (btn) btn.title = 'Daily progress: ' + done + '/' + total + ' habits';
         }
