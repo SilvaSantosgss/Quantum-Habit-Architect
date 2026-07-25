@@ -4260,6 +4260,7 @@
     <style>
         #mobileTabBar { display: none; }
         #mobileAddFab { display: none; }
+        #mobileTimerFab { display: none; }
         @media (max-width: 1023px) {
             #mobileTabBar {
                 display: flex;
@@ -4317,6 +4318,23 @@
             }
             #mobileAddFab:active { transform: scale(0.92); }
             #mobileAddFab svg { width: 26px; height: 26px; }
+            #mobileTimerFab {
+                display: flex; align-items: center; justify-content: center;
+                position: fixed;
+                right: 24px;
+                bottom: calc(150px + env(safe-area-inset-bottom, 0px));
+                z-index: 46;
+                width: 44px; height: 44px;
+                border-radius: 9999px;
+                background: linear-gradient(135deg, #0ea5e9, #6366f1);
+                color: #ffffff;
+                border: none;
+                box-shadow: 0 8px 20px rgba(14, 165, 233, 0.5);
+                cursor: pointer;
+                transition: transform .15s ease, box-shadow .15s ease;
+            }
+            #mobileTimerFab:active { transform: scale(0.90); }
+            #mobileTimerFab svg { width: 20px; height: 20px; }
             #mobileMenuToggle { display: none !important; }
             body { padding-bottom: 96px !important; }
             #toastContainer { bottom: 100px !important; }
@@ -4331,6 +4349,7 @@
         <button id="mnav-system" type="button" onclick="switchTab('system')"><i data-lucide="settings"></i><span>System</span></button>
     </nav>
     <button id="mobileAddFab" type="button" onclick="openCreateModal()" aria-label="Add habit"><i data-lucide="plus"></i></button>
+    <button id="mobileTimerFab" type="button" onclick="openMobileTimer()" aria-label="Abrir cronometro" title="Cronometro"><i data-lucide="timer"></i></button>
 
     <!-- Script Application Logic -->
     <!-- ============ LOGIN / AUTH OVERLAY ============ -->
@@ -5613,6 +5632,17 @@
                 if (icon) icon.setAttribute('data-lucide', 'play');
             }
             if (window.lucide) lucide.createIcons();
+        }
+        function openMobileTimer() {
+            let id = null;
+            if (_timerHabitId && (_timerRunning || _timerElapsedMs() > 0)) { id = _timerHabitId; }
+            else if (state.selectedReportHabitId && state.habits.find(h => h.id === state.selectedReportHabitId)) { id = state.selectedReportHabitId; }
+            else {
+                const tracked = activeHabits().filter(h => h.trackTime !== false);
+                id = (tracked[0] && tracked[0].id) || (activeHabits()[0] && activeHabits()[0].id) || null;
+            }
+            if (!id) { showToast('Crie um h\u00e1bito primeiro para usar o cron\u00f4metro.', 'error'); return; }
+            openTimerModal(id);
         }
         function openTimerModal(habitId) {
             const habit = state.habits.find(h => h.id === habitId);
