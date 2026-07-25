@@ -3042,6 +3042,27 @@
                                 </label>
                                 <input id="todoTime" type="time" class="mt-2 hidden w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white focus:border-sky-500/50 focus:outline-none" />
                             </div>
+                            <div>
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Priority</label>
+                                <div id="taskPrio-form" class="grid grid-cols-3 gap-2"></div>
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Category / color</label>
+                                <input id="taskCatText-form" type="text" placeholder="e.g. Work, Home..." class="w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white placeholder-slate-600 focus:border-sky-500/50 focus:outline-none" />
+                                <div id="taskCat-form" class="mt-2 flex flex-wrap gap-2"></div>
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Notes</label>
+                                <textarea id="todoNotes" rows="2" placeholder="Details..." class="w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white placeholder-slate-600 focus:border-sky-500/50 focus:outline-none resize-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-500">Checklist</label>
+                                <div class="flex items-center gap-2">
+                                    <input id="todoFormSubtaskInput" type="text" placeholder="Add a checklist item..." onkeydown="if(event.key==='Enter'){event.preventDefault();addTodoFormSubtaskFromInput();}" class="flex-1 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white placeholder-slate-600 focus:border-sky-500/50 focus:outline-none" />
+                                    <button type="button" onclick="addTodoFormSubtaskFromInput()" class="shrink-0 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-bold text-slate-300 hover:border-sky-500/40 hover:text-sky-200 transition cursor-pointer">Add</button>
+                                </div>
+                                <div id="todoFormSubtaskList" class="mt-2 space-y-1.5"></div>
+                            </div>
                             <button onclick="addTodo()" class="w-full rounded-lg border border-sky-500/40 bg-sky-500/10 px-4 py-2.5 text-sm font-bold text-sky-200 hover:bg-sky-500/20 transition cursor-pointer">Add task</button>
                         </div>
                     </div>
@@ -3220,7 +3241,7 @@
                                     <p class="text-[10px] text-slate-500">Unlock badges as you build momentum.</p>
                                 </div>
                             </div>
-                            <span class="rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs font-bold text-indigo-300"><span id="achieveCount2">0 / 0</span></span>
+                            <div class="flex items-center gap-2"><button onclick="openAddAchievement()" class="inline-flex items-center gap-1 rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-2.5 py-1 text-[10px] font-bold text-indigo-200 hover:bg-indigo-500/20 transition cursor-pointer"><i data-lucide="plus" class="h-3 w-3"></i>Add</button><span class="rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs font-bold text-indigo-300"><span id="achieveCount2">0 / 0</span></span></div>
                         </div>
                         <div id="gameAchievements" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                     </div>
@@ -3242,7 +3263,7 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-7 gap-1 sm:gap-2 text-center text-[9px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mb-1 sm:mb-2">
-                        <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div><div>Sun</div>
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                     </div>
                     <div id="fullCalendarGrid" class="grid grid-cols-7 gap-1 sm:gap-2 flex-grow"><div class="aspect-square opacity-0 pointer-events-none"></div><div class="aspect-square opacity-0 pointer-events-none"></div><div onclick="selectCalendarDate('2026-07-01')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">1</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-02')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">2</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-03')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">3</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"><div class="w-1.5 h-1.5 rounded-full bg-slate-400 shadow-sm shadow-black/50"></div></div></div><div onclick="selectCalendarDate('2026-07-04')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">4</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"><div class="w-1.5 h-1.5 rounded-full bg-slate-400 shadow-sm shadow-black/50"></div><div class="w-1.5 h-1.5 rounded-full bg-slate-400 shadow-sm shadow-black/50"></div></div></div><div onclick="selectCalendarDate('2026-07-05')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-indigo-900/40 border-indigo-400 ring-1 ring-indigo-400 cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-indigo-400">5</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"><div class="w-1.5 h-1.5 rounded-full bg-slate-400 shadow-sm shadow-black/50"></div></div></div><div onclick="selectCalendarDate('2026-07-06')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">6</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-07')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">7</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-08')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">8</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-09')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">9</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-10')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">10</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-11')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">11</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-12')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">12</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-13')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">13</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-14')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">14</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-15')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">15</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-16')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">16</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-17')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">17</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-18')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">18</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-19')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">19</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-20')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">20</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-21')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">21</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-22')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">22</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-23')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">23</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-24')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">24</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-25')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">25</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-26')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">26</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-27')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">27</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-28')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">28</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-29')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">29</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-30')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">30</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div><div onclick="selectCalendarDate('2026-07-31')" class="aspect-square rounded-xl border flex flex-col items-center justify-between p-1.5 sm:p-2 bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-300">31</span><div class="flex gap-1 justify-center flex-wrap w-full mt-auto"></div></div></div>
                 </div>
@@ -3924,12 +3945,12 @@
                     <div id="scheduleSpecificView" class="hidden">
                         <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Target Days</label>
                         <div class="flex justify-between gap-1">
-                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="0">M</button>
-                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="1">T</button>
-                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="2">W</button>
-                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="3">T</button>
-                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="4">F</button>
-                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="5">S</button>
+                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="0">S</button>
+                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="1">M</button>
+                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="2">T</button>
+                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="3">W</button>
+                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="4">T</button>
+                            <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="5">F</button>
                             <button type="button" class="specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer" data-day="6">S</button>
                         </div>
                     </div>
@@ -3994,6 +4015,15 @@
                             <button type="button" onclick="addCreateTaskSubtaskFromInput()" class="shrink-0 rounded-lg border border-sky-500/40 bg-sky-500/10 px-3 py-2 text-xs font-bold text-sky-200 hover:bg-sky-500/20 transition cursor-pointer">Add</button>
                         </div>
                         <div id="createTaskSubtaskList" class="space-y-1.5"></div>
+                        <div>
+                            <label class="mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400">Priority</label>
+                            <div id="taskPrio-create" class="grid grid-cols-3 gap-2"></div>
+                        </div>
+                        <div>
+                            <label class="mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400">Category / color</label>
+                            <input id="taskCatText-create" type="text" placeholder="e.g. Work, Home..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-sky-500 transition outline-none">
+                            <div id="taskCat-create" class="mt-2 flex flex-wrap gap-2"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -4079,6 +4109,15 @@
                         <button onclick="addSubtaskFromInput()" class="shrink-0 rounded-lg border border-sky-500/40 bg-sky-600/20 px-3 py-2 text-sm font-bold text-sky-200 hover:bg-sky-600/30 transition cursor-pointer"><i data-lucide="plus" class="w-4 h-4"></i></button>
                     </div>
                     <div id="todoSubtaskList" class="space-y-1.5"></div>
+                    <div>
+                        <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-400">Priority</label>
+                        <div id="taskPrio-detail" class="grid grid-cols-3 gap-2"></div>
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-slate-400">Category / color</label>
+                        <input id="taskCatText-detail" type="text" placeholder="e.g. Work, Home..." class="w-full bg-slate-950/60 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500 transition" />
+                        <div id="taskCat-detail" class="mt-2 flex flex-wrap gap-2"></div>
+                    </div>
                 </div>
             </div>
             <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-800 p-4 sm:p-5">
@@ -4110,6 +4149,51 @@
             <div class="p-4 sm:p-5 border-t border-slate-800 flex gap-2">
                 <button onclick="closeModals()" class="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-700 transition cursor-pointer">Cancel</button>
                 <button onclick="saveRewardEdit()" class="flex-1 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-xs font-bold text-amber-200 hover:bg-amber-500/20 transition cursor-pointer">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalAchievement" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3 sm:p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm shadow-2xl relative flex flex-col">
+            <div class="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center">
+                <h3 id="achModalTitle" class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="trophy" class="h-4 w-4 text-indigo-300"></i> Add Achievement</h3>
+                <button onclick="closeModals()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition cursor-pointer"><i data-lucide="x" class="h-4 w-4"></i></button>
+            </div>
+            <div class="p-4 sm:p-5 space-y-4">
+                <div>
+                    <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Name</label>
+                    <input type="text" id="achName" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500/50 transition outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Description</label>
+                    <input type="text" id="achDesc" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500/50 transition outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Icon (Lucide name)</label>
+                    <input type="text" id="achIcon" placeholder="award" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500/50 transition outline-none">
+                </div>
+                <div id="achMetricWrap" class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Metric</label>
+                        <select id="achMetric" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-indigo-500/50 transition outline-none">
+                            <option value="totalCompleted">Total completions</option>
+                            <option value="level">Level</option>
+                            <option value="bestStreak">Best streak (days)</option>
+                            <option value="redeemedCount">Rewards redeemed</option>
+                            <option value="totalEarnedCoins">Total coins earned</option>
+                            <option value="hp">HP</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Goal</label>
+                        <input type="number" id="achGoal" min="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500/50 transition outline-none">
+                    </div>
+                </div>
+                <p id="achBuiltinNote" class="hidden text-[10px] text-slate-500">Built-in achievement: you can customize the name, description and icon. Its unlock condition stays the same.</p>
+            </div>
+            <div class="p-4 sm:p-5 border-t border-slate-800 flex gap-2">
+                <button onclick="closeModals()" class="flex-1 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-700 transition cursor-pointer">Cancel</button>
+                <button onclick="saveAchievement()" class="flex-1 rounded-xl border border-indigo-500/40 bg-indigo-500/10 px-4 py-2.5 text-xs font-bold text-indigo-200 hover:bg-indigo-500/20 transition cursor-pointer">Save</button>
             </div>
         </div>
     </div>
@@ -4316,6 +4400,18 @@
         };
 
         state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
+
+        (function migrateWeekStartSunday(){
+            try {
+                if (localStorage.getItem('quantum_week_sunday_migrated_v1')) return;
+                const remap = function(arr){ return Array.isArray(arr) ? arr.map(function(d){ return (Number(d) + 1) % 7; }) : arr; };
+                (state.habits || []).forEach(function(hh){ if (Array.isArray(hh.specificDays)) hh.specificDays = remap(hh.specificDays); });
+                (state.todos || []).forEach(function(tt){ if (Array.isArray(tt.days)) tt.days = remap(tt.days); });
+                localStorage.setItem('quantum_week_sunday_migrated_v1', '1');
+                try { localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits)); } catch(e){}
+                try { localStorage.setItem('quantum_sync_todos', JSON.stringify(state.todos || [])); } catch(e){}
+            } catch(e){}
+        })();
 
         hydrateCustomAuras();
         try { if (fixTimezoneShiftedDates() > 0) saveToStorage(); } catch (e) {}
@@ -4555,11 +4651,10 @@
         }
         function getWeekDays(currentDate) {
             const currentDay = currentDate.getDay();
-            const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay;
-            const monday = new Date(currentDate); monday.setDate(currentDate.getDate() + distanceToMonday);
+            const sunday = new Date(currentDate); sunday.setDate(currentDate.getDate() - currentDay);
             const days = [];
             for (let i = 0; i < 7; i++) {
-                const nextDay = new Date(monday); nextDay.setDate(monday.getDate() + i); days.push(nextDay);
+                const nextDay = new Date(sunday); nextDay.setDate(sunday.getDate() + i); days.push(nextDay);
             }
             return days;
         }
@@ -4673,8 +4768,8 @@
 
         function getPresetDaysForMode(mode) {
             if (mode === 'daily') return [0, 1, 2, 3, 4, 5, 6];
-            if (mode === 'weekdays') return [0, 1, 2, 3, 4];
-            if (mode === 'weekends') return [5, 6];
+            if (mode === 'weekdays') return [1, 2, 3, 4, 5];
+            if (mode === 'weekends') return [0, 6];
             if (mode === 'recovery') return [0, 1, 2, 3, 4, 5, 6];
             return advCreateState.specificDays || [];
         }
@@ -4845,6 +4940,10 @@
             const stInput = document.getElementById('createTaskSubtaskInput'); if (stInput) stInput.value = '';
             renderCreateTaskSubtasks();
             createTaskDays = [];
+            createTaskPriority = 'medium';
+            createTaskCatColor = 'slate';
+            setTaskCatText('create', '');
+            renderTaskAdv('create');
             setCreateTaskRecur('once');
             renderCreateTaskWeekdays();
         }
@@ -4868,6 +4967,9 @@
                 history: {},
                 notes: notes,
                 subtasks: createTaskSubtasks.map(s => ({ id: s.id, text: s.text, done: !!s.done })),
+                priority: createTaskPriority,
+                category: getTaskCatText('create'),
+                catColor: createTaskCatColor,
                 archived: false
             };
             if (todo.recur === 'weekly' && todo.days.length === 0) { showToast('Pick at least one weekday.', 'error'); return; }
@@ -5133,12 +5235,12 @@
         // --- Main Dashboard Rendering ---
         function updateDashboard() {
             const weekDays = getWeekDays(state.currentDate);
-            const daysShort = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+            const daysShort = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
             
             document.getElementById('weekLabel').innerText = `${weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
             document.getElementById('matrixHeaders').innerHTML = weekDays.map((day, idx) => `
                 <div class="flex flex-col items-center">
-                    <span class="text-slate-400 font-bold">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][idx]}</span>
+                    <span class="text-slate-400 font-bold">${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][idx]}</span>
                     <span class="text-[9px] sm:text-[10px] font-normal text-slate-500 mt-0.5">${day.getDate()}</span>
                 </div>
             `).join('');
@@ -5307,7 +5409,7 @@
             } else {
                 start.setDate(start.getDate() - 370);
             }
-            const startIdx = (start.getDay() === 0 ? 6 : start.getDay() - 1);
+            const startIdx = start.getDay();
             start.setDate(start.getDate() - startIdx);
             const cColor = habit.color || legacyCatColors[habit.category] || 'indigo';
             const onHex = palette[cColor] ? palette[cColor].hex : '#6366f1';
@@ -5354,7 +5456,7 @@
             html += '</div>';
             html += '<div class="flex gap-1">';
             html += '<div class="flex flex-col gap-1 w-4 shrink-0">';
-            ['M', 'T', 'W', 'T', 'F', 'S', 'S'].forEach(function(w, i) { html += '<div class="h-2.5 sm:h-3 text-[7px] sm:text-[8px] text-slate-600 font-mono leading-none flex items-center">' + (i % 2 === 0 ? w : '') + '</div>'; });
+            ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(function(w, i) { html += '<div class="h-2.5 sm:h-3 text-[7px] sm:text-[8px] text-slate-600 font-mono leading-none flex items-center">' + (i % 2 === 0 ? w : '') + '</div>'; });
             html += '</div>';
             weeks.forEach(function(col) {
                 html += '<div class="flex flex-col gap-1">';
@@ -5635,7 +5737,7 @@
             const firstDay = new Date(year, month, 1);
             const lastDay = new Date(year, month + 1, 0);
             
-            let startOffset = firstDay.getDay() - 1;
+            let startOffset = firstDay.getDay();
             if (startOffset === -1) startOffset = 6;
             const todayStr = getISODateString(new Date());
             let html = '';
@@ -5660,7 +5762,7 @@
                     if(completedHabits.length > 4) dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-slate-500 text-[5px] font-bold text-white flex items-center justify-center">+</div>`;
                 }
                 for(let j=0; j<Math.min(slipHabits.length, 4); j++) { dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-sm shadow-black/50" title="Slip"></div>`; }
-                const _cwd = currentD.getDay() === 0 ? 6 : currentD.getDay() - 1;
+                const _cwd = currentD.getDay();
                 if(activeTodos().some(t => isTodoScheduledOn(t, dStr, _cwd))) dotsHtml += `<div class="w-1.5 h-1.5 rounded-full bg-sky-400 shadow-sm shadow-black/50 ring-1 ring-sky-300/40"></div>`;
 
                 let dayClass = 'bg-slate-900/60 border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800 transition cursor-pointer';
@@ -5681,7 +5783,7 @@
             document.getElementById('calendarSelectedDateLabel').innerText = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
             const completed = activeHabits().filter(h => !isAvoidHabit(h) && h.history[selectedCalendarDateStr]);
-            const dayIndex = dateObj.getDay() === 0 ? 6 : dateObj.getDay() - 1;
+            const dayIndex = dateObj.getDay();
             
             const missedSpecific = activeHabits().filter(h => {
                 if(isAvoidHabit(h)) { return h.history[selectedCalendarDateStr] === true; }
@@ -5728,7 +5830,7 @@
             document.getElementById('globalStreakDisplay').innerText = `${computeGlobalStreak()}d`;
             
             const runnerDate = new Date(); runnerDate.setDate(runnerDate.getDate() - 27);
-            const padSize = runnerDate.getDay() === 0 ? 6 : runnerDate.getDay() - 1;
+            const padSize = runnerDate.getDay();
             let htmlBlocks = '';
             for(let p=0; p<padSize; p++) htmlBlocks += `<div class="w-full aspect-square opacity-0"></div>`;
 
@@ -5745,7 +5847,7 @@
         }
 
         function getDayIndexMondayFirst(date) {
-            return date.getDay() === 0 ? 6 : date.getDay() - 1;
+            return date.getDay();
         }
 
         function isHabitScheduledForDate(habit, date) {
@@ -5798,7 +5900,7 @@
             let targetsHit = 0;
             const catCounts = {};
             const scheduleCounts = {};
-            const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const dayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
             activeHabits().forEach(habit => {
                 const c = escapeHTML(habit.category || 'Uncategorized');
@@ -5952,6 +6054,8 @@
             g.unlockedBadges = g.unlockedBadges || [];
             g.customRewards = g.customRewards || [];
             g.rewardOverrides = g.rewardOverrides || {};
+            g.customAchievements = g.customAchievements || [];
+            g.achievementOverrides = g.achievementOverrides || {};
             return g;
         }
 
@@ -6083,22 +6187,114 @@
             }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-6 text-center text-xs text-slate-500">No rewards redeemed yet.</div>`;
         }
 
+        let editingAchievementId = null;
+        function buildAchievementList() {
+            const g = ensureGameState();
+            const ov = g.achievementOverrides || {};
+            const base = GAME_BADGES.map(function(b) {
+                const o = ov[b.id] || {};
+                return { id: b.id, name: o.name || b.name, desc: o.desc || b.desc, icon: o.icon || b.icon, check: b.check, custom: false, overridden: !!ov[b.id] };
+            });
+            const custom = (g.customAchievements || []).map(function(c) {
+                const metric = c.metric || 'totalCompleted';
+                const goal = Number(c.goal) || 1;
+                return { id: c.id, name: c.name, desc: c.desc || '', icon: c.icon || 'award', check: function(s){ return (Number(s[metric]) || 0) >= goal; }, custom: true, overridden: false, metric: metric, goal: goal };
+            });
+            return base.concat(custom);
+        }
+        function openAddAchievement() {
+            editingAchievementId = 'new';
+            document.getElementById('achModalTitle').textContent = 'Add Achievement';
+            document.getElementById('achName').value = '';
+            document.getElementById('achDesc').value = '';
+            document.getElementById('achIcon').value = 'award';
+            document.getElementById('achMetric').value = 'totalCompleted';
+            document.getElementById('achGoal').value = '';
+            const mw = document.getElementById('achMetricWrap'); if (mw) mw.classList.remove('hidden');
+            const note = document.getElementById('achBuiltinNote'); if (note) note.classList.add('hidden');
+            openModal('modalAchievement');
+        }
+        function openEditAchievement(id) {
+            const a = buildAchievementList().find(function(x){ return x.id === id; });
+            if (!a) return;
+            editingAchievementId = id;
+            document.getElementById('achModalTitle').textContent = 'Edit Achievement';
+            document.getElementById('achName').value = a.name || '';
+            document.getElementById('achDesc').value = a.desc || '';
+            document.getElementById('achIcon').value = a.icon || 'award';
+            const mw = document.getElementById('achMetricWrap');
+            const note = document.getElementById('achBuiltinNote');
+            if (a.custom) {
+                document.getElementById('achMetric').value = a.metric || 'totalCompleted';
+                document.getElementById('achGoal').value = a.goal || '';
+                if (mw) mw.classList.remove('hidden');
+                if (note) note.classList.add('hidden');
+            } else {
+                if (mw) mw.classList.add('hidden');
+                if (note) note.classList.remove('hidden');
+            }
+            openModal('modalAchievement');
+        }
+        function saveAchievement() {
+            const name = (document.getElementById('achName').value || '').trim();
+            if (!name) { showToast('Enter an achievement name.', 'error'); return; }
+            const desc = (document.getElementById('achDesc').value || '').trim();
+            const icon = (document.getElementById('achIcon').value || 'award').trim() || 'award';
+            const g = ensureGameState();
+            if (editingAchievementId === 'new' || String(editingAchievementId).indexOf('ach_') === 0) {
+                const metric = document.getElementById('achMetric').value || 'totalCompleted';
+                const goal = parseInt(document.getElementById('achGoal').value, 10);
+                if (!goal || goal < 1) { showToast('Enter a valid goal value.', 'error'); return; }
+                if (editingAchievementId === 'new') {
+                    g.customAchievements = g.customAchievements || [];
+                    g.customAchievements.push({ id: 'ach_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: name, desc: desc, icon: icon, metric: metric, goal: goal });
+                } else {
+                    const c = (g.customAchievements || []).find(function(x){ return x.id === editingAchievementId; });
+                    if (c) { c.name = name; c.desc = desc; c.icon = icon; c.metric = metric; c.goal = goal; }
+                }
+            } else {
+                g.achievementOverrides = g.achievementOverrides || {};
+                g.achievementOverrides[editingAchievementId] = { name: name, desc: desc, icon: icon };
+            }
+            editingAchievementId = null;
+            saveGameState();
+            renderGameSection();
+            closeModals();
+            showToast('Achievement saved.');
+        }
+        function deleteCustomAchievement(id) {
+            const g = ensureGameState();
+            g.customAchievements = (g.customAchievements || []).filter(function(x){ return x.id !== id; });
+            const bi = g.unlockedBadges.indexOf(id); if (bi >= 0) g.unlockedBadges.splice(bi, 1);
+            saveGameState();
+            renderGameSection();
+        }
+        function resetAchievement(id) {
+            const g = ensureGameState();
+            if (g.achievementOverrides && g.achievementOverrides[id]) {
+                delete g.achievementOverrides[id];
+                saveGameState();
+                renderGameSection();
+                showToast('Achievement reset to default.');
+            }
+        }
         function renderAchievements(stats) {
             const g = ensureGameState();
             const container = document.getElementById('gameAchievements');
             const newlyUnlocked = [];
-            const html = GAME_BADGES.map(b => {
+            const list = buildAchievementList();
+            const html = list.map(b => {
                 const unlocked = !!b.check(stats);
                 if (unlocked && !g.unlockedBadges.includes(b.id)) { g.unlockedBadges.push(b.id); newlyUnlocked.push(b); }
                 const isUnlocked = unlocked || g.unlockedBadges.includes(b.id);
                 return `<div class="flex items-center gap-3 rounded-xl border ${isUnlocked ? 'border-amber-500/30 bg-amber-500/5' : 'border-slate-800 bg-slate-950/40 opacity-60'} px-3 py-2.5">
                     <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${isUnlocked ? 'bg-amber-500/15 text-amber-300' : 'bg-slate-800 text-slate-600'}"><i data-lucide="${isUnlocked ? b.icon : 'lock'}" class="h-4 w-4"></i></div>
-                    <div class="min-w-0"><div class="truncate text-xs font-bold ${isUnlocked ? 'text-white' : 'text-slate-500'}">${b.name}</div><div class="truncate text-[10px] text-slate-500">${b.desc}</div></div>
-                    ${isUnlocked ? '<i data-lucide="check-circle-2" class="ml-auto h-4 w-4 shrink-0 text-emerald-400"></i>' : ''}
+                    <div class="min-w-0 flex-1"><div class="truncate text-xs font-bold ${isUnlocked ? 'text-white' : 'text-slate-500'}">${escapeHTML(b.name)}${b.custom ? ' <span class="text-[8px] text-indigo-300">CUSTOM</span>' : ''}</div><div class="truncate text-[10px] text-slate-500">${escapeHTML(b.desc)}</div></div>
+                    <div class="ml-auto flex shrink-0 items-center gap-1">${isUnlocked ? '<i data-lucide="check-circle-2" class="h-4 w-4 text-emerald-400"></i>' : ''}<button onclick="openEditAchievement('${b.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-sky-300 cursor-pointer" title="Edit"><i data-lucide="pencil" class="h-3 w-3"></i></button>${b.custom ? `<button onclick="deleteCustomAchievement('${b.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-rose-300 cursor-pointer" title="Remove"><i data-lucide="trash-2" class="h-3 w-3"></i></button>` : (b.overridden ? `<button onclick="resetAchievement('${b.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-amber-300 cursor-pointer" title="Reset to default"><i data-lucide="rotate-ccw" class="h-3 w-3"></i></button>` : '')}</div>
                 </div>`;
             }).join('');
             if (container) container.innerHTML = html;
-            const label = `${g.unlockedBadges.length} / ${GAME_BADGES.length}`;
+            const label = `${g.unlockedBadges.length} / ${list.length}`;
             ['achieveCount', 'achieveCount2'].forEach(id => { const e = document.getElementById(id); if (e) e.textContent = label; });
             if (newlyUnlocked.length) {
                 newlyUnlocked.forEach(b => showToast(`🏆 Achievement unlocked: ${b.name}`));
@@ -6107,7 +6303,7 @@
         }
 
         // ===================== TO-DO ENGINE =====================
-        const TODO_WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const TODO_WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         let todoFormRecur = 'once';
         let todoFormDays = [];
 
@@ -6116,8 +6312,7 @@
             return state.todos;
         }
         function todoWeekdayIndex(date) {
-            const d = date.getDay();
-            return d === 0 ? 6 : d - 1;
+            return date.getDay();
         }
         function isTodoScheduledOn(todo, dateStr, weekdayIdx) {
             if (todo.createdAt && dateStr < todo.createdAt) return false;
@@ -6208,6 +6403,92 @@
             if (dateEl && !dateEl.value) dateEl.value = getISODateString(new Date());
             setTodoRecur('once');
             renderTodoWeekdayPicker();
+            todoFormPriority = 'medium';
+            todoFormCatColor = 'slate';
+            setTaskCatText('form', '');
+            todoFormSubtasks = [];
+            renderTodoFormSubtasks();
+            renderTaskAdv('form');
+            var _tn = document.getElementById('todoNotes'); if (_tn) _tn.value = '';
+        }
+
+        const TASK_CAT_COLORS = { slate: '#64748b', sky: '#38bdf8', violet: '#a78bfa', emerald: '#34d399', amber: '#fbbf24', rose: '#fb7185' };
+        const TASK_PRIORITIES = { low: { label: 'Low', color: '#34d399' }, medium: { label: 'Medium', color: '#fbbf24' }, high: { label: 'High', color: '#fb7185' } };
+        let todoFormPriority = 'medium', createTaskPriority = 'medium', todoDetailPriority = 'medium';
+        let todoFormCatColor = 'slate', createTaskCatColor = 'slate', todoDetailCatColor = 'slate';
+        let todoFormSubtasks = [];
+        function _taskPriorityVar(scope, val) {
+            if (val === undefined) return scope === 'create' ? createTaskPriority : (scope === 'detail' ? todoDetailPriority : todoFormPriority);
+            if (scope === 'create') createTaskPriority = val; else if (scope === 'detail') todoDetailPriority = val; else todoFormPriority = val;
+        }
+        function _taskCatVar(scope, val) {
+            if (val === undefined) return scope === 'create' ? createTaskCatColor : (scope === 'detail' ? todoDetailCatColor : todoFormCatColor);
+            if (scope === 'create') createTaskCatColor = val; else if (scope === 'detail') todoDetailCatColor = val; else todoFormCatColor = val;
+        }
+        function renderTaskPriority(scope) {
+            const wrap = document.getElementById('taskPrio-' + scope);
+            if (!wrap) return;
+            const cur = _taskPriorityVar(scope);
+            wrap.innerHTML = ['low', 'medium', 'high'].map(function(pr) {
+                const active = cur === pr; const c = TASK_PRIORITIES[pr].color;
+                return `<button type="button" onclick="setTaskPriority('${scope}','${pr}')" class="rounded-lg border px-2 py-2 text-xs font-bold transition cursor-pointer ${active ? '' : 'text-slate-400 border-slate-700 bg-slate-900 hover:border-slate-500'}" style="${active ? ('border-color:' + c + ';background:' + c + '22;color:' + c) : ''}">${TASK_PRIORITIES[pr].label}</button>`;
+            }).join('');
+        }
+        function setTaskPriority(scope, val) { _taskPriorityVar(scope, val); renderTaskPriority(scope); }
+        function renderTaskCatColors(scope) {
+            const wrap = document.getElementById('taskCat-' + scope);
+            if (!wrap) return;
+            const cur = _taskCatVar(scope);
+            wrap.innerHTML = Object.keys(TASK_CAT_COLORS).map(function(k) {
+                const active = cur === k;
+                return `<button type="button" onclick="setTaskCatColor('${scope}','${k}')" class="h-7 w-7 rounded-full border-2 transition cursor-pointer ${active ? 'border-white scale-110' : 'border-transparent'}" style="background:${TASK_CAT_COLORS[k]}" title="${k}"></button>`;
+            }).join('');
+        }
+        function setTaskCatColor(scope, val) { _taskCatVar(scope, val); renderTaskCatColors(scope); }
+        function renderTaskAdv(scope) { renderTaskPriority(scope); renderTaskCatColors(scope); }
+        function getTaskCatText(scope) { const el = document.getElementById('taskCatText-' + scope); return el ? (el.value || '').trim() : ''; }
+        function setTaskCatText(scope, v) { const el = document.getElementById('taskCatText-' + scope); if (el) el.value = v || ''; }
+        function renderTodoFormSubtasks() {
+            const wrap = document.getElementById('todoFormSubtaskList');
+            if (!wrap) return;
+            if (!todoFormSubtasks.length) { wrap.innerHTML = `<div class="rounded-lg border border-dashed border-slate-800 py-3 text-center text-[11px] text-slate-600">No checklist items yet.</div>`; if (window.lucide) lucide.createIcons(); return; }
+            wrap.innerHTML = todoFormSubtasks.map(function(s) { return `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleTodoFormSubtask('${s.id}')" class="h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" /><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteTodoFormSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`; }).join('');
+            if (window.lucide) lucide.createIcons();
+        }
+        function addTodoFormSubtaskFromInput() {
+            const inp = document.getElementById('todoFormSubtaskInput');
+            if (!inp) return;
+            const text = (inp.value || '').trim();
+            if (!text) return;
+            todoFormSubtasks.push({ id: 'sub_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), text: text, done: false });
+            inp.value = '';
+            renderTodoFormSubtasks();
+        }
+        function toggleTodoFormSubtask(sid) { const s = todoFormSubtasks.find(function(x){ return x.id === sid; }); if (s) s.done = !s.done; renderTodoFormSubtasks(); }
+        function deleteTodoFormSubtask(sid) { const i = todoFormSubtasks.findIndex(function(x){ return x.id === sid; }); if (i >= 0) todoFormSubtasks.splice(i, 1); renderTodoFormSubtasks(); }
+        function toggleTaskSubtask(todoId, subId) {
+            const t = ensureTodos().find(function(x){ return x.id === todoId; });
+            if (!t || !Array.isArray(t.subtasks)) return;
+            const s = t.subtasks.find(function(x){ return x.id === subId; });
+            if (!s) return;
+            s.done = !s.done;
+            saveTodos();
+            renderTodos();
+        }
+        function renderTaskCardSubtasks(t) {
+            if (!t.subtasks || !t.subtasks.length) return '';
+            return `<div class="mt-2 space-y-1 border-t border-slate-800/70 pt-2">` + t.subtasks.map(function(s) { return `<label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" ${s.done ? 'checked' : ''} onclick="event.stopPropagation()" onchange="toggleTaskSubtask('${t.id}','${s.id}')" class="h-3.5 w-3.5 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" /><span class="min-w-0 flex-1 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-300'}">${escapeHTML(s.text)}</span></label>`; }).join('') + `</div>`;
+        }
+        function taskPriorityChip(t) {
+            const pr = t.priority || 'medium';
+            if (pr === 'medium') return '';
+            const c = TASK_PRIORITIES[pr] ? TASK_PRIORITIES[pr].color : '#fbbf24';
+            return `<span class="rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase" style="border-color:${c}66;color:${c};background:${c}15">${TASK_PRIORITIES[pr] ? TASK_PRIORITIES[pr].label : pr}</span>`;
+        }
+        function taskCatChip(t) {
+            if (!t.category) return '';
+            const c = TASK_CAT_COLORS[t.catColor] || TASK_CAT_COLORS.slate;
+            return `<span class="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9px] font-bold" style="border-color:${c}66;color:${c}"><span class="h-1.5 w-1.5 rounded-full" style="background:${c}"></span>${escapeHTML(t.category)}</span>`;
         }
         function addTodo() {
             const titleEl = document.getElementById('todoTitle');
@@ -6226,8 +6507,11 @@
                 time: hasTime ? time : '',
                 createdAt: todayStr,
                 history: {},
-                notes: '',
-                subtasks: [],
+                notes: (document.getElementById('todoNotes') ? document.getElementById('todoNotes').value : '').trim(),
+                subtasks: todoFormSubtasks.map(function(s){ return { id: s.id, text: s.text, done: !!s.done }; }),
+                priority: todoFormPriority,
+                category: getTaskCatText('form'),
+                catColor: todoFormCatColor,
                 archived: false
             };
             if (todo.recur === 'weekly' && todo.days.length === 0) { showToast('Pick at least one weekday.', 'error'); return; }
@@ -6238,6 +6522,13 @@
             document.getElementById('todoTime').classList.add('hidden');
             todoFormDays = [];
             renderTodoWeekdayPicker();
+            var _tn = document.getElementById('todoNotes'); if (_tn) _tn.value = '';
+            todoFormSubtasks = [];
+            renderTodoFormSubtasks();
+            todoFormPriority = 'medium';
+            todoFormCatColor = 'slate';
+            setTaskCatText('form', '');
+            renderTaskAdv('form');
             saveTodos();
             renderTodos();
             showToast('Task added.');
@@ -6330,6 +6621,8 @@
             todoDetailRecur = t.recur || 'once';
             todoDetailDays = Array.isArray(t.days) ? [...t.days] : [];
             todoDetailSubtasks = Array.isArray(t.subtasks) ? t.subtasks.map(s => ({ id: s.id, text: s.text, done: !!s.done })) : [];
+            todoDetailPriority = t.priority || 'medium';
+            todoDetailCatColor = t.catColor || 'slate';
             document.getElementById('todoDetailTitle').value = t.title || '';
             document.getElementById('todoDetailDate').value = t.date || getISODateString(new Date());
             document.getElementById('todoDetailHasTime').checked = !!t.hasTime;
@@ -6340,6 +6633,8 @@
             setTodoDetailRecur(todoDetailRecur);
             renderTodoDetailWeekdays();
             renderTodoDetailSubtasks();
+            setTaskCatText('detail', t.category || '');
+            renderTaskAdv('detail');
             openModal('todoDetailModal');
             if (window.lucide) lucide.createIcons();
         }
@@ -6358,6 +6653,9 @@
             t.time = hasTime ? document.getElementById('todoDetailTime').value : '';
             t.notes = document.getElementById('todoDetailNotes').value || '';
             t.subtasks = todoDetailSubtasks.map(s => ({ id: s.id, text: s.text, done: !!s.done }));
+            t.priority = todoDetailPriority;
+            t.category = getTaskCatText('detail');
+            t.catColor = todoDetailCatColor;
             saveTodos();
             renderTodos();
             const cs = document.getElementById('section-calendar');
@@ -6461,12 +6759,13 @@
                 const due = todaysTodos();
                 todayList.innerHTML = due.length ? due.map(t => {
                     const done = isTodoDoneOn(t, today);
-                    return `<div class="flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
+                    return `<div class="rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5"><div class="flex items-center justify-between gap-3">
                         <label class="flex min-w-0 items-center gap-3 cursor-pointer">
                             <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTodoDone('${t.id}')" class="h-5 w-5 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" />
-                            <span class="min-w-0"><span class="block truncate text-sm font-semibold ${done ? 'text-slate-500 line-through' : 'text-white'}">${escapeHTML(t.title)}</span><span class="block text-[10px] text-slate-500">${todoRecurLabel(t)}${t.hasTime && t.time ? ' \u00b7 ' + escapeHTML(t.time) : ''}</span></span>
+                            <span class="min-w-0"><span class="block truncate text-sm font-semibold ${done ? 'text-slate-500 line-through' : 'text-white'}">${escapeHTML(t.title)}</span><span class="block text-[10px] text-slate-500">${todoRecurLabel(t)}${t.hasTime && t.time ? ' \u00b7 ' + escapeHTML(t.time) : ''}${t.category ? ' \u00b7 ' + escapeHTML(t.category) : ''}</span></span>
                         </label>
                         ${(t.subtasks && t.subtasks.length) ? `<span class="shrink-0 inline-flex items-center gap-1 rounded-md border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-[9px] font-bold text-slate-300" title="Checklist"><i data-lucide="check-square" class="h-2.5 w-2.5"></i>${t.subtasks.filter(s => s.done).length}/${t.subtasks.length}</span>` : ''}${(t.notes && t.notes.trim()) ? `<span class="shrink-0 text-slate-500" title="Has notes"><i data-lucide="sticky-note" class="h-3.5 w-3.5"></i></span>` : ''}<button onclick="openTodoDetail('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-sky-300 hover:border-sky-500/40 transition cursor-pointer" title="Edit / Notes / Checklist"><i data-lucide="pencil" class="h-3.5 w-3.5"></i></button><button onclick="archiveTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-amber-300 hover:border-amber-500/40 transition cursor-pointer" title="Archive"><i data-lucide="archive" class="h-3.5 w-3.5"></i></button><button onclick="deleteTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-rose-300 hover:border-rose-500/40 transition cursor-pointer" title="Delete"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>
+                    </div>${renderTaskCardSubtasks(t)}
                     </div>`;
                 }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">Nothing scheduled today. Enjoy or add a task.</div>`;
             }
@@ -6478,19 +6777,20 @@
                 allList.innerHTML = arr.length ? arr.map(t => {
                     const overdue = overdueIds.has(t.id);
                     const recurColor = t.recur === 'once' ? 'text-indigo-300 border-indigo-500/30 bg-indigo-500/10' : (t.recur === 'weekly' ? 'text-violet-300 border-violet-500/30 bg-violet-500/10' : 'text-sky-300 border-sky-500/30 bg-sky-500/10');
-                    return `<div class="flex items-center justify-between gap-3 rounded-xl border ${overdue ? 'border-rose-500/30 bg-rose-950/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
+                    return `<div class="rounded-xl border ${overdue ? 'border-rose-500/30 bg-rose-950/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5"><div class="flex items-center justify-between gap-3">
                         <div class="flex min-w-0 items-center gap-2">
                             <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${overdue ? 'bg-rose-500/15 text-rose-300' : 'bg-slate-800 text-slate-400'}"><i data-lucide="${t.recur === 'once' ? 'calendar' : (t.recur === 'weekly' ? 'calendar-days' : 'repeat')}" class="h-4 w-4"></i></div>
                             <div class="min-w-0">
                                 <div class="truncate text-sm font-semibold text-white">${escapeHTML(t.title)}</div>
                                 <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
-                                    <span class="rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${recurColor}">${todoRecurLabel(t)}</span>
+                                    <span class="rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide ${recurColor}">${todoRecurLabel(t)}</span>${taskPriorityChip(t)}${taskCatChip(t)}
                                     ${t.hasTime && t.time ? `<span class="inline-flex items-center gap-1 rounded-md border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-[9px] font-bold text-slate-300"><i data-lucide="clock" class="h-2.5 w-2.5"></i>${escapeHTML(t.time)}</span>` : ''}
                                     ${overdue ? '<span class="rounded-md border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">OVERDUE</span>' : ''}
                                 </div>
                             </div>
                         </div>
                         ${(t.subtasks && t.subtasks.length) ? `<span class="shrink-0 inline-flex items-center gap-1 rounded-md border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-[9px] font-bold text-slate-300" title="Checklist"><i data-lucide="check-square" class="h-2.5 w-2.5"></i>${t.subtasks.filter(s => s.done).length}/${t.subtasks.length}</span>` : ''}${(t.notes && t.notes.trim()) ? `<span class="shrink-0 text-slate-500" title="Has notes"><i data-lucide="sticky-note" class="h-3.5 w-3.5"></i></span>` : ''}<button onclick="openTodoDetail('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-sky-300 hover:border-sky-500/40 transition cursor-pointer" title="Edit / Notes / Checklist"><i data-lucide="pencil" class="h-3.5 w-3.5"></i></button><button onclick="archiveTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-amber-300 hover:border-amber-500/40 transition cursor-pointer" title="Archive"><i data-lucide="archive" class="h-3.5 w-3.5"></i></button><button onclick="deleteTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-rose-300 hover:border-rose-500/40 transition cursor-pointer" title="Delete"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>
+                    </div>${renderTaskCardSubtasks(t)}
                     </div>`;
                 }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">No tasks yet. Create one to get started.</div>`;
             }
@@ -6504,7 +6804,7 @@
             const habits = activeHabits();
             const g = ensureGameState();
             const completedToday = habits.filter(h => isAvoidHabit(h) ? !(h.history && h.history[today] === true) : (h.history && h.history[today] === true));
-            const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+            const todayIndex = new Date().getDay();
             const missedToday = habits.filter(h => {
                 if (isAvoidHabit(h)) return h.history && h.history[today] === true;
                 const isScheduled = isTargetedScheduleMode(h.scheduleMode) ? (h.specificDays || []).includes(todayIndex) : true;
