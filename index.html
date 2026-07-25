@@ -2378,6 +2378,19 @@
         #settingsPalette.open .settings-palette-row:nth-child(4) { animation-delay: .19s; }
         .palette-chevron { transition: transform .3s ease; }
         #settingsPaletteTrigger[aria-expanded="true"] .palette-chevron { transform: rotate(180deg); }
+        /* Mobile habit filter dropdown (multi-select) */
+        #habitFilterDropdown.open .settings-palette-menu { clip-path: inset(0 0 0% 0 round 1rem); opacity: 1; visibility: visible; pointer-events: auto; transition: clip-path .42s cubic-bezier(0.16,1,0.3,1), opacity .2s ease, visibility 0s; }
+        #habitFilterDropdown.open .settings-palette-row { opacity: 1; transform: none; }
+        #habitFilterDropdown.open.animate-rows .settings-palette-row { animation: paletteRowIn .4s cubic-bezier(0.16,1,0.3,1) forwards; }
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(1){animation-delay:.03s}
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(2){animation-delay:.06s}
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(3){animation-delay:.09s}
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(4){animation-delay:.12s}
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(5){animation-delay:.15s}
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(6){animation-delay:.18s}
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(7){animation-delay:.21s}
+        #habitFilterDropdown.open.animate-rows .settings-palette-row:nth-child(8){animation-delay:.24s}
+        #habitFilterTrigger[aria-expanded="true"] .palette-chevron { transform: rotate(180deg); }
         /* Selectable filter chips */
         .filter-chip { transition: transform .28s cubic-bezier(0.34,1.56,0.64,1), background-color .2s ease, color .2s ease, border-color .2s ease; }
         .filter-chip.on { background: var(--web-accent,#6366f1) !important; border-color: var(--web-accent,#6366f1) !important; color: var(--web-bg,#020617) !important; box-shadow: 0 2px 10px -3px var(--web-accent,#6366f1); }
@@ -2886,7 +2899,20 @@
                     <!-- Dynamic Category Filter Panel -->
                     <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-3 sm:p-5">
                         <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-2 sm:mb-3">Filter Architecture</span>
-                        <div class="flex flex-wrap gap-1.5 sm:gap-2" id="categoryFilters"><button onclick="setFilter('All')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-semibold transition bg-slate-800 border-slate-700 text-white shadow-sm cursor-pointer">All Focus</button><button onclick="setFilter('Health')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Health</button><button onclick="setFilter('Mind')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Mind</button><button onclick="setFilter('Work')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Work</button><button onclick="setFilter('Finance')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Finance</button><button onclick="setFilter('Social')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Social</button></div>
+                        <div id="habitFilterDropdown" class="relative w-full lg:hidden">
+                            <button type="button" id="habitFilterTrigger" onclick="toggleHabitFilter()" aria-haspopup="menu" aria-expanded="false" aria-controls="habitFilterMenu" class="group flex w-full items-center justify-between gap-2 rounded-2xl border border-slate-800 bg-slate-950/70 px-3.5 py-2.5 shadow-lg backdrop-blur">
+                                <span class="flex min-w-0 items-center gap-2">
+                                    <span class="grid h-7 w-7 place-items-center rounded-lg bg-indigo-500/15 text-indigo-300"><i data-lucide="sliders-horizontal" class="h-4 w-4"></i></span>
+                                    <span class="flex min-w-0 flex-col items-start">
+                                        <span class="text-[9px] font-semibold uppercase tracking-wider text-slate-500">Filter</span>
+                                        <span id="habitFilterLabel" class="truncate text-sm font-bold text-white">All Focus</span>
+                                    </span>
+                                </span>
+                                <i data-lucide="chevron-down" class="palette-chevron h-4 w-4 text-slate-400"></i>
+                            </button>
+                            <div id="habitFilterMenu" role="menu" aria-label="Habit filters" class="settings-palette-menu absolute left-0 right-0 top-full z-50 mt-2 max-h-72 origin-top overflow-auto rounded-2xl border border-slate-800/80 bg-slate-950/80 p-1.5 shadow-2xl backdrop-blur-xl"></div>
+                        </div>
+                        <div class="hidden lg:flex flex-wrap gap-1.5 sm:gap-2" id="categoryFilters"><button onclick="setFilter('All')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-semibold transition bg-slate-800 border-slate-700 text-white shadow-sm cursor-pointer">All Focus</button><button onclick="setFilter('Health')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Health</button><button onclick="setFilter('Mind')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Mind</button><button onclick="setFilter('Work')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Work</button><button onclick="setFilter('Finance')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Finance</button><button onclick="setFilter('Social')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Social</button></div>
                     </div>
                 </div>
 
@@ -4940,6 +4966,20 @@
                 filterHtml += `<button data-cat="${escapeHTML(cat)}" onclick="toggleFilter('${escapeHTML(cat)}')" class="filter-chip ${isActive ? 'on' : ''} text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium border-slate-800 ${isActive ? '' : 'text-slate-400 hover:text-slate-200'} cursor-pointer">${escapeHTML(cat)}</button>`;
             });
             filterContainer.innerHTML = filterHtml;
+
+            // Mobile dropdown (multi-select) that mirrors the filter chips
+            const fdMenu = document.getElementById('habitFilterMenu');
+            if (fdMenu) {
+                let menuHtml = `<button type="button" role="menuitemcheckbox" aria-checked="${allOn}" data-cat="All" onclick="toggleFilter('All')" class="settings-palette-row ${allOn ? 'active' : ''}"><i data-lucide="layers" class="h-4 w-4 text-indigo-300"></i><span class="flex-1">All Focus</span><i data-lucide="check" class="h-4 w-4 ${allOn ? '' : 'opacity-0'}"></i></button>`;
+                state.categories.forEach(cat => {
+                    const sel = state.activeFilters.includes(cat);
+                    menuHtml += `<button type="button" role="menuitemcheckbox" aria-checked="${sel}" data-cat="${escapeHTML(cat)}" onclick="toggleFilter('${escapeHTML(cat)}')" class="settings-palette-row ${sel ? 'active' : ''}"><i data-lucide="hash" class="h-4 w-4 text-indigo-300"></i><span class="flex-1">${escapeHTML(cat)}</span><i data-lucide="check" class="h-4 w-4 ${sel ? '' : 'opacity-0'}"></i></button>`;
+                });
+                fdMenu.innerHTML = menuHtml;
+            }
+            const fdLabel = document.getElementById('habitFilterLabel');
+            if (fdLabel) { fdLabel.textContent = allOn ? 'All Focus' : (state.activeFilters.length === 1 ? state.activeFilters[0] : state.activeFilters.length + ' selected'); }
+            if (window.lucide && lucide.createIcons) lucide.createIcons();
 
             const selectEl = document.getElementById('advHabitCategory');
             if(selectEl) {
@@ -7789,6 +7829,11 @@
             rose:     { bg:'#160a10', surface:'#241019', panel:'#3a1826', text:'#fff1f5', muted:'#c58aa0', accent:'#f43f5e', success:'#10b981', danger:'#ef4444' }
         };
         let __settingsTab = 'appearance';
+        function toggleHabitFilter(){ var p=document.getElementById('habitFilterDropdown'); if(!p) return; if(p.classList.contains('open')) closeHabitFilter(); else openHabitFilter(); }
+        function openHabitFilter(){ var p=document.getElementById('habitFilterDropdown'); if(!p) return; p.classList.add('open'); p.classList.add('animate-rows'); var t=document.getElementById('habitFilterTrigger'); if(t) t.setAttribute('aria-expanded','true'); if(window.lucide && lucide.createIcons) lucide.createIcons(); setTimeout(function(){ p.classList.remove('animate-rows'); }, 520); setTimeout(function(){ document.addEventListener('click', _habitFilterOutside, true); document.addEventListener('keydown', _habitFilterKey); }, 0); }
+        function closeHabitFilter(){ var p=document.getElementById('habitFilterDropdown'); if(!p) return; p.classList.remove('open'); p.classList.remove('animate-rows'); var t=document.getElementById('habitFilterTrigger'); if(t) t.setAttribute('aria-expanded','false'); document.removeEventListener('click', _habitFilterOutside, true); document.removeEventListener('keydown', _habitFilterKey); }
+        function _habitFilterOutside(e){ var p=document.getElementById('habitFilterDropdown'); if(p && !p.contains(e.target)) closeHabitFilter(); }
+        function _habitFilterKey(e){ if(e.key==='Escape'){ closeHabitFilter(); var t=document.getElementById('habitFilterTrigger'); if(t) t.focus(); } }
         function toggleSettingsPalette(){ var p=document.getElementById('settingsPalette'); if(!p) return; if(p.classList.contains('open')) closeSettingsPalette(); else openSettingsPalette(); }
         function openSettingsPalette(){ var p=document.getElementById('settingsPalette'); if(!p) return; p.classList.add('open'); var t=document.getElementById('settingsPaletteTrigger'); if(t) t.setAttribute('aria-expanded','true'); if(window.lucide && lucide.createIcons) lucide.createIcons(); setTimeout(function(){ document.addEventListener('click', _settingsPaletteOutside, true); document.addEventListener('keydown', _settingsPaletteKey); }, 0); }
         function closeSettingsPalette(){ var p=document.getElementById('settingsPalette'); if(!p) return; p.classList.remove('open'); var t=document.getElementById('settingsPaletteTrigger'); if(t) t.setAttribute('aria-expanded','false'); document.removeEventListener('click', _settingsPaletteOutside, true); document.removeEventListener('keydown', _settingsPaletteKey); }
