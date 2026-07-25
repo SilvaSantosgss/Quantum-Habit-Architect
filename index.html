@@ -3544,6 +3544,12 @@
                     <button onclick="timerReset()" class="col-span-1 flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl border border-slate-700/60 transition cursor-pointer text-sm"><i data-lucide="rotate-ccw" class="w-4 h-4"></i>Zerar</button>
                     <button onclick="timerSave()" class="col-span-1 flex items-center justify-center gap-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold py-2.5 rounded-xl transition cursor-pointer text-sm"><i data-lucide="save" class="w-4 h-4"></i>Salvar</button>
                 </div>
+                <div class="flex items-center justify-center flex-wrap gap-1.5 mt-4">
+                    <span class="text-[10px] text-slate-500 uppercase tracking-wide mr-0.5">Adicionar</span>
+                    <button onclick="timerAddPreset(5)" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition cursor-pointer">+5m</button>
+                    <button onclick="timerAddPreset(15)" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition cursor-pointer">+15m</button>
+                    <button onclick="timerAddPreset(25)" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition cursor-pointer">+25m</button>
+                </div>
                 <p class="text-[10px] text-slate-600 mt-3 leading-snug">Ao salvar, o tempo é somado ao total do dia e registrado no histórico.</p>
             </div>
         </div>
@@ -3623,6 +3629,8 @@
                                 <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Hoje</span><span class="js-time-today text-sm font-bold font-mono text-indigo-300">0s</span></div>
                                 <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Total</span><span class="js-time-total text-sm font-bold font-mono text-white">0s</span></div>
                             </div>
+                            <div class="js-time-spark flex items-end justify-between gap-1 h-10 mt-2"></div>
+                            <div class="js-time-stats grid grid-cols-3 gap-1.5 mt-2 mb-1"></div>
                             <div class="js-time-log max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
                         </div>
                     </div>
@@ -3641,6 +3649,8 @@
                                 <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Hoje</span><span class="js-time-today text-sm font-bold font-mono text-indigo-300">0s</span></div>
                                 <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Total</span><span class="js-time-total text-sm font-bold font-mono text-white">0s</span></div>
                             </div>
+                            <div class="js-time-spark flex items-end justify-between gap-1 h-10 mt-2"></div>
+                            <div class="js-time-stats grid grid-cols-3 gap-1.5 mt-2 mb-1"></div>
                             <div class="js-time-log max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
                         </div>
                     </div>
@@ -5409,6 +5419,7 @@
             } else {
                 start.setDate(start.getDate() - 370);
             }
+            if (heatmapMode !== 'custom') { endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0); endDate.setHours(0, 0, 0, 0); }
             const startIdx = start.getDay();
             start.setDate(start.getDate() - startIdx);
             const cColor = habit.color || legacyCatColors[habit.category] || 'indigo';
@@ -5462,7 +5473,7 @@
                 html += '<div class="flex flex-col gap-1">';
                 const _alphas = [0.4, 0.6, 0.8, 1];
                 col.forEach(function(c) {
-                    if (c.future) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] border border-slate-800/40" style="background:rgba(148,163,184,0.03)" title="' + c.ds + ' \u00b7 futuro"></div>'; return; }
+                    if (c.future) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px] border border-dashed border-slate-600/50" style="background:rgba(148,163,184,0.08)" title="' + c.ds + ' \u00b7 futuro"></div>'; return; }
                     if (c.slip) { html += '<div class="h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-[3px]" style="background:rgba(244,63,94,0.85)" title="' + c.ds + ' \u2717 slip"></div>'; return; }
                     const _hex = isAvoid ? avHex : onHex;
                     const style = c.done ? ('background:' + _hmRgba(_hex, _alphas[c.level])) : 'background:rgba(148,163,184,0.08)';
@@ -5529,17 +5540,20 @@
         function openTimerModal(habitId) {
             const habit = state.habits.find(h => h.id === habitId);
             if (!habit) return;
+            const resuming = (_timerHabitId === habitId) && (_timerAccumMs > 0 || _timerRunning);
             _timerHabitId = habitId;
-            _timerRunning = false;
-            _timerAccumMs = 0;
-            _timerStartTs = 0;
-            if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+            if (!resuming) {
+                _timerRunning = false;
+                _timerAccumMs = 0;
+                _timerStartTs = 0;
+                if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
+            }
             document.getElementById('timerHabitName').innerText = (typeof unescapeHTML === 'function' ? unescapeHTML(habit.name || '') : (habit.name || ''));
             const todaySec = (habit.timeLog && habit.timeLog[getISODateString(new Date())]) || 0;
             const tt = document.getElementById('timerTodayTotal');
             if (tt) tt.innerText = 'Hoje: ' + formatDuration(todaySec);
             _timerRender();
-            _timerSetStartLabel(false);
+            _timerSetStartLabel(_timerRunning);
             if (window.lucide) lucide.createIcons();
             openModal('modalTimer');
         }
@@ -5584,6 +5598,7 @@
             if (state.selectedReportHabitId === openedId) openReportInspector(openedId);
         }
         function closeTimerModal() {
+            if (_timerRunning) { _timerAccumMs += Date.now() - _timerStartTs; }
             if (_timerInterval) { clearInterval(_timerInterval); _timerInterval = null; }
             _timerRunning = false;
             const modal = document.getElementById('modalTimer');
@@ -5594,17 +5609,69 @@
                 setTimeout(() => modal.classList.add('hidden'), 200);
             }
         }
+        function _applyTimeCardVisibility(track) {
+            var isDesktop = window.innerWidth >= 1024;
+            document.querySelectorAll('.js-time-card').forEach(function(cardEl){
+                var desktopCard = cardEl.classList.contains('lg:block');
+                var show = track !== false && (desktopCard ? isDesktop : !isDesktop);
+                cardEl.style.display = show ? 'block' : 'none';
+            });
+        }
+        window.addEventListener('resize', function(){ if (typeof state !== 'undefined' && state && state.selectedReportHabitId) { var _h = (state.habits || []).find(function(x){ return x.id === state.selectedReportHabitId; }); if (_h) _applyTimeCardVisibility(_h.trackTime); } });
+        function timerAddPreset(min) {
+            _timerAccumMs += min * 60 * 1000;
+            _timerRender();
+            _timerSetStartLabel(_timerRunning);
+            if (typeof showToast === 'function') showToast('+' + min + 'm adicionados ao cronômetro.', 'success');
+        }
+        function _friendlyTimeDate(k) {
+            const ds = getISODateString(new Date());
+            const y = new Date(); y.setDate(y.getDate() - 1); const yds = getISODateString(y);
+            if (k === ds) return 'Hoje';
+            if (k === yds) return 'Ontem';
+            const p = String(k).split('-');
+            const dt = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+            const wd = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][dt.getDay()];
+            return wd + ' ' + p[2] + '/' + p[1];
+        }
+        function deleteTimeRecord(habitId, dsKey) {
+            const habit = state.habits.find(function(h){ return h.id === habitId; });
+            if (!habit || !habit.timeLog) return;
+            if (!window.confirm('Remover o tempo registrado em ' + _friendlyTimeDate(dsKey) + '?')) return;
+            delete habit.timeLog[dsKey];
+            if (Array.isArray(habit.timeSessions)) habit.timeSessions = habit.timeSessions.filter(function(s){ return s.ds !== dsKey; });
+            if (typeof saveToStorage === 'function') saveToStorage();
+            renderHabitTimeLog(habit);
+            if (typeof showToast === 'function') showToast('Registro removido.', 'success');
+        }
         function renderHabitTimeLog(habit) {
-            document.querySelectorAll('.js-time-card').forEach(function(cardEl){ cardEl.style.display = habit.trackTime !== false ? '' : 'none'; });
+            _applyTimeCardVisibility(habit.trackTime);
             if (habit.trackTime === false) return;
             const log = habit.timeLog || {};
             const ds = getISODateString(new Date());
-            const totalSec = Object.keys(log).reduce((a, k) => a + (log[k] || 0), 0);
+            const keys = Object.keys(log).filter(function(k){ return log[k] > 0; }).sort().reverse();
+            const totalSec = keys.reduce(function(a, k){ return a + (log[k] || 0); }, 0);
             document.querySelectorAll('.js-time-today').forEach(function(e){ e.innerText = formatDuration(log[ds] || 0); });
             document.querySelectorAll('.js-time-total').forEach(function(e){ e.innerText = formatDuration(totalSec); });
-            const keys = Object.keys(log).filter(k => log[k] > 0).sort().reverse();
-            const inner = keys.length === 0 ? '<span class="text-slate-600 italic block py-1">Nenhum tempo registrado ainda.</span>' : keys.map(function(k){ return '<div class="flex items-center justify-between border-b border-slate-900 pb-1 last:border-0"><span class="font-mono text-slate-500">' + escapeHTML(k) + '</span><span class="font-mono font-bold text-indigo-300">' + formatDuration(log[k]) + '</span></div>'; }).join('');
-            document.querySelectorAll('.js-time-log').forEach(function(e){ e.innerHTML = inner; });
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const weekStart = new Date(today); weekStart.setDate(weekStart.getDate() - today.getDay());
+            let weekSec = 0;
+            keys.forEach(function(k){ const p = String(k).split('-'); const dt = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)); dt.setHours(0, 0, 0, 0); if (dt >= weekStart && dt <= today) weekSec += (log[k] || 0); });
+            const sessions = (habit.timeSessions || []).length;
+            const activeDays = keys.length;
+            const avgSec = activeDays > 0 ? Math.round(totalSec / activeDays) : 0;
+            const spark = [];
+            for (let i = 6; i >= 0; i--) { const dd = new Date(today); dd.setDate(dd.getDate() - i); const kk = getISODateString(dd); spark.push({ k: kk, sec: log[kk] || 0, dow: dd.getDay() }); }
+            const maxSpark = Math.max(1, spark.reduce(function(m, s){ return Math.max(m, s.sec); }, 0));
+            const dowL = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+            const sparkHtml = spark.map(function(s){ const hpct = s.sec > 0 ? Math.max(12, Math.round(s.sec / maxSpark * 100)) : 4; const isT = s.k === ds; const bg = s.sec > 0 ? 'rgba(99,102,241,0.75)' : 'rgba(99,102,241,0.15)'; return `<div class="flex-1 flex flex-col items-center justify-end gap-1 h-full"><div class="w-full rounded-t" style="height:${hpct}%;background:${bg}" title="${s.k} · ${formatDuration(s.sec)}"></div><span class="text-[7px] leading-none ${isT ? 'text-indigo-300 font-bold' : 'text-slate-600'}">${dowL[s.dow]}</span></div>`; }).join('');
+            document.querySelectorAll('.js-time-spark').forEach(function(e){ e.innerHTML = sparkHtml; });
+            function _statChip(lbl, val){ return `<div class="bg-slate-900/50 rounded-lg px-1 py-1.5 border border-slate-800/60 text-center"><span class="block text-[7px] text-slate-500 uppercase tracking-wide">${lbl}</span><span class="block text-[11px] font-bold font-mono text-slate-200 mt-0.5">${val}</span></div>`; }
+            const statsHtml = _statChip('Semana', formatDuration(weekSec)) + _statChip('Sessões', String(sessions)) + _statChip('Média', formatDuration(avgSec));
+            document.querySelectorAll('.js-time-stats').forEach(function(e){ e.innerHTML = statsHtml; });
+            const listHtml = keys.length === 0 ? '<span class="text-slate-600 italic block py-1">Nenhum tempo registrado ainda.</span>' : keys.map(function(k){ return `<div class="group flex items-center justify-between gap-2 border-b border-slate-900 pb-1 last:border-0"><span class="font-mono text-slate-500 truncate">${escapeHTML(_friendlyTimeDate(k))}</span><span class="flex items-center gap-1.5 shrink-0"><span class="font-mono font-bold text-indigo-300">${formatDuration(log[k])}</span><button onclick="deleteTimeRecord('${habit.id}','${k}')" class="text-slate-600 hover:text-rose-400 transition cursor-pointer p-0.5" title="Remover"><i data-lucide="trash-2" class="w-3 h-3"></i></button></span></div>`; }).join('');
+            document.querySelectorAll('.js-time-log').forEach(function(e){ e.innerHTML = listHtml; });
+            if (window.lucide) lucide.createIcons();
         }
 
         function openReportInspector(habitId) {
