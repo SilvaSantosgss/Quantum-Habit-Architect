@@ -3545,6 +3545,13 @@
                 </div>
                 <div id="timerDisplay" class="font-mono font-bold text-white tracking-tight tabular-nums" style="font-size:3.25rem;line-height:1">00:00:00</div>
                 <p id="timerTodayTotal" class="text-[11px] text-slate-500 mt-1">Hoje: 0s</p>
+                <div id="timerCountdownEdit" class="hidden items-center justify-center gap-1.5 mt-3">
+                    <input id="timerCdMin" type="number" min="0" max="999" inputmode="numeric" onkeydown="if(event.key==='Enter'){event.preventDefault();applyCountdownEdit();}" class="w-14 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-center text-white font-mono text-sm focus:outline-none focus:border-indigo-500" />
+                    <span class="text-slate-500 text-xs">min</span>
+                    <input id="timerCdSec" type="number" min="0" max="59" inputmode="numeric" onkeydown="if(event.key==='Enter'){event.preventDefault();applyCountdownEdit();}" class="w-14 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-center text-white font-mono text-sm focus:outline-none focus:border-indigo-500" />
+                    <span class="text-slate-500 text-xs">seg</span>
+                    <button onclick="applyCountdownEdit()" class="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition cursor-pointer">Definir</button>
+                </div>
                 <div class="grid grid-cols-3 gap-2 sm:gap-3 mt-5">
                     <button id="timerStartBtn" onclick="timerToggle()" class="col-span-1 flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl transition cursor-pointer text-sm"><i data-lucide="play" class="w-4 h-4"></i><span id="timerStartLabel">Iniciar</span></button>
                     <button onclick="timerReset()" class="col-span-1 flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl border border-slate-700/60 transition cursor-pointer text-sm"><i data-lucide="rotate-ccw" class="w-4 h-4"></i>Zerar</button>
@@ -5697,11 +5704,41 @@
             if (sw) sw.className = _timerMode === 'stopwatch' ? activeCls : idleCls;
             if (cd) cd.className = _timerMode === 'countdown' ? activeCls : idleCls;
             const hint = document.getElementById('timerPresetHint');
-            if (hint) hint.innerText = _timerMode === 'countdown' ? 'Definir' : 'Adicionar';
+            if (hint) hint.innerText = 'Adicionar';
             const note = document.getElementById('timerModeNote');
             if (note) note.innerText = _timerMode === 'countdown'
-                ? 'Ao chegar a zero, o tempo é registrado e você recebe uma notificação.'
+                ? 'Defina o tempo desejado (ou use os atalhos) e toque em Iniciar. Ao chegar a zero, o tempo é registrado e você recebe uma notificação.'
                 : 'Ao salvar, o tempo é somado ao total do dia e registrado no histórico.';
+            const edit = document.getElementById('timerCountdownEdit');
+            if (edit) {
+                if (_timerMode === 'countdown') { edit.classList.remove('hidden'); edit.classList.add('flex'); }
+                else { edit.classList.add('hidden'); edit.classList.remove('flex'); }
+            }
+            _timerSyncCountdownInputs();
+        }
+        function _timerSyncCountdownInputs() {
+            const totalSec = Math.round(_timerTargetMs / 1000);
+            const mi = document.getElementById('timerCdMin');
+            const si = document.getElementById('timerCdSec');
+            if (mi && document.activeElement !== mi) mi.value = Math.floor(totalSec / 60);
+            if (si && document.activeElement !== si) si.value = totalSec % 60;
+        }
+        function applyCountdownEdit() {
+            const mi = document.getElementById('timerCdMin');
+            const si = document.getElementById('timerCdSec');
+            let m = parseInt(mi ? mi.value : '0', 10); if (isNaN(m) || m < 0) m = 0;
+            let s = parseInt(si ? si.value : '0', 10); if (isNaN(s) || s < 0) s = 0; if (s > 59) s = 59;
+            const total = (m * 60 + s) * 1000;
+            if (total <= 0) { if (typeof showToast === 'function') showToast('Informe um tempo válido.', 'error'); return; }
+            _timerMode = 'countdown';
+            _timerTargetMs = total;
+            _timerAccumMs = 0;
+            if (_timerRunning) _timerStartTs = Date.now();
+            _timerRender();
+            _timerSetStartLabel(_timerRunning);
+            _timerSyncCountdownInputs();
+            _timerUpdateFloating();
+            if (typeof showToast === 'function') showToast('Contagem definida para ' + formatDuration(Math.round(total / 1000)) + '.', 'success');
         }
         function _timerRequestNotifyPermission() {
             try {
@@ -5801,12 +5838,11 @@
         window.addEventListener('resize', function(){ if (typeof state !== 'undefined' && state && state.selectedReportHabitId) { var _h = (state.habits || []).find(function(x){ return x.id === state.selectedReportHabitId; }); if (_h) _applyTimeCardVisibility(_h.trackTime); } });
         function timerAddPreset(min) {
             if (_timerMode === 'countdown') {
-                _timerTargetMs = min * 60 * 1000;
-                _timerAccumMs = 0;
-                if (_timerRunning) { _timerStartTs = Date.now(); }
+                _timerTargetMs = Math.max(0, _timerTargetMs) + min * 60 * 1000;
                 _timerRender();
                 _timerSetStartLabel(_timerRunning);
-                if (typeof showToast === 'function') showToast('Contagem definida para ' + min + 'm.', 'success');
+                _timerSyncCountdownInputs();
+                if (typeof showToast === 'function') showToast('+' + min + 'm na contagem (' + formatDuration(Math.round(_timerTargetMs / 1000)) + ').', 'success');
             } else {
                 _timerAccumMs += min * 60 * 1000;
                 _timerRender();
