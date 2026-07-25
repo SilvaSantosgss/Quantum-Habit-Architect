@@ -3427,6 +3427,10 @@
                     .theme-preset { display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 4px; border-radius:12px; border:1px solid rgb(30,41,59); background:rgba(2,6,23,0.5); color:#cbd5e1; font-size:10px; font-weight:600; cursor:pointer; transition:all .15s; }
                     .theme-preset:hover { border-color:var(--p,#6366f1); color:#fff; transform:translateY(-1px); }
                     .preset-dot { width:22px; height:22px; border-radius:9999px; border:1px solid rgba(255,255,255,0.18); }
+                    .theme-preset-active { border-color: var(--p,#6366f1) !important; box-shadow: 0 0 0 2px var(--p,#6366f1) inset; color:#fff !important; }
+                    .theme-color-label { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+                    .theme-hex { font-family:ui-monospace,monospace; font-size:9px; font-weight:700; color:#64748b; letter-spacing:0.02em; }
+                    .archive-chip { display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; border-radius:9999px; background:rgba(148,163,184,0.15); color:#cbd5e1; font-size:10px; font-weight:800; }
                 </style>
 
                 <!-- ACCOUNT (mobile only) -->
@@ -3450,27 +3454,49 @@
                     </div>
                     <div class="bg-slate-900/40 border border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-3xl"></div>
+                        <div id="themePreviewFrame" class="relative z-10 mb-5 rounded-xl border border-slate-800 p-3 sm:p-4 overflow-hidden" style="background:#020617">
+                            <div class="flex items-center gap-1.5 mb-2.5">
+                                <span class="w-2.5 h-2.5 rounded-full" style="background:#f43f5e"></span>
+                                <span class="w-2.5 h-2.5 rounded-full" style="background:#f59e0b"></span>
+                                <span class="w-2.5 h-2.5 rounded-full" style="background:#10b981"></span>
+                                <span class="ml-auto text-[9px] font-bold uppercase tracking-wider text-slate-500">Live Preview</span>
+                            </div>
+                            <div id="themePreviewCard" class="rounded-lg border p-3" style="background:#0f172a;border-color:#1e293b">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div id="themePreviewTitle" class="text-sm font-bold truncate" style="color:#f8fafc">Morning Routine</div>
+                                        <div id="themePreviewMuted" class="text-[10px] truncate" style="color:#94a3b8">5 day streak · 80% this week</div>
+                                    </div>
+                                    <button id="themePreviewBtn" type="button" class="shrink-0 rounded-lg px-2.5 py-1.5 text-[10px] font-bold" style="background:#6366f1;color:#fff">Check in</button>
+                                </div>
+                                <div class="mt-2.5 h-1.5 w-full rounded-full overflow-hidden" style="background:rgba(148,163,184,0.2)"><div id="themePreviewBar" class="h-full rounded-full" style="width:72%;background:#6366f1"></div></div>
+                                <div class="mt-2.5 flex items-center gap-1.5">
+                                    <span id="themePreviewChipS" class="rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white" style="background:#10b981">Done</span>
+                                    <span id="themePreviewChipD" class="rounded-md px-1.5 py-0.5 text-[9px] font-bold text-white" style="background:#f43f5e">Missed</span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="relative z-10 mb-5">
                             <h4 class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Quick Presets</h4>
                             <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                                <button onclick="applyThemePreset('midnight')" class="theme-preset" style="--p:#6366f1"><span class="preset-dot" style="background:linear-gradient(135deg,#020617,#6366f1)"></span>Midnight</button>
-                                <button onclick="applyThemePreset('violet')" class="theme-preset" style="--p:#8b5cf6"><span class="preset-dot" style="background:linear-gradient(135deg,#0f0a1e,#8b5cf6)"></span>Violet</button>
-                                <button onclick="applyThemePreset('ocean')" class="theme-preset" style="--p:#0ea5e9"><span class="preset-dot" style="background:linear-gradient(135deg,#020c1b,#0ea5e9)"></span>Ocean</button>
-                                <button onclick="applyThemePreset('emerald')" class="theme-preset" style="--p:#10b981"><span class="preset-dot" style="background:linear-gradient(135deg,#04140f,#10b981)"></span>Emerald</button>
-                                <button onclick="applyThemePreset('amber')" class="theme-preset" style="--p:#f59e0b"><span class="preset-dot" style="background:linear-gradient(135deg,#140f02,#f59e0b)"></span>Amber</button>
-                                <button onclick="applyThemePreset('rose')" class="theme-preset" style="--p:#f43f5e"><span class="preset-dot" style="background:linear-gradient(135deg,#160a10,#f43f5e)"></span>Rose</button>
+                                <button onclick="applyThemePreset('midnight')" data-preset="midnight" class="theme-preset" style="--p:#6366f1"><span class="preset-dot" style="background:linear-gradient(135deg,#020617,#6366f1)"></span>Midnight</button>
+                                <button onclick="applyThemePreset('violet')" data-preset="violet" class="theme-preset" style="--p:#8b5cf6"><span class="preset-dot" style="background:linear-gradient(135deg,#0f0a1e,#8b5cf6)"></span>Violet</button>
+                                <button onclick="applyThemePreset('ocean')" data-preset="ocean" class="theme-preset" style="--p:#0ea5e9"><span class="preset-dot" style="background:linear-gradient(135deg,#020c1b,#0ea5e9)"></span>Ocean</button>
+                                <button onclick="applyThemePreset('emerald')" data-preset="emerald" class="theme-preset" style="--p:#10b981"><span class="preset-dot" style="background:linear-gradient(135deg,#04140f,#10b981)"></span>Emerald</button>
+                                <button onclick="applyThemePreset('amber')" data-preset="amber" class="theme-preset" style="--p:#f59e0b"><span class="preset-dot" style="background:linear-gradient(135deg,#140f02,#f59e0b)"></span>Amber</button>
+                                <button onclick="applyThemePreset('rose')" data-preset="rose" class="theme-preset" style="--p:#f43f5e"><span class="preset-dot" style="background:linear-gradient(135deg,#160a10,#f43f5e)"></span>Rose</button>
                             </div>
                         </div>
                         <h4 class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 relative z-10">Custom Colors</h4>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 relative z-10 mb-4">
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Background<input id="themeBg" type="color" value="#020617" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Surface<input id="themeSurface" type="color" value="#0f172a" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Panel<input id="themePanel" type="color" value="#1e293b" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Text<input id="themeText" type="color" value="#f8fafc" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Accent<input id="themeAccent" type="color" value="#6366f1" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Success<input id="themeSuccess" type="color" value="#10b981" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Danger<input id="themeDanger" type="color" value="#f43f5e" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
-                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400">Muted<input id="themeMuted" type="color" value="#94a3b8" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Background<span id="hexBg" class="theme-hex">#020617</span></span><input id="themeBg" type="color" value="#020617" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Surface<span id="hexSurface" class="theme-hex">#0f172a</span></span><input id="themeSurface" type="color" value="#0f172a" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Panel<span id="hexPanel" class="theme-hex">#1e293b</span></span><input id="themePanel" type="color" value="#1e293b" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Text<span id="hexText" class="theme-hex">#f8fafc</span></span><input id="themeText" type="color" value="#f8fafc" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Accent<span id="hexAccent" class="theme-hex">#6366f1</span></span><input id="themeAccent" type="color" value="#6366f1" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Success<span id="hexSuccess" class="theme-hex">#10b981</span></span><input id="themeSuccess" type="color" value="#10b981" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Danger<span id="hexDanger" class="theme-hex">#f43f5e</span></span><input id="themeDanger" type="color" value="#f43f5e" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
+                            <label class="rounded-xl border border-slate-800 bg-slate-950/50 p-2 sm:p-3 text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-400"><span class="theme-color-label">Muted<span id="hexMuted" class="theme-hex">#94a3b8</span></span><input id="themeMuted" type="color" value="#94a3b8" oninput="updateThemePreview()" class="mt-2 h-9 w-full cursor-pointer rounded-lg bg-slate-900 border border-slate-700"></label>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 relative z-10">
                             <button onclick="previewWebThemeFromControls()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 sm:py-3 px-4 rounded-xl border border-slate-700/60 transition cursor-pointer text-xs sm:text-sm">Preview</button>
@@ -3521,13 +3547,32 @@
                 <section id="set-archive" class="settings-section space-y-3">
                     <div class="settings-section-header">
                         <div class="p-2 bg-slate-500/10 border border-slate-500/20 rounded-lg"><i data-lucide="archive" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-300"></i></div>
-                        <div><h3 class="text-base sm:text-lg font-bold text-white">Archive</h3><p class="text-[10px] sm:text-xs text-slate-500">Archived habits and tasks are hidden and excluded from Game and Analytics. Restore them anytime.</p></div>
+                        <div class="flex-1"><h3 class="text-base sm:text-lg font-bold text-white">Archive</h3><p class="text-[10px] sm:text-xs text-slate-500">Archived habits and tasks are hidden and excluded from Game and Analytics. Restore them anytime.</p></div>
+                        <span id="archiveTotalBadge" class="shrink-0 self-start rounded-full border border-slate-700 bg-slate-800/60 px-2.5 py-1 text-[10px] font-bold text-slate-300">0 items</span>
                     </div>
                     <div class="bg-slate-900/40 border border-slate-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-slate-500/5 blur-2xl"></div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
-                            <div><h4 class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Archived Habits</h4><div id="archivedHabitsList" class="space-y-2"></div></div>
-                            <div><h4 class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Archived Tasks</h4><div id="archivedTasksList" class="space-y-2"></div></div>
+                        <div class="relative z-10 mb-4">
+                            <div class="relative">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i>
+                                <input id="archiveSearch" type="text" oninput="renderArchived()" placeholder="Search archived items..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500/50 transition">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 relative z-10">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-2">
+                                    <h4 class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400"><i data-lucide="activity" class="w-3 h-3"></i>Archived Habits<span id="archHabitCount" class="archive-chip">0</span></h4>
+                                    <button id="restoreAllHabitsBtn" onclick="unarchiveAllHabits()" style="display:none" class="shrink-0 items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition cursor-pointer flex"><i data-lucide="archive-restore" class="w-3 h-3"></i>Restore all</button>
+                                </div>
+                                <div id="archivedHabitsList" class="space-y-2"></div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-2">
+                                    <h4 class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400"><i data-lucide="check-square" class="w-3 h-3"></i>Archived Tasks<span id="archTaskCount" class="archive-chip">0</span></h4>
+                                    <button id="restoreAllTasksBtn" onclick="unarchiveAllTodos()" style="display:none" class="shrink-0 items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition cursor-pointer flex"><i data-lucide="archive-restore" class="w-3 h-3"></i>Restore all</button>
+                                </div>
+                                <div id="archivedTasksList" class="space-y-2"></div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -7115,23 +7160,54 @@
             if (typeof renderArchived === 'function') renderArchived();
             showToast('Habit restored.');
         }
+        function unarchiveAllHabits() {
+            const arr = (state.habits || []).filter(h => h.archived);
+            if (!arr.length) return;
+            arr.forEach(h => { h.archived = false; });
+            saveToStorage();
+            if (typeof renderArchived === 'function') renderArchived();
+            if (document.getElementById('section-tracker') && document.getElementById('section-tracker').classList.contains('active') && typeof updateDashboard === 'function') updateDashboard();
+            showToast('Restored ' + arr.length + ' habit' + (arr.length === 1 ? '' : 's') + '.', 'success');
+        }
+        function unarchiveAllTodos() {
+            const arr = ensureTodos().filter(t => t.archived);
+            if (!arr.length) return;
+            arr.forEach(t => { t.archived = false; });
+            saveTodos();
+            renderTodos();
+            if (typeof renderArchived === 'function') renderArchived();
+            showToast('Restored ' + arr.length + ' task' + (arr.length === 1 ? '' : 's') + '.', 'success');
+        }
         function archiveCurrentTodo() { if (editingTodoId) { const id = editingTodoId; closeModals(); archiveTodo(id); } }
         function deleteCurrentTodo() { if (editingTodoId) { const id = editingTodoId; closeModals(); deleteTodo(id); } }
         function renderArchived() {
+            const _archTerm = (document.getElementById('archiveSearch')?.value || '').trim().toLowerCase();
             const hWrap = document.getElementById('archivedHabitsList');
             const tWrap = document.getElementById('archivedTasksList');
+            let _archHCount = 0, _archTCount = 0;
             if (hWrap) {
-                const arr = (state.habits || []).filter(h => h.archived);
+                const arrAll = (state.habits || []).filter(h => h.archived);
+                _archHCount = arrAll.length;
+                const arr = _archTerm ? arrAll.filter(h => String(h.name || '').toLowerCase().includes(_archTerm)) : arrAll;
                 hWrap.innerHTML = arr.length ? arr.map(h => {
                     const cColor = h.color || legacyCatColors[h.category] || 'slate';
                     const pStyle = palette[cColor] ? palette[cColor] : palette['slate'];
-                    return `<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-3 py-2"><div class="flex min-w-0 items-center gap-2"><div class="w-7 h-7 rounded-lg ${pStyle.tailwindBadge} flex items-center justify-center shrink-0"><i data-lucide="${h.icon || 'activity'}" class="w-3.5 h-3.5"></i></div><span class="truncate text-xs font-semibold text-slate-200">${escapeHTML(h.name)}</span></div><button onclick="unarchiveHabit('${h.id}')" class="shrink-0 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition cursor-pointer flex items-center gap-1"><i data-lucide="archive-restore" class="w-3 h-3"></i>Restore</button></div>`;
-                }).join('') : `<div class="rounded-lg border border-dashed border-slate-800 py-6 text-center text-[11px] text-slate-600">No archived habits.</div>`;
+                    return `<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-3 py-2"><div class="flex min-w-0 items-center gap-2"><div class="w-7 h-7 rounded-lg ${pStyle.tailwindBadge} flex items-center justify-center shrink-0"><i data-lucide="${h.icon || 'activity'}" class="w-3.5 h-3.5"></i></div><div class="min-w-0"><div class="truncate text-xs font-semibold text-slate-200">${escapeHTML(h.name)}</div>${h.category ? `<div class="truncate text-[10px] text-slate-500">${escapeHTML(h.category)}</div>` : ''}</div></div><button onclick="unarchiveHabit('${h.id}')" class="shrink-0 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition cursor-pointer flex items-center gap-1"><i data-lucide="archive-restore" class="w-3 h-3"></i>Restore</button></div>`;
+                }).join('') : `<div class="rounded-lg border border-dashed border-slate-800 py-6 text-center text-[11px] text-slate-600">${_archTerm ? 'No habits match your search.' : 'No archived habits.'}</div>`;
             }
             if (tWrap) {
-                const arr = ensureTodos().filter(t => t.archived);
-                tWrap.innerHTML = arr.length ? arr.map(t => `<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-3 py-2"><div class="flex min-w-0 items-center gap-2"><div class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center shrink-0"><i data-lucide="check-square" class="w-3.5 h-3.5"></i></div><span class="truncate text-xs font-semibold text-slate-200">${escapeHTML(t.title)}</span></div><button onclick="unarchiveTodo('${t.id}')" class="shrink-0 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition cursor-pointer flex items-center gap-1"><i data-lucide="archive-restore" class="w-3 h-3"></i>Restore</button></div>`).join('') : `<div class="rounded-lg border border-dashed border-slate-800 py-6 text-center text-[11px] text-slate-600">No archived tasks.</div>`;
+                const arrAll = ensureTodos().filter(t => t.archived);
+                _archTCount = arrAll.length;
+                const arr = _archTerm ? arrAll.filter(t => String(t.title || '').toLowerCase().includes(_archTerm)) : arrAll;
+                tWrap.innerHTML = arr.length ? arr.map(t => `<div class="flex items-center justify-between gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-3 py-2"><div class="flex min-w-0 items-center gap-2"><div class="w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center shrink-0"><i data-lucide="check-square" class="w-3.5 h-3.5"></i></div><span class="truncate text-xs font-semibold text-slate-200">${escapeHTML(t.title)}</span></div><button onclick="unarchiveTodo('${t.id}')" class="shrink-0 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-bold text-emerald-300 hover:bg-emerald-500/20 transition cursor-pointer flex items-center gap-1"><i data-lucide="archive-restore" class="w-3 h-3"></i>Restore</button></div>`).join('') : `<div class="rounded-lg border border-dashed border-slate-800 py-6 text-center text-[11px] text-slate-600">${_archTerm ? 'No tasks match your search.' : 'No archived tasks.'}</div>`;
             }
+            const _setArchBadge = (id, n) => { const e = document.getElementById(id); if (e) e.textContent = n; };
+            _setArchBadge('archHabitCount', _archHCount);
+            _setArchBadge('archTaskCount', _archTCount);
+            const _archTot = document.getElementById('archiveTotalBadge');
+            if (_archTot) _archTot.textContent = (_archHCount + _archTCount) + ' item' + ((_archHCount + _archTCount) === 1 ? '' : 's');
+            const _rhb = document.getElementById('restoreAllHabitsBtn'); if (_rhb) _rhb.style.display = _archHCount ? 'flex' : 'none';
+            const _rtb = document.getElementById('restoreAllTasksBtn'); if (_rtb) _rtb.style.display = _archTCount ? 'flex' : 'none';
             if (window.lucide) lucide.createIcons();
         }
         function renderTaskAnalytics() {
@@ -7353,8 +7429,38 @@
                 const input = document.getElementById(id);
                 if (input) input.value = value;
             });
+            if (typeof updateThemePreview === 'function') updateThemePreview();
         }
 
+        function updateThemePreview() {
+            try {
+                const t = (typeof readWebThemeControls === 'function') ? readWebThemeControls() : null;
+                if (!t) return;
+                const setS = (id, prop, val) => { const e = document.getElementById(id); if (e) e.style[prop] = val; };
+                setS('themePreviewFrame','background', t.bg);
+                setS('themePreviewCard','background', t.surface);
+                setS('themePreviewCard','borderColor', t.panel);
+                setS('themePreviewTitle','color', t.text);
+                setS('themePreviewMuted','color', t.muted);
+                setS('themePreviewBtn','background', t.accent);
+                setS('themePreviewBar','background', t.accent);
+                setS('themePreviewChipS','background', t.success);
+                setS('themePreviewChipD','background', t.danger);
+                const hexes = { hexBg:t.bg, hexSurface:t.surface, hexPanel:t.panel, hexText:t.text, hexMuted:t.muted, hexAccent:t.accent, hexSuccess:t.success, hexDanger:t.danger };
+                Object.entries(hexes).forEach(([id,v]) => { const e = document.getElementById(id); if (e) e.textContent = String(v).toUpperCase(); });
+                highlightActivePreset(t);
+            } catch (e) {}
+        }
+        function highlightActivePreset(t) {
+            try {
+                if (typeof WEB_THEME_PRESETS === 'undefined') return;
+                document.querySelectorAll('#set-appearance [data-preset]').forEach(b => {
+                    const key = b.getAttribute('data-preset'); const p = WEB_THEME_PRESETS[key];
+                    const match = p && ['bg','surface','panel','text','muted','accent','success','danger'].every(k => String(p[k]).toLowerCase() === String(t[k]).toLowerCase());
+                    b.classList.toggle('theme-preset-active', !!match);
+                });
+            } catch (e) {}
+        }
         function applyWebTheme(theme, persist = false) {
             const t = { ...DEFAULT_WEB_THEME, ...(theme || {}) };
             const root = document.documentElement;
