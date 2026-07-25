@@ -2345,6 +2345,22 @@
     <style>
         /* Mobile-Optimized Grid Gaps */
         .habit-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+        /* Selectable filter chips */
+        .filter-chip { transition: transform .28s cubic-bezier(0.34,1.56,0.64,1), background-color .2s ease, color .2s ease, border-color .2s ease; }
+        .filter-chip.on { background: var(--web-accent,#6366f1) !important; border-color: var(--web-accent,#6366f1) !important; color: var(--web-bg,#020617) !important; box-shadow: 0 2px 10px -3px var(--web-accent,#6366f1); }
+        .filter-chip.pop { animation: chipPop .32s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes chipPop { 0%{transform:scale(1);} 45%{transform:scale(1.12);} 100%{transform:scale(1);} }
+        /* Animated SVG-stroke checkboxes */
+        .acheck { position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; vertical-align: middle; }
+        .acheck-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; z-index: 1; }
+        .acheck-box { width: 1.05rem; height: 1.05rem; border: 2px solid #475569; border-radius: 6px; background: #020617; display: inline-flex; align-items: center; justify-content: center; transition: background-color .22s ease, border-color .22s ease; pointer-events: none; }
+        .acheck-sm .acheck-box { width: .9rem; height: .9rem; border-radius: 5px; }
+        .acheck-lg .acheck-box { width: 1.2rem; height: 1.2rem; border-radius: 7px; }
+        .acheck-svg { width: 78%; height: 78%; display: block; }
+        .acheck-tick { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+        .acheck-input:checked + .acheck-box { background: var(--web-accent,#6366f1); border-color: var(--web-accent,#6366f1); }
+        .acheck-input:checked + .acheck-box .acheck-tick { animation: acheckDraw .32s cubic-bezier(0.16,1,0.3,1) forwards; }
+        @keyframes acheckDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
         /* Mobile swipe-to-reveal on habit cards */
         .habit-swipe { position: relative; }
         .habit-swipe-actions { position: absolute; top: 0; right: 0; bottom: 0; display: none; align-items: stretch; z-index: 0; }
@@ -3068,7 +3084,7 @@
                             </div>
                             <div>
                                 <label class="flex items-center gap-2 cursor-pointer select-none">
-                                    <input id="todoHasTime" type="checkbox" onchange="toggleTodoTimeInput()" class="h-4 w-4 rounded border-slate-700 bg-slate-950 accent-sky-500 cursor-pointer" />
+                                    <span class="acheck"><input id="todoHasTime" type="checkbox" onchange="toggleTodoTimeInput()" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span>
                                     <span class="text-xs font-medium text-slate-300">Specific time</span>
                                 </label>
                                 <input id="todoTime" type="time" class="mt-2 hidden w-full rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-white focus:border-sky-500/50 focus:outline-none" />
@@ -4073,7 +4089,7 @@
                         <input type="text" id="advHabitGoal" placeholder="Why is this required?" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2 sm:px-3 py-2 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500 transition outline-none">
                     </div>
                     <div>
-                        <label class="flex items-center gap-2 text-xs sm:text-sm text-slate-300 cursor-pointer"><input type="checkbox" id="advHabitTrackTime" class="accent-indigo-500 w-4 h-4"> <span class="flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-indigo-400"></i>Com tempo (ativar cronômetro)</span></label>
+                        <label class="flex items-center gap-2 text-xs sm:text-sm text-slate-300 cursor-pointer"><span class="acheck"><input type="checkbox" id="advHabitTrackTime" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span> <span class="flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-indigo-400"></i>Com tempo (ativar cronômetro)</span></label>
                         <p class="text-[10px] text-slate-500 mt-1 ml-6">Registra o tempo por sessão e o total por dia no relatório do hábito.</p>
                     </div>
                 </div>
@@ -4100,7 +4116,7 @@
                         <div id="createTaskWeekdays" class="grid grid-cols-7 gap-1"></div>
                     </div>
                     <div>
-                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer"><input type="checkbox" id="createTaskHasTime" onchange="toggleCreateTaskTime()" class="accent-sky-500"> Specific time</label>
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer"><span class="acheck"><input type="checkbox" id="createTaskHasTime" onchange="toggleCreateTaskTime()" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span> Specific time</label>
                         <input type="time" id="createTaskTime" class="hidden mt-2 w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-sky-500 transition outline-none">
                     </div>
                     <div>
@@ -4194,7 +4210,7 @@
                     <div id="todoDetailWeekdays" class="grid grid-cols-7 gap-1"></div>
                 </div>
                 <div>
-                    <label class="flex items-center gap-2 text-xs font-semibold text-slate-300 cursor-pointer mb-1.5"><input id="todoDetailHasTime" type="checkbox" onchange="toggleTodoDetailTime()" class="h-4 w-4 rounded border-slate-700 bg-slate-950 accent-sky-500 cursor-pointer" />Specific time</label>
+                    <label class="flex items-center gap-2 text-xs font-semibold text-slate-300 cursor-pointer mb-1.5"><span class="acheck"><input id="todoDetailHasTime" type="checkbox" onchange="toggleTodoDetailTime()" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span>Specific time</label>
                     <input id="todoDetailTime" type="time" class="hidden w-full bg-slate-950/60 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500 transition" />
                 </div>
                 <div>
@@ -4535,7 +4551,7 @@
             categories: loadedCategories,
             currentDate: new Date(),
             selectedReportHabitId: null,
-            activeFilter: 'All',
+            activeFilters: [],
             game: loadedGame,
             todos: loadedTodos,
             habitOrderMode: loadedOrderMode
@@ -4815,10 +4831,12 @@
         // --- Categories ---
         function renderCategories() {
             const filterContainer = document.getElementById('categoryFilters');
-            let filterHtml = `<button onclick="setFilter('All')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-semibold transition ${state.activeFilter === 'All' ? 'bg-slate-800 border-slate-700 text-white shadow-sm' : 'border-slate-800 text-slate-400 hover:text-slate-200'} cursor-pointer">All Focus</button>`;
+            if (!Array.isArray(state.activeFilters)) state.activeFilters = [];
+            const allOn = state.activeFilters.length === 0;
+            let filterHtml = `<button data-cat="All" onclick="toggleFilter('All')" class="filter-chip ${allOn ? 'on' : ''} text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-semibold border-slate-700 ${allOn ? '' : 'text-slate-400 hover:text-slate-200'} cursor-pointer">All Focus</button>`;
             state.categories.forEach(cat => {
-                const isActive = state.activeFilter === cat;
-                filterHtml += `<button onclick="setFilter('${escapeHTML(cat)}')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition ${isActive ? 'bg-slate-800 border-slate-700 text-white shadow-sm' : 'border-slate-800 text-slate-400 hover:text-slate-200'} cursor-pointer">${escapeHTML(cat)}</button>`;
+                const isActive = state.activeFilters.includes(cat);
+                filterHtml += `<button data-cat="${escapeHTML(cat)}" onclick="toggleFilter('${escapeHTML(cat)}')" class="filter-chip ${isActive ? 'on' : ''} text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium border-slate-800 ${isActive ? '' : 'text-slate-400 hover:text-slate-200'} cursor-pointer">${escapeHTML(cat)}</button>`;
             });
             filterContainer.innerHTML = filterHtml;
 
@@ -4829,7 +4847,15 @@
                 if(state.categories.includes(currentVal)) selectEl.value = currentVal;
             }
         }
-        function setFilter(category) { state.activeFilter = category; renderCategories(); updateDashboard(); }
+        function toggleFilter(category) {
+            if (!Array.isArray(state.activeFilters)) state.activeFilters = [];
+            if (category === 'All') { state.activeFilters = []; }
+            else { const i = state.activeFilters.indexOf(category); if (i >= 0) state.activeFilters.splice(i, 1); else state.activeFilters.push(category); }
+            renderCategories(); updateDashboard();
+            const chips = document.querySelectorAll('#categoryFilters .filter-chip');
+            chips.forEach(function(c){ if (c.getAttribute('data-cat') === category) { c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); } });
+        }
+        function setFilter(category) { toggleFilter(category); }
         
         function toggleCategoryInput(show) {
             if(show) {
@@ -5046,7 +5072,7 @@
             const wrap = document.getElementById('createTaskSubtaskList');
             if (!wrap) return;
             if (!createTaskSubtasks.length) { wrap.innerHTML = `<div class="rounded-lg border border-dashed border-slate-800 py-3 text-center text-[11px] text-slate-600">No checklist items yet.</div>`; if (window.lucide) lucide.createIcons(); return; }
-            wrap.innerHTML = createTaskSubtasks.map(s => `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleCreateTaskSubtask('${s.id}')" class="h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" /><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteCreateTaskSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`).join('');
+            wrap.innerHTML = createTaskSubtasks.map(s => `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><span class="acheck"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleCreateTaskSubtask('${s.id}')" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteCreateTaskSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`).join('');
             if (window.lucide) lucide.createIcons();
         }
         function addCreateTaskSubtaskFromInput() {
@@ -5365,7 +5391,7 @@
         }
         function moveHabit(habitId, dir, event) {
             if (event) event.stopPropagation();
-            const visible = activeHabits().filter(h => state.activeFilter === 'All' || h.category === state.activeFilter);
+            const visible = activeHabits().filter(h => !Array.isArray(state.activeFilters) || state.activeFilters.length === 0 || state.activeFilters.includes(h.category));
             const vIdx = visible.findIndex(h => h.id === habitId);
             if (vIdx < 0) return;
             const nIdx = dir === 'up' ? vIdx - 1 : vIdx + 1;
@@ -5501,7 +5527,7 @@
             `).join('');
 
             const container = document.getElementById('habitsContainer');
-            const filteredHabits = activeHabits().filter(h => state.activeFilter === 'All' || h.category === state.activeFilter);
+            const filteredHabits = activeHabits().filter(h => !Array.isArray(state.activeFilters) || state.activeFilters.length === 0 || state.activeFilters.includes(h.category));
             if ((state.habitOrderMode || 'auto') === 'auto') {
                 filteredHabits.sort((a, b) => {
                     const wa = weeklyDoneCount(a, weekDays), wb = weeklyDoneCount(b, weekDays);
@@ -6359,7 +6385,7 @@
                 dayTodos.forEach(t => {
                     const tdone = isTodoDoneOn(t, selectedCalendarDateStr);
                     const subInfo = (t.subtasks && t.subtasks.length) ? ` · ${t.subtasks.filter(s => s.done).length}/${t.subtasks.length}` : '';
-                    html += `<div class="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-lg border mb-2 ${tdone ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-slate-900/80 border-slate-800/80'}"><label class="flex min-w-0 items-center gap-2 cursor-pointer"><input type="checkbox" ${tdone ? 'checked' : ''} onchange="toggleTodoDone('${t.id}','${selectedCalendarDateStr}'); renderFullCalendarTab();" class="h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-950 accent-sky-500 cursor-pointer" /><span class="min-w-0"><span class="block truncate text-[10px] sm:text-xs font-bold ${tdone ? 'text-slate-500 line-through' : 'text-white'}">${escapeHTML(t.title)}</span><span class="block text-[9px] text-slate-500">${todoRecurLabel(t)}${t.hasTime && t.time ? ' · ' + escapeHTML(t.time) : ''}${subInfo}</span>${(t.category || (t.priority && t.priority !== 'medium')) ? `<span class="mt-1 flex flex-wrap items-center gap-1">${taskPriorityChip(t)}${taskCatChip(t)}</span>` : ''}</span></label><button onclick="openTodoDetail('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-sky-300 hover:border-sky-500/40 transition cursor-pointer" title="Edit task"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button></div>`;
+                    html += `<div class="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-lg border mb-2 ${tdone ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-slate-900/80 border-slate-800/80'}"><label class="flex min-w-0 items-center gap-2 cursor-pointer"><span class="acheck"><input type="checkbox" ${tdone ? 'checked' : ''} onchange="toggleTodoDone('${t.id}','${selectedCalendarDateStr}'); renderFullCalendarTab();" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span><span class="min-w-0"><span class="block truncate text-[10px] sm:text-xs font-bold ${tdone ? 'text-slate-500 line-through' : 'text-white'}">${escapeHTML(t.title)}</span><span class="block text-[9px] text-slate-500">${todoRecurLabel(t)}${t.hasTime && t.time ? ' · ' + escapeHTML(t.time) : ''}${subInfo}</span>${(t.category || (t.priority && t.priority !== 'medium')) ? `<span class="mt-1 flex flex-wrap items-center gap-1">${taskPriorityChip(t)}${taskCatChip(t)}</span>` : ''}</span></label><button onclick="openTodoDetail('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-sky-300 hover:border-sky-500/40 transition cursor-pointer" title="Edit task"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button></div>`;
                 });
             }
             container.innerHTML = html; lucide.createIcons();
@@ -6994,7 +7020,7 @@
             const wrap = document.getElementById('todoFormSubtaskList');
             if (!wrap) return;
             if (!todoFormSubtasks.length) { wrap.innerHTML = `<div class="rounded-lg border border-dashed border-slate-800 py-3 text-center text-[11px] text-slate-600">No checklist items yet.</div>`; if (window.lucide) lucide.createIcons(); return; }
-            wrap.innerHTML = todoFormSubtasks.map(function(s) { return `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleTodoFormSubtask('${s.id}')" class="h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" /><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteTodoFormSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`; }).join('');
+            wrap.innerHTML = todoFormSubtasks.map(function(s) { return `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><span class="acheck"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleTodoFormSubtask('${s.id}')" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteTodoFormSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`; }).join('');
             if (window.lucide) lucide.createIcons();
         }
         function addTodoFormSubtaskFromInput() {
@@ -7019,7 +7045,7 @@
         }
         function renderTaskCardSubtasks(t) {
             if (!t.subtasks || !t.subtasks.length) return '';
-            return `<div class="mt-2 space-y-1 border-t border-slate-800/70 pt-2">` + t.subtasks.map(function(s) { return `<label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" ${s.done ? 'checked' : ''} onclick="event.stopPropagation()" onchange="toggleTaskSubtask('${t.id}','${s.id}')" class="h-3.5 w-3.5 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" /><span class="min-w-0 flex-1 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-300'}">${escapeHTML(s.text)}</span></label>`; }).join('') + `</div>`;
+            return `<div class="mt-2 space-y-1 border-t border-slate-800/70 pt-2">` + t.subtasks.map(function(s) { return `<label class="flex items-center gap-2 cursor-pointer"><span class="acheck acheck-sm"><input type="checkbox" ${s.done ? 'checked' : ''} onclick="event.stopPropagation()" onchange="toggleTaskSubtask('${t.id}','${s.id}')" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span><span class="min-w-0 flex-1 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-300'}">${escapeHTML(s.text)}</span></label>`; }).join('') + `</div>`;
         }
         function taskPriorityChip(t) {
             const pr = t.priority || 'medium';
@@ -7135,7 +7161,7 @@
             const wrap = document.getElementById('todoSubtaskList');
             if (!wrap) return;
             if (!todoDetailSubtasks.length) { wrap.innerHTML = `<div class="rounded-lg border border-dashed border-slate-800 py-3 text-center text-[11px] text-slate-600">No checklist items yet.</div>`; if (window.lucide) lucide.createIcons(); return; }
-            wrap.innerHTML = todoDetailSubtasks.map(s => `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleDetailSubtask('${s.id}')" class="h-4 w-4 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" /><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteDetailSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`).join('');
+            wrap.innerHTML = todoDetailSubtasks.map(s => `<div class="flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-950/50 px-2.5 py-2"><span class="acheck"><input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleDetailSubtask('${s.id}')" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span><span class="flex-1 min-w-0 truncate text-xs ${s.done ? 'text-slate-500 line-through' : 'text-slate-200'}">${escapeHTML(s.text)}</span><button onclick="deleteDetailSubtask('${s.id}')" class="shrink-0 rounded-md p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="x" class="h-3.5 w-3.5"></i></button></div>`).join('');
             if (window.lucide) lucide.createIcons();
         }
         function addSubtaskFromInput() {
@@ -7334,7 +7360,7 @@
                     const done = isTodoDoneOn(t, today);
                     return `<div class="rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5"><div class="flex items-center justify-between gap-3">
                         <label class="flex min-w-0 items-center gap-3 cursor-pointer">
-                            <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTodoDone('${t.id}')" class="h-5 w-5 shrink-0 rounded border-slate-700 bg-slate-950 accent-emerald-500 cursor-pointer" />
+                            <span class="acheck acheck-lg"><input type="checkbox" ${done ? 'checked' : ''} onchange="toggleTodoDone('${t.id}')" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span>
                             <span class="min-w-0"><span class="block truncate text-sm font-semibold ${done ? 'text-slate-500 line-through' : 'text-white'}">${escapeHTML(t.title)}</span><span class="block text-[10px] text-slate-500">${todoRecurLabel(t)}${t.hasTime && t.time ? ' \u00b7 ' + escapeHTML(t.time) : ''}</span>${(t.category || (t.priority && t.priority !== 'medium')) ? `<span class="mt-1 flex flex-wrap items-center gap-1">${taskPriorityChip(t)}${taskCatChip(t)}</span>` : ''}</span>
                         </label>
                         ${(t.subtasks && t.subtasks.length) ? `<span class="shrink-0 inline-flex items-center gap-1 rounded-md border border-slate-700 bg-slate-900 px-1.5 py-0.5 text-[9px] font-bold text-slate-300" title="Checklist"><i data-lucide="check-square" class="h-2.5 w-2.5"></i>${t.subtasks.filter(s => s.done).length}/${t.subtasks.length}</span>` : ''}${(t.notes && t.notes.trim()) ? `<span class="shrink-0 text-slate-500" title="Has notes"><i data-lucide="sticky-note" class="h-3.5 w-3.5"></i></span>` : ''}<button onclick="openTodoDetail('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-sky-300 hover:border-sky-500/40 transition cursor-pointer" title="Edit / Notes / Checklist"><i data-lucide="pencil" class="h-3.5 w-3.5"></i></button><button onclick="archiveTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-amber-300 hover:border-amber-500/40 transition cursor-pointer" title="Archive"><i data-lucide="archive" class="h-3.5 w-3.5"></i></button><button onclick="deleteTodo('${t.id}')" class="shrink-0 rounded-md border border-slate-800 p-1.5 text-slate-500 hover:text-rose-300 hover:border-rose-500/40 transition cursor-pointer" title="Delete"><i data-lucide="trash-2" class="h-3.5 w-3.5"></i></button>
