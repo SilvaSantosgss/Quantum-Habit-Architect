@@ -2345,6 +2345,22 @@
     <style>
         /* Mobile-Optimized Grid Gaps */
         .habit-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+        /* Mobile swipe-to-reveal on habit cards */
+        .habit-swipe { position: relative; }
+        .habit-swipe-actions { position: absolute; top: 0; right: 0; bottom: 0; display: none; align-items: stretch; z-index: 0; }
+        .habit-swipe-act { width: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; cursor: pointer; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.03em; -webkit-tap-highlight-color: transparent; }
+        .habit-swipe-archive { background: #4f46e5; color: #fff; }
+        .habit-swipe-delete { background: #e11d48; color: #fff; }
+        .habit-swipe-item { position: relative; z-index: 1; transform: translateX(0); }
+        @media (max-width: 1023px) {
+            .habit-swipe { overflow: hidden; border-radius: 0.75rem; }
+            .habit-swipe-actions { display: flex; }
+            .habit-swipe-item { touch-action: pan-y; will-change: transform; }
+            .habit-swipe-item::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--web-bg, #020617); z-index: -1; }
+            .habit-swipe-item.swiping { transition: none !important; }
+            .habit-swipe-item.springing { transition: transform 0.38s cubic-bezier(0.22, 1.15, 0.36, 1) !important; }
+            .habit-swipe-item.open { transform: translateX(-96px); }
+        }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
         @media (max-width: 640px) { 
             .habit-grid { gap: 4px; } 
@@ -5285,6 +5301,68 @@
             updateDashboard();
         }
 
+        // --- Mobile swipe-to-reveal for habit cards ---
+        var SWIPE_OPEN_POS = 96, SWIPE_MAX = 128, SWIPE_THRESHOLD = 64;
+        function isMobileSwipe(){ return window.matchMedia('(max-width: 1023px)').matches; }
+        function springCloseSwipe(el){ el.classList.remove('swiping'); el.classList.add('springing'); el.style.transform=''; el.classList.remove('open'); }
+        function closeAllSwipes(except){ document.querySelectorAll('.habit-swipe-item.open').forEach(function(el){ if(el!==except) springCloseSwipe(el); }); }
+        function attachHabitSwipe(){
+            if(!window._habitSwipeDocBound){
+                window._habitSwipeDocBound = true;
+                document.addEventListener('click', function(e){
+                    var item = e.target && e.target.closest ? e.target.closest('.habit-swipe-item') : null;
+                    if(item){
+                        if(item._suppressClick){ e.stopPropagation(); e.preventDefault(); item._suppressClick=false; return; }
+                        if(item.classList.contains('open')){ e.stopPropagation(); e.preventDefault(); springCloseSwipe(item); return; }
+                        closeAllSwipes(item); return;
+                    }
+                    closeAllSwipes(null);
+                }, true);
+            }
+            document.querySelectorAll('.habit-swipe-item').forEach(function(item){
+                if(item.dataset.swipeBound === '1') return;
+                item.dataset.swipeBound = '1';
+                var startX=0, startY=0, startOffset=0, dragging=false, moved=false, decided=false, horiz=false;
+                item.addEventListener('pointerdown', function(e){
+                    if(!isMobileSwipe()) return;
+                    if(e.pointerType==='mouse' && e.button!==0) return;
+                    startX=e.clientX; startY=e.clientY;
+                    startOffset = item.classList.contains('open') ? -SWIPE_OPEN_POS : 0;
+                    dragging=true; moved=false; decided=false; horiz=false;
+                    item.classList.remove('springing');
+                });
+                item.addEventListener('pointermove', function(e){
+                    if(!dragging) return;
+                    var dx=e.clientX-startX, dy=e.clientY-startY;
+                    if(!decided){
+                        if(Math.abs(dx)<6 && Math.abs(dy)<6) return;
+                        decided=true; horiz=Math.abs(dx)>Math.abs(dy);
+                        if(horiz){ item.classList.add('swiping'); try{ item.setPointerCapture(e.pointerId); }catch(_){} }
+                    }
+                    if(!horiz) return;
+                    moved=true;
+                    var offset=startOffset+dx;
+                    if(offset>0) offset=0;
+                    if(offset<-SWIPE_MAX) offset=-SWIPE_MAX;
+                    item.style.transform='translateX('+offset+'px)';
+                    e.preventDefault();
+                });
+                function endDrag(e){
+                    if(!dragging) return;
+                    dragging=false;
+                    if(!horiz) return;
+                    item.classList.remove('swiping'); item.classList.add('springing');
+                    var dx=(e.clientX||0)-startX;
+                    var offset=Math.max(-SWIPE_MAX, Math.min(0, startOffset+dx));
+                    item.style.transform='';
+                    if(offset <= -SWIPE_THRESHOLD){ item.classList.add('open'); }
+                    else { item.classList.remove('open'); }
+                    if(moved){ item._suppressClick=true; setTimeout(function(){ item._suppressClick=false; }, 60); }
+                }
+                item.addEventListener('pointerup', endDrag);
+                item.addEventListener('pointercancel', endDrag);
+            });
+        }
         function moveHabit(habitId, dir, event) {
             if (event) event.stopPropagation();
             const visible = activeHabits().filter(h => state.activeFilter === 'All' || h.category === state.activeFilter);
@@ -5490,7 +5568,12 @@
                 const timeHtml = (timeDisplay && timeDisplay !== 'Anytime') ? `<span class="text-[8px] sm:text-[9px] font-bold uppercase border border-slate-700 text-slate-400 bg-slate-900 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="clock" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${escapeHTML(timeDisplay)}</span>` : '';
 
                 return `
-                    <div onclick="openReportInspector('${habit.id}')" class="border rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all cursor-pointer ${isSelected}">
+                    <div class="habit-swipe" data-habit-wrap="${habit.id}">
+                        <div class="habit-swipe-actions">
+                            <button type="button" class="habit-swipe-act habit-swipe-archive" onclick="event.stopPropagation(); archiveHabit('${habit.id}'); if(typeof updateDashboard==='function'){ updateDashboard(); }" aria-label="Archive habit"><i data-lucide="archive" class="w-4 h-4"></i><span>Archive</span></button>
+                            <button type="button" class="habit-swipe-act habit-swipe-delete" onclick="initiateDelete('${habit.id}', event)" aria-label="Delete habit"><i data-lucide="trash-2" class="w-4 h-4"></i><span>Delete</span></button>
+                        </div>
+                        <div onclick="openReportInspector('${habit.id}')" class="habit-swipe-item border rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all cursor-pointer ${isSelected}">
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-center">
                             <div class="sm:col-span-4 lg:col-span-5 flex sm:flex-col justify-between items-start gap-1 w-full overflow-hidden">
                                 <div class="min-w-0 flex-1 pr-2">
@@ -5524,10 +5607,11 @@
                                 <div class="habit-grid">${matrixHtml}</div>
                             </div>
                         </div>
+                    </div>
                     </div>`;
             }).join('');
 
-            lucide.createIcons(); updateStatsAndCharts(weekDays); renderHeatmapMatrix(); renderGameSection();
+            lucide.createIcons(); updateStatsAndCharts(weekDays); renderHeatmapMatrix(); renderGameSection(); if(typeof attachHabitSwipe==="function") attachHabitSwipe();
         }
 
         // --- Inline Report Inspector Modal ---
