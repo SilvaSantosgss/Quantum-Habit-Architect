@@ -2345,6 +2345,28 @@
     <style>
         /* Mobile-Optimized Grid Gaps */
         .habit-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+        /* Reorderable habit list (manual mode) */
+        .habit-swipe.reordering { transition: none !important; box-shadow: 0 18px 42px -10px rgba(0,0,0,0.75); position: relative; z-index: 50; }
+        .habit-swipe.reorder-snap { transition: transform .34s cubic-bezier(0.16,1,0.3,1) !important; position: relative; z-index: 50; }
+        .habit-drag-handle { cursor: grab; touch-action: none; -webkit-tap-highlight-color: transparent; }
+        .habit-drag-handle:active { cursor: grabbing; }
+        /* Mobile settings command palette */
+        @media (max-width: 1023px) { .settings-nav { display: none !important; } }
+        #settingsPalette { display: none; }
+        @media (max-width: 1023px) { #settingsPalette { display: block; } }
+        .settings-palette-menu { clip-path: inset(0 0 100% 0 round 1rem); opacity: 0; visibility: hidden; pointer-events: none; transition: clip-path .42s cubic-bezier(0.16,1,0.3,1), opacity .26s ease, visibility 0s linear .42s; }
+        #settingsPalette.open .settings-palette-menu { clip-path: inset(0 0 0% 0 round 1rem); opacity: 1; visibility: visible; pointer-events: auto; transition: clip-path .42s cubic-bezier(0.16,1,0.3,1), opacity .2s ease, visibility 0s; }
+        .settings-palette-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 12px; color: #cbd5e1; font-size: 13px; font-weight: 600; cursor: pointer; background: transparent; text-align: left; transform: translateY(6px); opacity: 0; transition: background-color .15s ease, color .15s ease; }
+        #settingsPalette.open .settings-palette-row { animation: paletteRowIn .4s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .settings-palette-row:hover { background: rgba(99,102,241,0.15); color: #fff; }
+        .settings-palette-row.active { background: #4f46e5; color: #fff; }
+        @keyframes paletteRowIn { from { transform: translateY(6px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        #settingsPalette.open .settings-palette-row:nth-child(1) { animation-delay: .04s; }
+        #settingsPalette.open .settings-palette-row:nth-child(2) { animation-delay: .09s; }
+        #settingsPalette.open .settings-palette-row:nth-child(3) { animation-delay: .14s; }
+        #settingsPalette.open .settings-palette-row:nth-child(4) { animation-delay: .19s; }
+        .palette-chevron { transition: transform .3s ease; }
+        #settingsPaletteTrigger[aria-expanded="true"] .palette-chevron { transform: rotate(180deg); }
         /* Selectable filter chips */
         .filter-chip { transition: transform .28s cubic-bezier(0.34,1.56,0.64,1), background-color .2s ease, color .2s ease, border-color .2s ease; }
         .filter-chip.on { background: var(--web-accent,#6366f1) !important; border-color: var(--web-accent,#6366f1) !important; color: var(--web-bg,#020617) !important; box-shadow: 0 2px 10px -3px var(--web-accent,#6366f1); }
@@ -3439,6 +3461,25 @@
                     <button type="button" data-tab="appearance" onclick="switchSettingsTab('appearance')" class="settings-pill">Appearance</button>
                     <button type="button" data-tab="data" onclick="switchSettingsTab('data')" class="settings-pill">Data &amp; Sync</button>
                     <button type="button" data-tab="archive" onclick="switchSettingsTab('archive')" class="settings-pill">Archive</button>
+                </div>
+
+                <div id="settingsPalette" class="relative mx-auto w-full max-w-xs">
+                    <button type="button" id="settingsPaletteTrigger" onclick="toggleSettingsPalette()" aria-haspopup="menu" aria-expanded="false" aria-controls="settingsPaletteMenu" class="group flex w-full items-center justify-between gap-2 rounded-2xl border border-slate-800 bg-slate-950/70 px-3.5 py-2.5 shadow-lg backdrop-blur">
+                        <span class="flex min-w-0 items-center gap-2">
+                            <span class="grid h-7 w-7 place-items-center rounded-lg bg-indigo-500/15 text-indigo-300"><i data-lucide="command" class="h-4 w-4"></i></span>
+                            <span class="flex min-w-0 flex-col items-start">
+                                <span class="text-[9px] font-semibold uppercase tracking-wider text-slate-500">Section</span>
+                                <span id="settingsPaletteLabel" class="truncate text-sm font-bold text-white">Appearance</span>
+                            </span>
+                        </span>
+                        <kbd class="flex items-center gap-1 rounded-md border border-slate-700 bg-slate-900 px-1.5 py-1 text-[10px] font-bold text-slate-400"><i data-lucide="corner-down-left" class="h-3 w-3"></i><i data-lucide="chevron-down" class="palette-chevron h-3 w-3"></i></kbd>
+                    </button>
+                    <div id="settingsPaletteMenu" role="menu" aria-label="Settings sections" class="settings-palette-menu absolute left-0 right-0 top-full z-50 mt-2 origin-top rounded-2xl border border-slate-800/80 bg-slate-950/80 p-1.5 shadow-2xl backdrop-blur-xl">
+                        <button type="button" role="menuitem" data-tab="account" onclick="selectSettingsPalette('account')" class="settings-palette-row"><i data-lucide="user" class="h-4 w-4 text-indigo-300"></i><span>Account</span></button>
+                        <button type="button" role="menuitem" data-tab="appearance" onclick="selectSettingsPalette('appearance')" class="settings-palette-row"><i data-lucide="palette" class="h-4 w-4 text-indigo-300"></i><span>Appearance</span></button>
+                        <button type="button" role="menuitem" data-tab="data" onclick="selectSettingsPalette('data')" class="settings-palette-row"><i data-lucide="database" class="h-4 w-4 text-indigo-300"></i><span>Data &amp; Sync</span></button>
+                        <button type="button" role="menuitem" data-tab="archive" onclick="selectSettingsPalette('archive')" class="settings-palette-row"><i data-lucide="archive" class="h-4 w-4 text-indigo-300"></i><span>Archive</span></button>
+                    </div>
                 </div>
 
                 <style>
@@ -5389,6 +5430,85 @@
                 item.addEventListener('pointercancel', endDrag);
             });
         }
+        var _hdrag = null;
+        function attachHabitReorder(){
+            var cont = document.getElementById('habitsContainer');
+            if(!cont) return;
+            cont.querySelectorAll('[data-drag-handle]').forEach(function(handle){
+                if(handle.dataset.dragBound === '1') return;
+                handle.dataset.dragBound = '1';
+                handle.addEventListener('pointerdown', function(e){
+                    if(state.habitOrderMode !== 'manual') return;
+                    if(e.pointerType === 'mouse' && e.button !== 0) return;
+                    var wrap = handle.closest('.habit-swipe');
+                    if(!wrap) return;
+                    e.preventDefault(); e.stopPropagation();
+                    _hdrag = { wrap: wrap, container: wrap.parentElement, startY: e.clientY };
+                    wrap.classList.add('reordering');
+                    try { handle.setPointerCapture(e.pointerId); } catch(_) {}
+                    window.addEventListener('pointermove', _hdragMove);
+                    window.addEventListener('pointerup', _hdragUp);
+                    window.addEventListener('pointercancel', _hdragUp);
+                });
+            });
+        }
+        function _hdragMove(e){
+            if(!_hdrag) return;
+            var wrap = _hdrag.wrap;
+            var dy = e.clientY - _hdrag.startY;
+            wrap.style.transform = 'translateY(' + dy + 'px)';
+            var rect = wrap.getBoundingClientRect();
+            var mid = rect.top + rect.height / 2;
+            var next = wrap.nextElementSibling;
+            if(next && next.classList.contains('habit-swipe')){
+                var nr = next.getBoundingClientRect();
+                if(mid > nr.top + nr.height / 2){
+                    _hdrag.container.insertBefore(next, wrap);
+                    _hdrag.startY += nr.height;
+                    wrap.style.transform = 'translateY(' + (e.clientY - _hdrag.startY) + 'px)';
+                    return;
+                }
+            }
+            var prev = wrap.previousElementSibling;
+            if(prev && prev.classList.contains('habit-swipe')){
+                var pr = prev.getBoundingClientRect();
+                if(mid < pr.top + pr.height / 2){
+                    _hdrag.container.insertBefore(wrap, prev);
+                    _hdrag.startY -= pr.height;
+                    wrap.style.transform = 'translateY(' + (e.clientY - _hdrag.startY) + 'px)';
+                    return;
+                }
+            }
+        }
+        function _hdragUp(){
+            if(!_hdrag) return;
+            var d = _hdrag; _hdrag = null;
+            window.removeEventListener('pointermove', _hdragMove);
+            window.removeEventListener('pointerup', _hdragUp);
+            window.removeEventListener('pointercancel', _hdragUp);
+            var wrap = d.wrap;
+            wrap.classList.remove('reordering');
+            wrap.classList.add('reorder-snap');
+            wrap.style.transform = 'translateY(0px)';
+            var done = false;
+            var finish = function(){ if(done) return; done = true; wrap.classList.remove('reorder-snap'); wrap.style.transform = ''; wrap.removeEventListener('transitionend', finish); commitHabitOrderFromDOM(d.container); };
+            wrap.addEventListener('transitionend', finish);
+            setTimeout(finish, 420);
+        }
+        function commitHabitOrderFromDOM(container){
+            if(!container) container = document.getElementById('habitsContainer');
+            if(!container) return;
+            var wraps = [].slice.call(container.querySelectorAll('[data-habit-wrap]'));
+            var domIds = wraps.map(function(w){ return w.getAttribute('data-habit-wrap'); });
+            if(!domIds.length) return;
+            var visible = {}; domIds.forEach(function(id){ visible[id] = true; });
+            var vi = 0;
+            var newArr = state.habits.map(function(hb){ return visible[hb.id] ? null : hb; });
+            for(var i = 0; i < newArr.length; i++){ if(newArr[i] === null){ var id = domIds[vi++]; newArr[i] = state.habits.find(function(x){ return x.id === id; }); } }
+            state.habits = newArr;
+            if(typeof saveToStorage === 'function') saveToStorage();
+            if(typeof cloudSave === 'function') cloudSave();
+        }
         function moveHabit(habitId, dir, event) {
             if (event) event.stopPropagation();
             const visible = activeHabits().filter(h => !Array.isArray(state.activeFilters) || state.activeFilters.length === 0 || state.activeFilters.includes(h.category));
@@ -5625,7 +5745,7 @@
                                 </div>
                                 <div class="flex items-center gap-0.5 shrink-0 self-center sm:self-start mt-0 sm:mt-2" onclick="event.stopPropagation()">
                                     ${habit.trackTime !== false ? `<button onclick="openTimerModal('${habit.id}')" class="text-slate-500 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-3.5 h-3.5"></i></button>` : ''}
-                                    ${(state.habitOrderMode === 'manual') ? `<button onclick="moveHabit('${habit.id}', 'up', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move up" aria-label="Move up"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button><button onclick="moveHabit('${habit.id}', 'down', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move down" aria-label="Move down"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>` : ''}
+                                    ${(state.habitOrderMode === 'manual') ? `<button type="button" data-drag-handle onclick="event.stopPropagation()" class="habit-drag-handle text-slate-500 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition" title="Drag to reorder" aria-label="Drag to reorder"><i data-lucide="grip-vertical" class="w-4 h-4"></i></button>` : ''}
                                     <button onclick="initiateDelete('${habit.id}', event)" class="text-slate-600 hover:text-rose-400 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Delete" aria-label="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                                 </div>
                             </div>
@@ -5637,7 +5757,7 @@
                     </div>`;
             }).join('');
 
-            lucide.createIcons(); updateStatsAndCharts(weekDays); renderHeatmapMatrix(); renderGameSection(); if(typeof attachHabitSwipe==="function") attachHabitSwipe();
+            lucide.createIcons(); updateStatsAndCharts(weekDays); renderHeatmapMatrix(); renderGameSection(); if(typeof attachHabitSwipe==="function") attachHabitSwipe(); if(typeof attachHabitReorder==="function") attachHabitReorder();
         }
 
         // --- Inline Report Inspector Modal ---
@@ -7608,6 +7728,12 @@
             rose:     { bg:'#160a10', surface:'#241019', panel:'#3a1826', text:'#fff1f5', muted:'#c58aa0', accent:'#f43f5e', success:'#10b981', danger:'#ef4444' }
         };
         let __settingsTab = 'appearance';
+        function toggleSettingsPalette(){ var p=document.getElementById('settingsPalette'); if(!p) return; if(p.classList.contains('open')) closeSettingsPalette(); else openSettingsPalette(); }
+        function openSettingsPalette(){ var p=document.getElementById('settingsPalette'); if(!p) return; p.classList.add('open'); var t=document.getElementById('settingsPaletteTrigger'); if(t) t.setAttribute('aria-expanded','true'); if(window.lucide && lucide.createIcons) lucide.createIcons(); setTimeout(function(){ document.addEventListener('click', _settingsPaletteOutside, true); document.addEventListener('keydown', _settingsPaletteKey); }, 0); }
+        function closeSettingsPalette(){ var p=document.getElementById('settingsPalette'); if(!p) return; p.classList.remove('open'); var t=document.getElementById('settingsPaletteTrigger'); if(t) t.setAttribute('aria-expanded','false'); document.removeEventListener('click', _settingsPaletteOutside, true); document.removeEventListener('keydown', _settingsPaletteKey); }
+        function _settingsPaletteOutside(e){ var p=document.getElementById('settingsPalette'); if(p && !p.contains(e.target)) closeSettingsPalette(); }
+        function _settingsPaletteKey(e){ if(e.key==='Escape'){ closeSettingsPalette(); var t=document.getElementById('settingsPaletteTrigger'); if(t) t.focus(); } }
+        function selectSettingsPalette(name){ switchSettingsTab(name); closeSettingsPalette(); }
         function switchSettingsTab(name) {
             __settingsTab = name;
             document.querySelectorAll('#section-system .settings-section').forEach(s => { s.style.display = 'none'; });
@@ -7616,6 +7742,10 @@
             document.querySelectorAll('#section-system .settings-pill').forEach(p => {
                 p.classList.toggle('settings-pill-active', p.getAttribute('data-tab') === name);
             });
+            var _plabels = { account: 'Account', appearance: 'Appearance', data: 'Data & Sync', archive: 'Archive' };
+            var _plbl = document.getElementById('settingsPaletteLabel');
+            if (_plbl && _plabels[name]) _plbl.textContent = _plabels[name];
+            document.querySelectorAll('#settingsPaletteMenu .settings-palette-row').forEach(function(r){ r.classList.toggle('active', r.getAttribute('data-tab') === name); });
             if (window.lucide && lucide.createIcons) lucide.createIcons();
         }
 
