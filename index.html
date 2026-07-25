@@ -2347,15 +2347,14 @@
         .habit-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
         /* Daily pending marquee */
         .day-marquee { position: relative; width: 100%; overflow: hidden; margin-top: 10px; padding: 2px 0; -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent); }
-        @media (min-width: 768px) { #dayMarquee { order: 10000; margin-top: 14px; } }
-        .day-marquee-track { display: flex; width: max-content; will-change: transform; animation: dayMarqueeScroll 32s linear infinite; }
+        @media (min-width: 768px) { #dayMarquee { order: 10000; margin: 14px auto 0; max-width: 720px; } }
+        .day-marquee-track { display: flex; width: max-content; will-change: transform; animation: dayMarqueeScroll 22s linear infinite; }
         .day-marquee:hover .day-marquee-track, .day-marquee:focus-within .day-marquee-track { animation-play-state: paused; }
         @keyframes dayMarqueeScroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @media (prefers-reduced-motion: reduce) { .day-marquee-track { animation: none; } }
         .day-chip { flex: 0 0 auto; margin-right: 8px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 9999px; border: 1px solid rgba(148,163,184,0.18); background: rgba(15,23,42,0.72); color: #cbd5e1; font-size: 11px; font-weight: 600; white-space: nowrap; line-height: 1; }
-        .day-chip .day-chip-dot { width: 7px; height: 7px; border-radius: 9999px; flex: 0 0 auto; }
-        .day-chip i { width: 12px; height: 12px; flex: 0 0 auto; }
-        .day-chip-habit { border-color: rgba(129,140,248,0.38); }
+        .day-chip i, .day-chip svg { width: 13px; height: 13px; flex: 0 0 auto; }
+        .day-chip-habit { border-color: rgba(251,146,60,0.34); }
         .day-chip-todo { border-color: rgba(56,189,248,0.32); }
         /* Reorderable habit list (manual mode) */
         .habit-swipe.reordering { transition: none !important; box-shadow: 0 18px 42px -10px rgba(0,0,0,0.75); position: relative; z-index: 50; }
@@ -4778,9 +4777,11 @@
         // --- Core UI Modifiers ---
         function _dayMarqueeChip(it){
             var cls = it.type === 'habit' ? 'day-chip day-chip-habit' : 'day-chip day-chip-todo';
-            var ic = it.type === 'habit' ? 'flame' : 'check-square';
-            var dot = it.color ? '<span class="day-chip-dot" style="background:' + it.color + '"></span>' : '<i data-lucide="' + ic + '" class="text-indigo-300"></i>';
-            return '<span class="' + cls + '" title="' + escapeHTML(it.label) + '">' + dot + '<span>' + escapeHTML(it.label) + '</span></span>';
+            var ic = it.type === 'habit' ? 'flame' : 'list-checks';
+            var icon = it.color
+                ? '<i data-lucide="' + ic + '" style="color:' + it.color + '"></i>'
+                : '<i data-lucide="' + ic + '" class="' + (it.type === 'habit' ? 'text-orange-300' : 'text-sky-300') + '"></i>';
+            return '<span class="' + cls + '" title="' + escapeHTML(it.label) + '">' + icon + '<span>' + escapeHTML(it.label) + '</span></span>';
         }
         function renderDayMarquee(){
             var el = document.getElementById('dayMarquee');
