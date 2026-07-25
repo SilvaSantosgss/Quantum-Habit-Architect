@@ -2824,8 +2824,11 @@
                 <!-- Right Column: Habit Matrix -->
                 <div class="lg:col-span-2 space-y-3 sm:space-y-4">
                     
-                    <div class="flex items-center justify-between bg-slate-900/60 p-2 sm:p-3 rounded-2xl border border-slate-800">
-                        <span class="hidden sm:block text-xs sm:text-sm font-semibold text-slate-400 ml-2">Active Workspace</span>
+                    <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-900/60 p-2 sm:p-3 rounded-2xl border border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <span class="hidden sm:block text-xs sm:text-sm font-semibold text-slate-400 ml-2">Active Workspace</span>
+                            <button id="orderModeBtn" type="button" onclick="toggleOrderMode()" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/70 px-2.5 py-1.5 text-[10px] sm:text-xs font-bold text-slate-300 hover:text-white hover:border-indigo-500/40 transition cursor-pointer" title="Alternar ordem automatica/manual"><i data-lucide="arrow-down-up" class="w-3.5 h-3.5"></i>Ordem: <span id="orderModeLabel">Auto</span></button>
+                        </div>
                         <div class="flex items-center gap-1 w-full sm:w-auto justify-between px-1">
                             <button onclick="changeWeek(-1)" class="bg-slate-800 hover:bg-slate-700 text-white p-2 sm:px-3 sm:py-1.5 rounded-lg flex items-center transition cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="chevron-left" aria-hidden="true" class="lucide lucide-chevron-left w-4 h-4"><path d="m15 18-6-6 6-6"></path></svg>
@@ -4463,6 +4466,9 @@
         if (INJECTED_DATA && !Array.isArray(INJECTED_DATA) && Array.isArray(INJECTED_DATA.todos)) { loadedTodos = INJECTED_DATA.todos; }
         else { try { const _t = JSON.parse(localStorage.getItem('quantum_sync_todos')); if (Array.isArray(_t)) loadedTodos = _t; } catch(e) {} }
 
+        let loadedOrderMode = 'auto';
+        try { const _om = localStorage.getItem('quantum_sync_order_mode'); if (_om === 'manual' || _om === 'auto') loadedOrderMode = _om; } catch(e) {}
+
         let state = {
             habits: loadedHabits,
             categories: loadedCategories,
@@ -4470,7 +4476,8 @@
             selectedReportHabitId: null,
             activeFilter: 'All',
             game: loadedGame,
-            todos: loadedTodos
+            todos: loadedTodos,
+            habitOrderMode: loadedOrderMode
         };
 
         state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
@@ -4736,6 +4743,7 @@
         function saveToStorage() {
             localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits));
             localStorage.setItem('quantum_sync_categories', JSON.stringify(state.categories));
+            localStorage.setItem('quantum_sync_order_mode', state.habitOrderMode || 'auto');
             localStorage.setItem('quantum_sync_game', JSON.stringify(state.game || {}));
             localStorage.setItem('quantum_sync_todos', JSON.stringify(state.todos || []));
             updateDashboard();
@@ -5194,6 +5202,44 @@
             }
         }
 
+        function setOrderModeUI() {
+            const lbl = document.getElementById('orderModeLabel');
+            const btn = document.getElementById('orderModeBtn');
+            const manual = (state.habitOrderMode === 'manual');
+            if (lbl) lbl.innerText = manual ? 'Manual' : 'Auto';
+            if (btn) { btn.classList.toggle('text-indigo-300', manual); btn.classList.toggle('border-indigo-500/40', manual); }
+        }
+        function _autoOrderComparator(weekDays) {
+            return function(a, b) {
+                const wa = weeklyDoneCount(a, weekDays), wb = weeklyDoneCount(b, weekDays);
+                if (wb !== wa) return wb - wa;
+                const sa = computeBestStreak(a), sb = computeBestStreak(b);
+                if (sb !== sa) return sb - sa;
+                return 0;
+            };
+        }
+        function toggleOrderMode() {
+            const goingManual = (state.habitOrderMode || 'auto') === 'auto';
+            if (goingManual) {
+                const weekDays = getWeekDays(state.currentDate);
+                const ordered = activeHabits().slice().sort(_autoOrderComparator(weekDays));
+                const rank = {}; ordered.forEach((hh, i) => { rank[hh.id] = i; });
+                state.habits.sort((a, b) => {
+                    const ra = (a.id in rank) ? rank[a.id] : 9999, rb = (b.id in rank) ? rank[b.id] : 9999;
+                    return ra - rb;
+                });
+                state.habitOrderMode = 'manual';
+                if (typeof showToast === 'function') showToast('Ordem manual ativada. Sua ordem atual foi salva.', 'success');
+            } else {
+                state.habitOrderMode = 'auto';
+                if (typeof showToast === 'function') showToast('Ordem automatica ativada (dias concluidos na semana).', 'info');
+            }
+            try { localStorage.setItem('quantum_sync_order_mode', state.habitOrderMode); } catch(e) {}
+            saveToStorage();
+            setOrderModeUI();
+            updateDashboard();
+        }
+
         function moveHabit(habitId, dir, event) {
             if (event) event.stopPropagation();
             const visible = activeHabits().filter(h => state.activeFilter === 'All' || h.category === state.activeFilter);
@@ -5247,6 +5293,17 @@
                 return h.history[ds] !== true;
             }
             return h.history[ds] === true;
+        }
+
+        function weeklyDoneCount(habit, weekDays) {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            let c = 0;
+            (weekDays || []).forEach(day => {
+                const dMid = new Date(day); dMid.setHours(0, 0, 0, 0);
+                if (dMid > today) return;
+                if (isDaySuccess(habit, getISODateString(day))) c++;
+            });
+            return c;
         }
 
         function computeStreak(habit) {
@@ -5309,6 +5366,7 @@
         // --- Main Dashboard Rendering ---
         function updateDashboard() {
             const weekDays = getWeekDays(state.currentDate);
+            if (typeof setOrderModeUI === "function") setOrderModeUI();
             const daysShort = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
             
             document.getElementById('weekLabel').innerText = `${weekDays[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekDays[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
@@ -5321,6 +5379,15 @@
 
             const container = document.getElementById('habitsContainer');
             const filteredHabits = activeHabits().filter(h => state.activeFilter === 'All' || h.category === state.activeFilter);
+            if ((state.habitOrderMode || 'auto') === 'auto') {
+                filteredHabits.sort((a, b) => {
+                    const wa = weeklyDoneCount(a, weekDays), wb = weeklyDoneCount(b, weekDays);
+                    if (wb !== wa) return wb - wa;
+                    const sa = computeBestStreak(a), sb = computeBestStreak(b);
+                    if (sb !== sa) return sb - sa;
+                    return 0;
+                });
+            }
 
             if (filteredHabits.length === 0) {
                 container.innerHTML = `<div class="text-center py-12 border border-dashed border-slate-800 rounded-2xl bg-slate-900/10"><i data-lucide="cpu" class="w-8 h-8 sm:w-10 sm:h-10 text-slate-700 mx-auto mb-3"></i><h3 class="text-xs sm:text-sm font-semibold text-slate-400">No active matrix nodes</h3></div>`;
@@ -5404,8 +5471,7 @@
                                 </div>
                                 <div class="flex items-center gap-0.5 shrink-0 self-center sm:self-start mt-0 sm:mt-2" onclick="event.stopPropagation()">
                                     ${habit.trackTime !== false ? `<button onclick="openTimerModal('${habit.id}')" class="text-slate-500 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-3.5 h-3.5"></i></button>` : ''}
-                                    <button onclick="moveHabit('${habit.id}', 'up', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move up" aria-label="Move up"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button>
-                                    <button onclick="moveHabit('${habit.id}', 'down', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move down" aria-label="Move down"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
+                                    ${(state.habitOrderMode === 'manual') ? `<button onclick="moveHabit('${habit.id}', 'up', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move up" aria-label="Move up"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button><button onclick="moveHabit('${habit.id}', 'down', event)" class="text-slate-600 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Move down" aria-label="Move down"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>` : ''}
                                     <button onclick="initiateDelete('${habit.id}', event)" class="text-slate-600 hover:text-rose-400 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Delete" aria-label="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                                 </div>
                             </div>
@@ -7539,6 +7605,7 @@
                         categories: state.categories,
                         game: state.game || {},
                         todos: state.todos || [],
+                        orderMode: state.habitOrderMode || 'auto',
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                         client: 'quantum-web'
                     }, { merge: true });
@@ -7558,6 +7625,7 @@
                 if (Array.isArray(data.categories)) state.categories = data.categories;
                 if (data.game && typeof data.game === 'object') state.game = Object.assign({ spentCoins: 0, redeemed: [], unlockedBadges: [], customRewards: [] }, data.game);
                 if (Array.isArray(data.todos)) state.todos = data.todos;
+                if (data.orderMode === 'manual' || data.orderMode === 'auto') { state.habitOrderMode = data.orderMode; try { localStorage.setItem('quantum_sync_order_mode', data.orderMode); } catch(e){} }
                 _tzMoved = fixTimezoneShiftedDates();
                 state.habits.forEach(h => { if (h.category && !state.categories.includes(h.category)) state.categories.push(escapeHTML(h.category)); });
                 localStorage.setItem('quantum_sync_habits', JSON.stringify(state.habits));
