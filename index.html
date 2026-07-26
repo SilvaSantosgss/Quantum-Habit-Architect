@@ -3119,7 +3119,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                    <div class="lg:col-span-1 rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                    <div class="hidden lg:block lg:col-span-1 rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center gap-2">
                             <div class="rounded-lg border border-sky-500/20 bg-sky-500/10 p-2"><i data-lucide="plus-circle" class="h-4 w-4 text-sky-300"></i></div>
                             <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">New task</h3>
@@ -4510,7 +4510,7 @@
         <button id="mnav-analytics" type="button" onclick="switchTab('analytics')"><i data-lucide="pie-chart"></i><span>Analytics</span></button>
         <button id="mnav-system" type="button" onclick="switchTab('system')"><i data-lucide="settings"></i><span>System</span></button>
     </nav>
-    <button id="mobileAddFab" type="button" onclick="openCreateModal()" aria-label="Add habit"><i data-lucide="plus"></i></button>
+    <button id="mobileAddFab" type="button" onclick="openMobileAdd()" aria-label="Add habit or task"><i data-lucide="plus"></i></button>
     <button id="mobileTimerFab" type="button" onclick="openMobileTimer()" aria-label="Abrir cronometro" title="Cronometro"><i data-lucide="timer"></i></button>
 
     <!-- Script Application Logic -->
@@ -5315,6 +5315,12 @@
             document.getElementById('createTypeToggle').classList.remove('hidden');
             applyCreateBody('habit');
             openModal('modalAdvancedCreate');
+        }
+
+        function openMobileAdd() {
+            const todoActive = document.getElementById('section-todo') && document.getElementById('section-todo').classList.contains('active');
+            openCreateModal();
+            if (todoActive && typeof setCreateType === 'function') { setCreateType('task'); }
         }
 
         function openEditMode() {
