@@ -2425,6 +2425,24 @@
             .habit-swipe-item.springing { transition: transform 0.38s cubic-bezier(0.22, 1.15, 0.36, 1) !important; }
             .habit-swipe-item.open { transform: translateX(-96px); }
         }
+        /* Mobile checklist + accordion (mobile only) */
+        .hab-today-toggle{display:none}
+        .hab-chevron{display:none}
+        .hab-mobile-actions{display:none}
+        @media (max-width: 1023px){
+            .hab-today-toggle{display:flex;align-items:center;justify-content:center;width:26px;height:26px;flex-shrink:0;border-radius:9999px;border:2px solid #334155;background:transparent;color:#fff;cursor:pointer;margin-right:8px;align-self:center;transition:all .15s}
+            .hab-today-toggle.done{background:#10b981;border-color:transparent}
+            .hab-today-toggle .hab-check{opacity:0}
+            .hab-today-toggle.done .hab-check{opacity:1}
+            .hab-chevron{display:flex;align-items:center;justify-content:center;width:28px;height:28px;flex-shrink:0;color:#64748b;background:transparent;border:none;cursor:pointer;align-self:center;transition:transform .2s}
+            .habit-swipe-item.mobile-open .hab-chevron{transform:rotate(180deg)}
+            .hab-grid-col{display:none}
+            .habit-swipe-item.mobile-open .hab-grid-col{display:block}
+            .habit-swipe-item .hab-head-timer,.habit-swipe-item .hab-head-delete{display:none}
+            .hab-mobile-actions{margin-top:10px;gap:7px}
+            .habit-swipe-item.mobile-open .hab-mobile-actions{display:flex}
+            .hab-mobile-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:10px;background:#1e293b;border:1px solid #334155;color:#c7d2fe;font-size:11px;font-weight:700;cursor:pointer}
+        }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
         @media (max-width: 640px) { 
             .habit-grid { gap: 4px; } 
@@ -5520,6 +5538,14 @@
         var SWIPE_OPEN_POS = 96, SWIPE_MAX = 128, SWIPE_THRESHOLD = 64;
         function isMobileSwipe(){ return window.matchMedia('(max-width: 1023px)').matches; }
         function springCloseSwipe(el){ el.classList.remove('swiping'); el.classList.add('springing'); el.style.transform=''; el.classList.remove('open'); }
+        const _mobileOpenHabits = new Set();
+        function toggleHabitAccordion(id, ev){
+            if(ev && ev.stopPropagation){ ev.stopPropagation(); }
+            var open;
+            if(_mobileOpenHabits.has(id)){ _mobileOpenHabits.delete(id); open=false; } else { _mobileOpenHabits.add(id); open=true; }
+            var item = document.querySelector('.habit-swipe-item[data-hab="'+id+'"]');
+            if(item){ item.classList.toggle('mobile-open', open); if(window.lucide) lucide.createIcons(); }
+        }
         function closeAllSwipes(except){ document.querySelectorAll('.habit-swipe-item.open').forEach(function(el){ if(el!==except) springCloseSwipe(el); }); }
         function attachHabitSwipe(){
             if(!window._habitSwipeDocBound){
@@ -5867,9 +5893,10 @@
                             <button type="button" class="habit-swipe-act habit-swipe-archive" onclick="event.stopPropagation(); archiveHabit('${habit.id}'); if(typeof updateDashboard==='function'){ updateDashboard(); }" aria-label="Archive habit"><i data-lucide="archive" class="w-4 h-4"></i></button>
                             <button type="button" class="habit-swipe-act habit-swipe-delete" onclick="initiateDelete('${habit.id}', event)" aria-label="Delete habit"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
-                        <div onclick="openReportInspector('${habit.id}')" class="habit-swipe-item border rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all cursor-pointer ${isSelected}">
+                        <div onclick="openReportInspector('${habit.id}')" data-hab="${habit.id}" class="habit-swipe-item border rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all cursor-pointer ${isSelected} ${_mobileOpenHabits.has(habit.id) ? 'mobile-open' : ''}">
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-center">
                             <div class="sm:col-span-4 lg:col-span-5 flex sm:flex-col justify-between items-start gap-1 w-full overflow-hidden">
+                                <button type="button" onclick="event.stopPropagation(); toggleDay('${habit.id}', '${getISODateString(new Date())}')" class="hab-today-toggle ${isDaySuccess(habit, getISODateString(new Date())) ? 'done' : ''}" aria-label="Marcar hoje"><i data-lucide="check" class="hab-check w-3.5 h-3.5"></i></button>
                                 <div class="min-w-0 flex-1 pr-2">
                                     <div class="flex items-center justify-between sm:justify-start sm:gap-3 w-full">
                                         <h4 class="text-xs sm:text-sm font-bold text-white tracking-wide truncate max-w-[140px] sm:max-w-[180px] flex items-center gap-1.5 sm:gap-2">
@@ -5892,13 +5919,15 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-0.5 shrink-0 self-center sm:self-start mt-0 sm:mt-2" onclick="event.stopPropagation()">
-                                    ${habit.trackTime !== false ? `<button onclick="openTimerModal('${habit.id}')" class="text-slate-500 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-3.5 h-3.5"></i></button>` : ''}
+                                    ${habit.trackTime !== false ? `<button onclick="openTimerModal('${habit.id}')" class="hab-head-timer text-slate-500 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-3.5 h-3.5"></i></button>` : ''}
                                     ${(state.habitOrderMode === 'manual') ? `<button type="button" data-drag-handle onclick="event.stopPropagation()" class="habit-drag-handle text-slate-500 hover:text-indigo-300 p-1 rounded-md hover:bg-slate-800/50 transition" title="Drag to reorder" aria-label="Drag to reorder"><i data-lucide="grip-vertical" class="w-4 h-4"></i></button>` : ''}
-                                    <button onclick="initiateDelete('${habit.id}', event)" class="text-slate-600 hover:text-rose-400 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Delete" aria-label="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                                    <button onclick="initiateDelete('${habit.id}', event)" class="hab-head-delete text-slate-600 hover:text-rose-400 p-1 rounded-md hover:bg-slate-800/50 transition cursor-pointer" title="Delete" aria-label="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                                 </div>
+                                <button type="button" onclick="toggleHabitAccordion('${habit.id}', event)" class="hab-chevron" aria-label="Expandir"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
                             </div>
-                            <div class="sm:col-span-8 lg:col-span-7">
+                            <div class="hab-grid-col sm:col-span-8 lg:col-span-7">
                                 <div class="habit-grid">${matrixHtml}</div>
+                                ${habit.trackTime !== false ? `<div class="hab-mobile-actions"><button type="button" onclick="event.stopPropagation(); openTimerModal('${habit.id}')" class="hab-mobile-act" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-4 h-4"></i><span>Cronômetro</span></button></div>` : ''}
                             </div>
                         </div>
                     </div>
