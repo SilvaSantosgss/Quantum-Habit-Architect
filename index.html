@@ -2366,6 +2366,7 @@
         #settingsPalette { display: none; }
         @media (max-width: 1023px) { #settingsPalette { display: block; } }
         @media (max-width: 1023px) { #todoNewTaskCol { display: none; } }
+        @media (max-width: 1023px) { #categoryFilters { display: none; } }
         .settings-palette-menu { clip-path: inset(0 0 100% 0 round 1rem); opacity: 0; visibility: hidden; pointer-events: none; transition: clip-path .42s cubic-bezier(0.16,1,0.3,1), opacity .26s ease, visibility 0s linear .42s; }
         #settingsPalette.open .settings-palette-menu { clip-path: inset(0 0 0% 0 round 1rem); opacity: 1; visibility: visible; pointer-events: auto; transition: clip-path .42s cubic-bezier(0.16,1,0.3,1), opacity .2s ease, visibility 0s; }
         .settings-palette-row { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 12px; color: #cbd5e1; font-size: 13px; font-weight: 600; cursor: pointer; background: transparent; text-align: left; transform: translateY(6px); opacity: 0; transition: background-color .15s ease, color .15s ease; }
@@ -2913,7 +2914,7 @@
                             </button>
                             <div id="habitFilterMenu" role="menu" aria-label="Habit filters" class="settings-palette-menu absolute left-0 right-0 top-full z-50 mt-2 max-h-72 origin-top overflow-auto rounded-2xl border border-slate-800/80 bg-slate-950/80 p-1.5 shadow-2xl backdrop-blur-xl"></div>
                         </div>
-                        <div class="hidden lg:flex flex-wrap gap-1.5 sm:gap-2" id="categoryFilters"><button onclick="setFilter('All')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-semibold transition bg-slate-800 border-slate-700 text-white shadow-sm cursor-pointer">All Focus</button><button onclick="setFilter('Health')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Health</button><button onclick="setFilter('Mind')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Mind</button><button onclick="setFilter('Work')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Work</button><button onclick="setFilter('Finance')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Finance</button><button onclick="setFilter('Social')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Social</button></div>
+                        <div class="flex flex-wrap gap-1.5 sm:gap-2" id="categoryFilters"><button onclick="setFilter('All')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-semibold transition bg-slate-800 border-slate-700 text-white shadow-sm cursor-pointer">All Focus</button><button onclick="setFilter('Health')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Health</button><button onclick="setFilter('Mind')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Mind</button><button onclick="setFilter('Work')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Work</button><button onclick="setFilter('Finance')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Finance</button><button onclick="setFilter('Social')" class="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border font-medium transition border-slate-800 text-slate-400 hover:text-slate-200 cursor-pointer">Social</button></div>
                     </div>
                 </div>
 
@@ -7005,23 +7006,47 @@
             const c = itemContribution(item, isHabit, oldRw, meta.since, boundary);
             return { xpGain: newRw.xpGain, xpLoss: newRw.xpLoss, hpGain: newRw.hpGain, hpLoss: newRw.hpLoss, since: boundary, baseXp: meta.baseXp + c.xp, baseHp: meta.baseHp + c.hp };
         }
+        function computeHp() {
+            const HP_WINDOW = 14;
+            let hp = 100;
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const todayStr = getISODateString(today);
+            const habits = activeHabits().map(h => ({ h: h, rw: rewardOf(h), avoid: isAvoidHabit(h), start: isAvoidHabit(h) ? habitStartDate(h) : null }));
+            const todos = activeTodos().map(t => ({ t: t, rw: rewardOf(t) }));
+            for (let i = 0; i < HP_WINDOW; i++) {
+                const d = new Date(today); d.setDate(d.getDate() - i);
+                const ds = getISODateString(d); const wd = d.getDay();
+                habits.forEach(o => {
+                    const v = o.h.history ? o.h.history[ds] : undefined;
+                    if (o.avoid) {
+                        if (d < o.start) return;
+                        if (v === true) hp -= o.rw.hpLoss; else hp += o.rw.hpGain;
+                    } else {
+                        if (v === true) hp += o.rw.hpGain; else if (v === false) hp -= o.rw.hpLoss;
+                    }
+                });
+                todos.forEach(o => {
+                    if (!isTodoScheduledOn(o.t, ds, wd)) return;
+                    if (isTodoDoneOn(o.t, ds)) hp += o.rw.hpGain; else if (ds !== todayStr) hp -= o.rw.hpLoss;
+                });
+            }
+            return Math.max(0, Math.min(100, Math.round(hp)));
+        }
         function computeGameTotals() {
-            let xp = 0, hp = 100;
+            let xp = 0;
             activeHabits().forEach(h => {
                 const rw = rewardOf(h); const meta = _rewardMeta(h);
                 const live = itemContribution(h, true, rw, meta.since, null);
                 const streak = (typeof computeStreak === 'function') ? computeStreak(h) : 0;
                 xp += meta.baseXp + live.xp + streakBonusXp(streak);
-                hp += meta.baseHp + live.hp;
             });
             activeTodos().forEach(t => {
                 const rw = rewardOf(t); const meta = _rewardMeta(t);
                 const live = itemContribution(t, false, rw, meta.since, null);
                 xp += meta.baseXp + live.xp;
-                hp += meta.baseHp + live.hp;
             });
             xp = Math.max(0, Math.round(xp));
-            hp = Math.max(0, Math.min(100, Math.round(hp)));
+            const hp = computeHp();
             const lv = levelFromXp(xp);
             return { xpTotal: xp, level: lv.level, xpIntoLevel: lv.xpIntoLevel, xpForNext: lv.xpForNext, hp: hp };
         }
