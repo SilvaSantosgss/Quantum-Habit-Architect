@@ -5864,8 +5864,8 @@
                 return `
                     <div class="habit-swipe" data-habit-wrap="${habit.id}">
                         <div class="habit-swipe-actions">
-                            <button type="button" class="habit-swipe-act habit-swipe-archive" onclick="event.stopPropagation(); archiveHabit('${habit.id}'); if(typeof updateDashboard==='function'){ updateDashboard(); }" aria-label="Archive habit"><i data-lucide="archive" class="w-4 h-4"></i><span>Archive</span></button>
-                            <button type="button" class="habit-swipe-act habit-swipe-delete" onclick="initiateDelete('${habit.id}', event)" aria-label="Delete habit"><i data-lucide="trash-2" class="w-4 h-4"></i><span>Delete</span></button>
+                            <button type="button" class="habit-swipe-act habit-swipe-archive" onclick="event.stopPropagation(); archiveHabit('${habit.id}'); if(typeof updateDashboard==='function'){ updateDashboard(); }" aria-label="Archive habit"><i data-lucide="archive" class="w-4 h-4"></i></button>
+                            <button type="button" class="habit-swipe-act habit-swipe-delete" onclick="initiateDelete('${habit.id}', event)" aria-label="Delete habit"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                         <div onclick="openReportInspector('${habit.id}')" class="habit-swipe-item border rounded-xl sm:rounded-2xl p-3 sm:p-4 transition-all cursor-pointer ${isSelected}">
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-center">
