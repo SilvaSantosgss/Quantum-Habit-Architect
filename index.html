@@ -2443,6 +2443,17 @@
             .habit-swipe-item.mobile-open .hab-mobile-actions{display:flex}
             .hab-mobile-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:10px;background:#1e293b;border:1px solid #334155;color:#c7d2fe;font-size:11px;font-weight:700;cursor:pointer}
         }
+            /* ===== Game tab: mobile Hero Card + segmented tabs (mobile only) ===== */
+            #gameTabBar{display:none}
+            .game-tabbar{gap:4px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:4px}
+            .game-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:10px;font-size:10px;font-weight:800;color:#94a3b8;background:transparent;border:none;cursor:pointer;transition:background .15s,color .15s}
+            .game-tab.gtab-active{background:#6366f1;color:#fff}
+            @media (max-width:1023px){
+                #gameTabBar{display:flex}
+                .game-mobile-hide{display:none}
+                .gtab-off{display:none}
+                .game-hero-verbose{display:none}
+            }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
         @media (max-width: 640px) { 
             .habit-grid { gap: 4px; } 
@@ -3233,7 +3244,7 @@
         </section>
 
         <section id="section-game" class="tab-section">
-            <div class="space-y-4 sm:space-y-8">
+            <div id="gameScope" data-game-tab="quests" class="space-y-4 sm:space-y-8">
                 <div class="relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/50 p-4 sm:p-6 shadow-xl">
                     <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl"></div>
                     <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between text-left">
@@ -3241,8 +3252,8 @@
                             <div class="mb-2 inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-indigo-300">
                                 <i data-lucide="sparkles" class="h-3 w-3"></i> <span id="gameRank">Rank I · Novice</span>
                             </div>
-                            <h2 class="text-xl sm:text-3xl font-extrabold tracking-tight text-white">Level up by executing habits.</h2>
-                            <p class="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-400">Every completed habit and task gives XP, coins, and streak power. Missed ones damage HP and create recovery quests for tomorrow.</p>
+                            <h2 class="game-hero-verbose text-xl sm:text-3xl font-extrabold tracking-tight text-white">Level up by executing habits.</h2>
+                            <p class="game-hero-verbose mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-slate-400">Every completed habit and task gives XP, coins, and streak power. Missed ones damage HP and create recovery quests for tomorrow.</p>
                         </div>
                         <div class="grid grid-cols-3 gap-2 sm:gap-3 shrink-0 sm:min-w-[320px]">
                             <div class="rounded-xl border border-slate-800 bg-slate-950/50 p-3 text-center">
@@ -3269,8 +3280,15 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                    <div class="rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-4 sm:p-5">
+                <div id="gameTabBar" class="game-tabbar">
+                    <button type="button" data-gtab-btn="quests" onclick="setGameTab('quests')" class="game-tab gtab-active"><i data-lucide="swords" class="h-4 w-4"></i><span>Quests</span></button>
+                    <button type="button" data-gtab-btn="recovery" onclick="setGameTab('recovery')" class="game-tab"><i data-lucide="skull" class="h-4 w-4"></i><span>Recovery</span></button>
+                    <button type="button" data-gtab-btn="shop" onclick="setGameTab('shop')" class="game-tab"><i data-lucide="shopping-bag" class="h-4 w-4"></i><span>Shop</span></button>
+                    <button type="button" data-gtab-btn="feats" onclick="setGameTab('feats')" class="game-tab"><i data-lucide="trophy" class="h-4 w-4"></i><span>Feats</span></button>
+                </div>
+
+                <div data-gtab="shop" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="game-mobile-hide rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-4 sm:p-5">
                         <div class="mb-3 flex items-center gap-2">
                             <div class="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-2"><i data-lucide="swords" class="h-4 w-4 text-emerald-300"></i></div>
                             <h3 class="text-sm font-bold text-white">When you do the habit</h3>
@@ -3281,7 +3299,7 @@
                             <li class="flex gap-2"><span class="text-emerald-300">Combo</span><span>streaks multiply identity confidence.</span></li>
                         </ul>
                     </div>
-                    <div class="rounded-2xl border border-rose-500/20 bg-rose-950/20 p-4 sm:p-5">
+                    <div class="game-mobile-hide rounded-2xl border border-rose-500/20 bg-rose-950/20 p-4 sm:p-5">
                         <div class="mb-3 flex items-center gap-2">
                             <div class="rounded-lg border border-rose-500/20 bg-rose-500/10 p-2"><i data-lucide="skull" class="h-4 w-4 text-rose-300"></i></div>
                             <h3 class="text-sm font-bold text-white">When you don't do it</h3>
@@ -3305,8 +3323,8 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                    <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                <div data-gtab="quests recovery" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div data-gtab="quests" class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Today's quest board</h3>
@@ -3316,7 +3334,7 @@
                         </div>
                         <div id="gameQuestList" class="space-y-2"></div>
                     </div>
-                    <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                    <div data-gtab="recovery" class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div>
                                 <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Penalty & recovery log</h3>
@@ -3328,7 +3346,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div data-gtab="feats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     <div class="rounded-2xl border border-orange-500/20 bg-orange-950/10 p-4 text-center">
                         <span class="block text-[9px] font-bold uppercase tracking-wider text-orange-300">Current Streak</span>
                         <span id="gameCurrentStreak" class="mt-1 block text-xl sm:text-2xl font-extrabold text-orange-300 font-mono">0d</span>
@@ -3347,8 +3365,8 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                    <div class="rounded-2xl border border-amber-500/20 bg-slate-900/40 p-4 sm:p-6">
+                <div data-gtab="shop feats" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div data-gtab="shop" class="rounded-2xl border border-amber-500/20 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div class="flex items-center gap-2">
                                 <div class="rounded-lg border border-amber-500/20 bg-amber-500/10 p-2"><i data-lucide="shopping-bag" class="h-4 w-4 text-amber-300"></i></div>
@@ -3371,7 +3389,7 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                    <div data-gtab="feats" class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div class="flex items-center gap-2">
                                 <div class="rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-2"><i data-lucide="trophy" class="h-4 w-4 text-indigo-300"></i></div>
@@ -7851,6 +7869,23 @@
             if(typeof renderDayMarquee === 'function') renderDayMarquee();
         }
 
+        function setGameTab(tab){
+            const scope = document.getElementById('gameScope');
+            if(!scope) return;
+            scope.dataset.gameTab = tab;
+            scope.querySelectorAll('[data-gtab]').forEach(function(el){
+                const tabs = (el.getAttribute('data-gtab') || '').split(' ');
+                el.classList.toggle('gtab-off', tabs.indexOf(tab) === -1);
+            });
+            document.querySelectorAll('#gameTabBar [data-gtab-btn]').forEach(function(b){
+                b.classList.toggle('gtab-active', b.getAttribute('data-gtab-btn') === tab);
+            });
+            if(window.lucide) lucide.createIcons();
+        }
+        function applyGameTab(){
+            const scope = document.getElementById('gameScope');
+            setGameTab((scope && scope.dataset.gameTab) ? scope.dataset.gameTab : 'quests');
+        }
         function renderGameSection() {
             const today = getISODateString(new Date());
             const habits = activeHabits();
@@ -7947,6 +7982,7 @@
             renderRewardShop(availableCoins);
             renderRedemptionHistory();
             renderAchievements({ totalCompleted, level, hp, bestStreak, redeemedCount: g.redeemed.length, totalEarnedCoins });
+            applyGameTab();
 
             if (window.lucide) lucide.createIcons();
         }
