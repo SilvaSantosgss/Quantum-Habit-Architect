@@ -2448,19 +2448,24 @@
             .game-tabbar{gap:4px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:4px}
             .game-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:10px;font-size:10px;font-weight:800;color:#94a3b8;background:transparent;border:none;cursor:pointer;transition:background .15s,color .15s}
             .game-tab.gtab-active{background:#6366f1;color:#fff}
-            .game-hero-mobile{display:none;position:relative;z-index:10;gap:12px;align-items:center;margin-top:14px}
-            .ghm-ring{position:relative;flex-shrink:0;width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(#fde68a 0%,rgba(255,255,255,0.2) 0)}
-            .ghm-ring-inner{width:52px;height:52px;border-radius:50%;background:#4c319e;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
-            .ghm-ring-inner span{font-size:20px;font-weight:900;line-height:1}
-            .ghm-ring-inner small{font-size:8px;font-weight:800;letter-spacing:1px;color:#e0e7ff}
+            .game-hero-mobile{display:none;position:relative;z-index:10;flex-direction:column;gap:11px;margin-top:14px}
+            .ghm-top{display:flex;gap:13px;align-items:center}
+            .ghm-ring{position:relative;flex-shrink:0;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(#fbbf24 0%,rgba(129,140,248,0.3) 0);box-shadow:0 0 12px rgba(251,191,36,0.25)}
+            .ghm-ring-inner{width:48px;height:48px;border-radius:50%;background:#1e1b4b;border:1px solid rgba(129,140,248,0.35);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+            .ghm-ring-inner span{font-size:20px;font-weight:900;line-height:1;color:#fff}
+            .ghm-ring-inner small{font-size:8px;font-weight:800;letter-spacing:1px;color:#c7d2fe}
             .ghm-info{flex:1;min-width:0}
-            .ghm-barrow{display:flex;justify-content:space-between;font-size:9px;color:#e0e7ff;margin-bottom:3px;font-weight:700}
-            .ghm-bar{height:7px;border-radius:99px;background:rgba(255,255,255,0.18);overflow:hidden}
-            .ghm-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#fb7185,#f43f5e);width:0%}
-            .ghm-chips{display:flex;gap:6px;margin-top:9px}
-            .ghm-chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;border-radius:99px;padding:4px 9px;background:rgba(255,255,255,0.16)}
-            .ghm-coin{color:#fde68a}
+            .ghm-barrow{display:flex;justify-content:space-between;font-size:9px;color:#e0e7ff;margin-top:6px;margin-bottom:3px;font-weight:700}
+            .ghm-barrow:first-child{margin-top:0}
+            .ghm-bar{height:7px;border-radius:99px;background:rgba(255,255,255,0.14);overflow:hidden}
+            .ghm-bar i{display:block;height:100%;border-radius:99px;width:0%}
+            .ghm-bar-hp{background:linear-gradient(90deg,#fb7185,#f43f5e)}
+            .ghm-bar-xp{background:linear-gradient(90deg,#818cf8,#38bdf8)}
+            .ghm-chips{display:flex;gap:6px}
+            .ghm-chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;border-radius:99px;padding:4px 10px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.12)}
+            .ghm-coin{color:#fbbf24}
             .ghm-streak{color:#fff}
+            .ghm-today{color:#6ee7b7}
             @media (max-width:1023px){
                 #gameTabBar{display:flex}
                 .game-mobile-hide{display:none}
@@ -3286,17 +3291,22 @@
                         </div>
                     </div>
                     <div class="game-hero-mobile">
-                        <div id="gameRingM" class="ghm-ring"><div class="ghm-ring-inner"><span id="gameLevelM">1</span><small>LV</small></div></div>
-                        <div class="ghm-info">
-                            <div class="ghm-barrow"><span>&#9829; HP</span><span id="gameHpM">100 / 100</span></div>
-                            <div class="ghm-bar"><i id="gameHpBarM"></i></div>
-                            <div class="ghm-chips">
-                                <span class="ghm-chip ghm-coin">&#9670; <b id="gameCoinsM">0</b></span>
-                                <span class="ghm-chip ghm-streak">&#9733; <b id="gameStreakM">0d</b></span>
+                        <div class="ghm-top">
+                            <div id="gameRingM" class="ghm-ring"><div class="ghm-ring-inner"><span id="gameLevelM">1</span><small>LV</small></div></div>
+                            <div class="ghm-info">
+                                <div class="ghm-barrow"><span>&#9829; HP</span><span id="gameHpM">100 / 100</span></div>
+                                <div class="ghm-bar"><i id="gameHpBarM" class="ghm-bar-hp"></i></div>
+                                <div class="ghm-barrow"><span>&#9889; XP</span><span id="gameXpLabelM">0 / 100 &middot; 0 to next</span></div>
+                                <div class="ghm-bar"><i id="gameXpBarM" class="ghm-bar-xp"></i></div>
                             </div>
                         </div>
+                        <div class="ghm-chips">
+                            <span class="ghm-chip ghm-coin">&#9670; <b id="gameCoinsM">0</b></span>
+                            <span class="ghm-chip ghm-streak">&#9733; <b id="gameStreakM">0d</b></span>
+                            <span class="ghm-chip ghm-today">&#10003; <b id="gameTodayM">0/0</b></span>
+                        </div>
                     </div>
-                    <div class="relative z-10 mt-5">
+                    <div class="game-hero-desktop relative z-10 mt-5">
                         <div class="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-500">
                             <span>XP Progress</span><span id="gameXpLabel">0 / 100 XP</span>
                         </div>
@@ -7959,12 +7969,17 @@
             if(xpBar) xpBar.style.width = `${xpForNext ? Math.min(100, Math.round((xpIntoLevel / xpForNext) * 100)) : 0}%`;
             const _xpPctM = xpForNext ? Math.min(100, Math.round((xpIntoLevel / xpForNext) * 100)) : 0;
             const _hpPctM = Math.max(0, Math.min(100, hp));
+            const _doneTodayM = completedToday.length + todoStats.doneToday;
+            const _totalTodayM = _doneTodayM + missedToday.length + (todoStats.openToday || 0);
             setText('gameLevelM', level);
             setText('gameHpM', `${hp} / 100`);
             setText('gameCoinsM', availableCoins);
             setText('gameStreakM', `${currentStreak}d`);
+            setText('gameTodayM', `${_doneTodayM}/${_totalTodayM}`);
+            setText('gameXpLabelM', `${xpIntoLevel} / ${xpForNext} · ${xpForNext - xpIntoLevel} to next`);
             const _hpBarM = document.getElementById('gameHpBarM'); if(_hpBarM) _hpBarM.style.width = _hpPctM + '%';
-            const _ringM = document.getElementById('gameRingM'); if(_ringM) _ringM.style.background = `conic-gradient(#fde68a ${_xpPctM}%, rgba(255,255,255,0.2) 0)`;
+            const _xpBarM = document.getElementById('gameXpBarM'); if(_xpBarM) _xpBarM.style.width = _xpPctM + '%';
+            const _ringM = document.getElementById('gameRingM'); if(_ringM) _ringM.style.background = `conic-gradient(#fbbf24 ${_xpPctM}%, rgba(129,140,248,0.3) 0)`;
 
             const questList = document.getElementById('gameQuestList');
             if(questList) {
