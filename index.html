@@ -2444,11 +2444,11 @@
             .hab-mobile-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:10px;background:#1e293b;border:1px solid #334155;color:#c7d2fe;font-size:11px;font-weight:700;cursor:pointer}
         }
             /* ===== Game tab: mobile Hero Card + segmented tabs (mobile only) ===== */
-            #gameTabBar{display:none}
+            #gameTabBar{display:flex}
             .game-tabbar{gap:4px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:4px}
             .game-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:10px;font-size:10px;font-weight:800;color:#94a3b8;background:transparent;border:none;cursor:pointer;transition:background .15s,color .15s}
             .game-tab.gtab-active{background:#6366f1;color:#fff}
-            .game-hero-mobile{display:none;position:relative;z-index:10;flex-direction:column;gap:11px;margin-top:14px}
+            .game-hero-mobile{display:flex;position:relative;z-index:10;flex-direction:column;gap:11px;margin-top:14px}
             .ghm-top{display:flex;gap:13px;align-items:center}
             .ghm-ring{position:relative;flex-shrink:0;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(#fbbf24 0%,rgba(129,140,248,0.3) 0);box-shadow:0 0 12px rgba(251,191,36,0.25)}
             .ghm-ring-inner{width:48px;height:48px;border-radius:50%;background:#1e1b4b;border:1px solid rgba(129,140,248,0.35);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
@@ -2466,14 +2466,14 @@
             .ghm-coin{color:#fbbf24}
             .ghm-streak{color:#fff}
             .ghm-today{color:#6ee7b7}
-            @media (max-width:1023px){
-                #gameTabBar{display:flex}
-                .game-mobile-hide{display:none}
-                .gtab-off{display:none}
-                .game-hero-verbose{display:none}
-                .game-hero-mobile{display:flex}
-                .game-hero-desktop{display:none}
-            }
+            .game-mobile-hide{display:none !important}
+            .game-hero-verbose{display:none !important}
+            .game-hero-desktop{display:none !important}
+            .gtab-stack{display:block !important}
+            .gtab-off{display:none !important}
+            #gameScope{max-width:760px;margin-left:auto;margin-right:auto}
+            #nav-game,#mnav-game{order:-2}
+            #nav-tracker,#mnav-tracker{order:-1}
         .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
         @media (max-width: 640px) { 
             .habit-grid { gap: 4px; } 
@@ -3323,7 +3323,7 @@
                     <button type="button" data-gtab-btn="feats" onclick="setGameTab('feats')" class="game-tab"><i data-lucide="trophy" class="h-4 w-4"></i><span>Feats</span></button>
                 </div>
 
-                <div data-gtab="shop" class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div data-gtab="shop" class="gtab-stack grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <div class="game-mobile-hide rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-4 sm:p-5">
                         <div class="mb-3 flex items-center gap-2">
                             <div class="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-2"><i data-lucide="swords" class="h-4 w-4 text-emerald-300"></i></div>
@@ -3359,7 +3359,7 @@
                     </div>
                 </div>
 
-                <div data-gtab="quests recovery" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div data-gtab="quests recovery" class="gtab-stack grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <div data-gtab="quests" class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div>
@@ -3401,7 +3401,7 @@
                     </div>
                 </div>
 
-                <div data-gtab="shop feats" class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div data-gtab="shop feats" class="gtab-stack grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <div data-gtab="shop" class="rounded-2xl border border-amber-500/20 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div class="flex items-center gap-2">
@@ -7988,7 +7988,7 @@
                     const done = _av ? !(h.history && h.history[today] === true) : (h.history && h.history[today] === true);
                     const icon = h.icon || 'activity';
                     const rw = rewardOf(h);
-                    return `<div class="flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
+                    return `<div onclick="openReportInspector('${h.id}')" class="cursor-pointer transition hover:border-indigo-500/40 flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-slate-800 bg-slate-950/40'} px-3 py-2.5">
                         <div class="flex min-w-0 items-center gap-2">
                             <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-500'}"><i data-lucide="${done ? 'check' : icon}" class="h-4 w-4"></i></div>
                             <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(h.name)}</div><div class="text-[10px] text-slate-500">${done ? ('+' + rw.xpGain + ' XP / +5 coins') : (_av ? 'Avoid quest \u2014 stay clean today' : 'Habit quest today')}</div></div>
@@ -7999,7 +7999,7 @@
                 const dueTodos = (typeof todaysTodos === 'function') ? todaysTodos() : [];
                 const todoQuestHtml = dueTodos.map(t => {
                     const done = isTodoDoneOn(t, today);
-                    return `<div class="flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-sky-500/20 bg-sky-950/20'} px-3 py-2.5">
+                    return `<div onclick="openTodoDetail('${t.id}')" class="cursor-pointer transition hover:border-sky-400/40 flex items-center justify-between gap-3 rounded-xl border ${done ? 'border-emerald-500/20 bg-emerald-500/10' : 'border-sky-500/20 bg-sky-950/20'} px-3 py-2.5">
                         <div class="flex min-w-0 items-center gap-2">
                             <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${done ? 'bg-emerald-500/20 text-emerald-300' : 'bg-sky-500/15 text-sky-300'}"><i data-lucide="${done ? 'check' : 'list-checks'}" class="h-4 w-4"></i></div>
                             <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(t.title)}</div><div class="text-[10px] text-slate-500">${done ? ('+' + rewardOf(t).xpGain + ' XP / +5 coins') : 'To-do'}${t.hasTime && t.time ? ' \u00b7 ' + escapeHTML(t.time) : ''}</div></div>
@@ -8014,13 +8014,13 @@
             const penaltyList = document.getElementById('gamePenaltyList');
             if(penaltyList) {
                 const habitPenaltyHtml = missedToday.map(h => `
-                    <div class="flex items-center justify-between gap-3 rounded-xl border border-rose-500/20 bg-rose-950/10 px-3 py-2.5">
+                    <div onclick="openReportInspector('${h.id}')" class="cursor-pointer transition hover:border-rose-400/50 flex items-center justify-between gap-3 rounded-xl border border-rose-500/20 bg-rose-950/10 px-3 py-2.5">
                         <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(h.name)}</div><div class="text-[10px] text-slate-500">Recovery: complete it next session to restore momentum.</div></div>
                         <span class="shrink-0 rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[10px] font-bold text-rose-300">-${rewardOf(h).hpLoss} HP</span>
                     </div>`).join('');
                 const overdueTodos = (typeof overdueTodoList === 'function') ? overdueTodoList() : [];
                 const todoPenaltyHtml = overdueTodos.map(t => `
-                    <div class="flex items-center justify-between gap-3 rounded-xl border border-rose-500/20 bg-rose-950/10 px-3 py-2.5">
+                    <div onclick="openTodoDetail('${t.id}')" class="cursor-pointer transition hover:border-rose-400/50 flex items-center justify-between gap-3 rounded-xl border border-rose-500/20 bg-rose-950/10 px-3 py-2.5">
                         <div class="min-w-0"><div class="truncate text-xs font-bold text-white">${escapeHTML(t.title)}</div><div class="text-[10px] text-slate-500">Overdue task${t.recur === 'once' && t.date ? ' \u00b7 was due ' + escapeHTML(t.date) : ''}. Complete it to recover.</div></div>
                         <span class="shrink-0 rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-1 text-[10px] font-bold text-rose-300">-${rewardOf(t).hpLoss} HP</span>
                     </div>`).join('');
