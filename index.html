@@ -3884,6 +3884,10 @@
                             <i data-lucide="archive" class="w-3.5 h-3.5"></i>Archive Habit
                         </button>
                         
+                        <div id="reportMeasureCard" class="hidden bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner">
+                            <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="ruler" class="w-3 h-3 text-indigo-400"></i>Contador de meta</span>
+                            <div id="reportMeasureContent"></div>
+                        </div>
                         <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 sm:space-y-3 shadow-inner">
                             <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Daily Node Log</span>
                             <textarea id="habitJournalInput" placeholder="Add metrics, logs or notes for today..." class="w-full h-16 sm:h-24 bg-slate-900/50 border border-slate-800 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
@@ -4265,6 +4269,26 @@
                     <div>
                         <label class="flex items-center gap-2 text-xs sm:text-sm text-slate-300 cursor-pointer"><span class="acheck"><input type="checkbox" id="advHabitTrackTime" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span> <span class="flex items-center gap-1.5"><i data-lucide="timer" class="w-3.5 h-3.5 text-indigo-400"></i>Com tempo (ativar cronômetro)</span></label>
                         <p class="text-[10px] text-slate-500 mt-1 ml-6">Registra o tempo por sessão e o total por dia no relatório do hábito.</p>
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-xs sm:text-sm text-slate-300 cursor-pointer"><span class="acheck"><input type="checkbox" id="advMeasureEnabled" onchange="toggleMeasureFields()" class="acheck-input" /><span class="acheck-box"><svg viewBox="0 0 24 24" class="acheck-svg"><path class="acheck-tick" pathLength="1" d="M5 12.5 L10 17.5 L19 6.5"/></svg></span></span> <span class="flex items-center gap-1.5"><i data-lucide="ruler" class="w-3.5 h-3.5 text-indigo-400"></i>Meta mensurável (contador)</span></label>
+                        <div id="advMeasureFields" class="hidden mt-2 ml-6 space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1">Tipo</label>
+                                    <select id="advMeasureUnit" onchange="onMeasureUnitChange()" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-white focus:border-indigo-500 outline-none"><option value="number">Número</option><option value="time">Tempo (min)</option></select>
+                                </div>
+                                <div>
+                                    <label id="advMeasureTargetLabel" class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1">Meta (mín.)</label>
+                                    <input id="advMeasureTarget" type="number" step="any" min="0" placeholder="ex.: 2" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-white focus:border-indigo-500 outline-none">
+                                </div>
+                            </div>
+                            <div id="advMeasureWhatWrap">
+                                <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-500 mb-1">O quê (unidade)</label>
+                                <input id="advMeasureWhat" type="text" placeholder="ex.: páginas, copos, km" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs text-white focus:border-indigo-500 outline-none">
+                            </div>
+                            <p id="advMeasureHint" class="text-[10px] text-slate-500">Defina a quantidade e o que medir. Ex.: 2 páginas.</p>
+                        </div>
                     </div>
                 </div>
                 </div>
@@ -5287,6 +5311,7 @@
             if (bBtn) bBtn.className = 'rounded-lg px-3 py-2 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ' + (advCreateState.habitType === 'build' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white');
             if (aBtn) aBtn.className = 'rounded-lg px-3 py-2 text-xs font-bold transition cursor-pointer flex items-center justify-center gap-1.5 ' + (advCreateState.habitType === 'avoid' ? 'bg-rose-600 text-white shadow-md' : 'text-slate-400 hover:text-white');
             if (hint) hint.innerText = advCreateState.habitType === 'avoid' ? 'Avoid mode: every clean day (unmarked) builds your streak and earns XP/coins. Marking a day = a slip, which resets the streak and removes XP/coins.' : 'Build mode: mark the day done to build your streak and earn XP/coins.';
+            if(typeof updateMeasureTargetLabel === 'function') updateMeasureTargetLabel();
             if (window.lucide) lucide.createIcons();
         }
         function setCreateTaskRecur(mode) {
@@ -5424,6 +5449,7 @@
             if(state.categories.length > 0) document.getElementById('advHabitCategory').value = state.categories[0];
             
             initPickers(); setScheduleMode('flexible'); setHabitType('build');
+            renderMeasureForm(null);
             document.querySelectorAll('.specific-day-btn').forEach(btn => { btn.className = 'specific-day-btn w-full aspect-square rounded-lg border border-slate-700 text-[10px] sm:text-xs font-bold text-slate-400 bg-slate-900 transition hover:border-slate-500 cursor-pointer'; });
             document.getElementById('createTypeToggle').classList.remove('hidden');
             applyCreateBody('habit');
@@ -5471,6 +5497,7 @@
             initPickers();
             setScheduleMode(advCreateState.mode);
             setHabitType(advCreateState.habitType);
+            renderMeasureForm(habit.measure);
             
             document.querySelectorAll('.specific-day-btn').forEach(btn => {
                 const dayNum = parseInt(btn.getAttribute('data-day'));
@@ -5516,8 +5543,10 @@
                         name, category, color: advCreateState.color, icon: advCreateState.icon,
                         scheduleMode: advCreateState.mode, specificDays: [...advCreateState.specificDays], 
                         frequency, timeOfDay: time, specificTime: specificTime, goal,
-                        habitType: advCreateState.habitType || 'build', trackTime, reward: freezeReward(state.habits[habitIndex], true, readRewardInputs('hb'))
+                        habitType: advCreateState.habitType || 'build', trackTime, reward: freezeReward(state.habits[habitIndex], true, readRewardInputs('hb')),
+                        measure: readMeasureForm()
                     };
+                    { const _mh = state.habits[habitIndex]; if(!_mh.progress) _mh.progress = {}; if(!_mh.overrides) _mh.overrides = {}; Object.keys(_mh.progress).forEach(function(_d){ recomputeMeasureDay(_mh, _d); }); Object.keys(_mh.overrides).forEach(function(_d){ recomputeMeasureDay(_mh, _d); }); }
                     showToast('Habit Node Updated.', 'success');
                 }
                 editingHabitId = null;
@@ -5528,7 +5557,7 @@
                     scheduleMode: advCreateState.mode, specificDays: [...advCreateState.specificDays], 
                     frequency, timeOfDay: time, specificTime: specificTime, goal,
                     habitType: advCreateState.habitType || 'build', trackTime, reward: readRewardInputs('hb'), createdAt: getISODateString(new Date()),
-                    history: {}, journal: {}
+                    history: {}, journal: {}, measure: readMeasureForm(), progress: {}, overrides: {}
                 });
                 showToast('New Habit Node Initiated.', 'success');
             }
@@ -5541,7 +5570,14 @@
         function toggleDay(habitId, dateStr) {
             const habit = state.habits.find(h => h.id === habitId);
             if (habit) {
-                habit.history[dateStr] = !habit.history[dateStr];
+                if (hasMeasure(habit)) {
+                    const _cur = habit.history[dateStr] === true;
+                    if(!habit.overrides) habit.overrides = {};
+                    habit.overrides[dateStr] = !_cur;
+                    recomputeMeasureDay(habit, dateStr);
+                } else {
+                    habit.history[dateStr] = !habit.history[dateStr];
+                }
                 if (isAvoidHabit(habit)) {
                     if (habit.history[dateStr] === true) { if (typeof showToast === 'function') showToast('Slip logged \u2014 clean streak reset, XP & coins lost.', 'error'); }
                     else { if (typeof showToast === 'function') showToast('Slip cleared \u2014 day counts as clean again.', 'success'); }
@@ -5767,6 +5803,219 @@
 
         // --- Avoid / break-habit helpers ---
         function isAvoidHabit(h) { return !!(h && h.habitType === 'avoid'); }
+        function hasMeasure(h){ return !!(h && h.measure && h.measure.enabled); }
+        function measureIsTime(h){ return !!(h && h.measure && h.measure.unit === 'time'); }
+        function dayProgressTotal(h, ds){
+            if(!h || !h.progress || !h.progress[ds]) return 0;
+            return h.progress[ds].reduce(function(s,e){ return s + (Number(e.amount)||0); }, 0);
+        }
+        function formatMeasureVal(h, val){
+            val = Number(val)||0;
+            if(measureIsTime(h)){
+                var m = Math.round(val);
+                var hh = Math.floor(m/60), mm = m%60;
+                if(hh>0 && mm>0) return hh+'h '+mm+'min';
+                if(hh>0) return hh+'h';
+                return mm+'min';
+            }
+            var n = Math.round(val*100)/100;
+            var what = (h && h.measure && h.measure.what) ? ' '+unescapeHTML(h.measure.what) : '';
+            return n + what;
+        }
+        function recomputeMeasureDay(h, ds){
+            if(!h) return;
+            if(!h.history) h.history = {};
+            if(h.overrides && Object.prototype.hasOwnProperty.call(h.overrides, ds)){
+                h.history[ds] = !!h.overrides[ds];
+                return;
+            }
+            if(!hasMeasure(h)) return;
+            var total = dayProgressTotal(h, ds);
+            var target = Number(h.measure.target)||0;
+            if(isAvoidHabit(h)){
+                h.history[ds] = (total > target);
+            } else {
+                h.history[ds] = (target > 0) ? (total >= target) : (total > 0);
+            }
+        }
+        function _measureRefresh(habitId){
+            saveToStorage();
+            if(state.selectedReportHabitId === habitId){
+                var h = state.habits.find(function(x){ return x.id===habitId; });
+                if(h) renderMeasureLog(h);
+            }
+        }
+        function addMeasureEntry(habitId, amount, dateStr, note){
+            var h = state.habits.find(function(x){ return x.id===habitId; });
+            if(!h) return;
+            amount = Number(amount);
+            if(isNaN(amount)) return;
+            if(!h.progress) h.progress = {};
+            if(!h.progress[dateStr]) h.progress[dateStr] = [];
+            h.progress[dateStr].push({ id: 'm_'+Date.now()+Math.random().toString(36).substr(2,4), amount: amount, note: note ? escapeHTML(note) : '' });
+            recomputeMeasureDay(h, dateStr);
+            _measureRefresh(habitId);
+        }
+        function updateMeasureEntry(habitId, dateStr, entryId, amount, note){
+            var h = state.habits.find(function(x){ return x.id===habitId; });
+            if(!h || !h.progress || !h.progress[dateStr]) return;
+            var e = h.progress[dateStr].find(function(x){ return x.id===entryId; });
+            if(!e) return;
+            if(amount !== null && amount !== undefined && !isNaN(Number(amount))) e.amount = Number(amount);
+            if(note !== null && note !== undefined) e.note = escapeHTML(note);
+            recomputeMeasureDay(h, dateStr);
+            _measureRefresh(habitId);
+        }
+        function deleteMeasureEntry(habitId, dateStr, entryId){
+            var h = state.habits.find(function(x){ return x.id===habitId; });
+            if(!h || !h.progress || !h.progress[dateStr]) return;
+            h.progress[dateStr] = h.progress[dateStr].filter(function(x){ return x.id!==entryId; });
+            if(h.progress[dateStr].length===0) delete h.progress[dateStr];
+            recomputeMeasureDay(h, dateStr);
+            _measureRefresh(habitId);
+        }
+        function setMeasureOverride(habitId, dateStr, val){
+            var h = state.habits.find(function(x){ return x.id===habitId; });
+            if(!h) return;
+            if(!h.overrides) h.overrides = {};
+            if(val === null){ delete h.overrides[dateStr]; }
+            else { h.overrides[dateStr] = !!val; }
+            recomputeMeasureDay(h, dateStr);
+            _measureRefresh(habitId);
+        }
+        function updateMeasureTargetLabel(){
+            var lbl = document.getElementById('advMeasureTargetLabel');
+            if(!lbl) return;
+            lbl.innerText = (advCreateState.habitType === 'avoid') ? 'Limite máx.' : 'Meta (mín.)';
+        }
+        function toggleMeasureFields(){
+            var en = document.getElementById('advMeasureEnabled');
+            var fields = document.getElementById('advMeasureFields');
+            if(!en || !fields) return;
+            if(en.checked) fields.classList.remove('hidden'); else fields.classList.add('hidden');
+        }
+        function onMeasureUnitChange(){
+            var unit = document.getElementById('advMeasureUnit');
+            var whatWrap = document.getElementById('advMeasureWhatWrap');
+            var hint = document.getElementById('advMeasureHint');
+            if(!unit) return;
+            var isTime = unit.value === 'time';
+            if(whatWrap) whatWrap.style.display = isTime ? 'none' : '';
+            if(hint) hint.innerText = isTime ? 'Meta em minutos. Ex.: 30 = 30 min. Some sessões ao longo do dia.' : 'Defina a quantidade e o que medir. Ex.: 2 páginas.';
+        }
+        function renderMeasureForm(measure){
+            var en = document.getElementById('advMeasureEnabled');
+            var unit = document.getElementById('advMeasureUnit');
+            var target = document.getElementById('advMeasureTarget');
+            var what = document.getElementById('advMeasureWhat');
+            if(!en || !unit || !target || !what) return;
+            if(measure && measure.enabled){
+                en.checked = true;
+                unit.value = measure.unit === 'time' ? 'time' : 'number';
+                target.value = (measure.target !== undefined && measure.target !== null) ? measure.target : '';
+                what.value = measure.what ? unescapeHTML(measure.what) : '';
+            } else {
+                en.checked = false;
+                unit.value = 'number';
+                target.value = '';
+                what.value = '';
+            }
+            toggleMeasureFields();
+            onMeasureUnitChange();
+            updateMeasureTargetLabel();
+        }
+        function readMeasureForm(){
+            var en = document.getElementById('advMeasureEnabled');
+            if(!en || !en.checked) return { enabled: false };
+            var unit = document.getElementById('advMeasureUnit');
+            var target = document.getElementById('advMeasureTarget');
+            var what = document.getElementById('advMeasureWhat');
+            var u = (unit && unit.value === 'time') ? 'time' : 'number';
+            var t = target ? parseFloat(target.value) : 0;
+            if(isNaN(t)) t = 0;
+            return { enabled: true, unit: u, target: t, what: (u==='number' && what) ? escapeHTML(what.value.trim()) : '' };
+        }
+        function addMeasureFromReport(){
+            var habitId = state.selectedReportHabitId;
+            if(!habitId) return;
+            var amtEl = document.getElementById('reportMeasureAmount');
+            var dateEl = document.getElementById('reportMeasureDate');
+            var noteEl = document.getElementById('reportMeasureNote');
+            var amt = amtEl ? parseFloat(amtEl.value) : NaN;
+            if(isNaN(amt)){ if(typeof showToast==='function') showToast('Informe a quantidade.', 'error'); return; }
+            var ds = (dateEl && dateEl.value) ? dateEl.value : getISODateString(new Date());
+            addMeasureEntry(habitId, amt, ds, noteEl ? noteEl.value.trim() : '');
+            if(amtEl) amtEl.value = '';
+            if(noteEl) noteEl.value = '';
+        }
+        function editMeasureEntryPrompt(habitId, dateStr, entryId, cur){
+            var v = window.prompt('Editar quantidade:', cur);
+            if(v === null) return;
+            var n = parseFloat(v);
+            if(isNaN(n)){ if(typeof showToast==='function') showToast('Valor inválido.', 'error'); return; }
+            updateMeasureEntry(habitId, dateStr, entryId, n, null);
+        }
+        function renderMeasureLog(habit){
+            var card = document.getElementById('reportMeasureCard');
+            var content = document.getElementById('reportMeasureContent');
+            if(!card || !content) return;
+            if(!hasMeasure(habit)){ card.classList.add('hidden'); return; }
+            card.classList.remove('hidden');
+            var today = getISODateString(new Date());
+            var target = Number(habit.measure.target)||0;
+            var todayTotal = dayProgressTotal(habit, today);
+            var isAvoid = isAvoidHabit(habit);
+            var pct = target>0 ? Math.min(100, Math.round((todayTotal/target)*100)) : (todayTotal>0?100:0);
+            var barColor = isAvoid ? (todayTotal>target ? '#f43f5e' : '#22c55e') : ((todayTotal>=target && target>0) ? '#22c55e' : '#6366f1');
+            var hid = JSON.stringify(habit.id);
+            var DOT = String.fromCharCode(183);
+            var html = '';
+            html += '<div class="flex items-center justify-between gap-2 mb-1">';
+            html += '<span class="text-[10px] sm:text-xs font-bold text-white">' + formatMeasureVal(habit, todayTotal) + ' <span class="text-slate-500 font-normal">/ ' + (isAvoid ? 'máx ' : '') + formatMeasureVal(habit, target) + '</span></span>';
+            html += '<span class="text-[9px] sm:text-[10px] font-mono ' + (isAvoid ? (todayTotal>target?'text-rose-400':'text-emerald-400') : ((todayTotal>=target&&target>0)?'text-emerald-400':'text-slate-400')) + '">' + pct + '%</span>';
+            html += '</div>';
+            html += '<div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden mb-3"><div style="width:' + pct + '%;background:' + barColor + '" class="h-full rounded-full transition-all"></div></div>';
+            html += '<div class="flex flex-wrap items-end gap-1.5 mb-3">';
+            html += '<input id="reportMeasureAmount" type="number" step="any" placeholder="Qtd" class="w-16 bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-[10px] sm:text-xs text-white focus:border-indigo-500 outline-none">';
+            html += '<input id="reportMeasureDate" type="date" value="' + today + '" class="bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-[10px] sm:text-xs text-white focus:border-indigo-500 outline-none">';
+            html += '<input id="reportMeasureNote" type="text" placeholder="Nota (opcional)" class="flex-1 min-w-[80px] bg-slate-900 border border-slate-800 rounded-lg px-2 py-1.5 text-[10px] sm:text-xs text-white focus:border-indigo-500 outline-none">';
+            html += '<button onclick="addMeasureFromReport()" class="rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 text-[10px] sm:text-xs font-bold transition cursor-pointer">+ Add</button>';
+            html += '</div>';
+            var ovState = (habit.overrides && Object.prototype.hasOwnProperty.call(habit.overrides, today)) ? habit.overrides[today] : null;
+            html += '<div class="flex items-center gap-1.5 mb-3">';
+            html += '<button onclick="setMeasureOverride(' + hid + ',' + JSON.stringify(today) + ',true)" class="flex-1 rounded-lg border py-1.5 text-[9px] sm:text-[10px] font-bold transition cursor-pointer ' + (ovState===true?'bg-emerald-600 border-emerald-500 text-white':'border-slate-700 text-slate-300 hover:border-emerald-500/50') + '">Marcar feito</button>';
+            html += '<button onclick="setMeasureOverride(' + hid + ',' + JSON.stringify(today) + ',false)" class="flex-1 rounded-lg border py-1.5 text-[9px] sm:text-[10px] font-bold transition cursor-pointer ' + (ovState===false?'bg-rose-600 border-rose-500 text-white':'border-slate-700 text-slate-300 hover:border-rose-500/50') + '">Não feito</button>';
+            html += '<button onclick="setMeasureOverride(' + hid + ',' + JSON.stringify(today) + ',null)" class="flex-1 rounded-lg border py-1.5 text-[9px] sm:text-[10px] font-bold transition cursor-pointer ' + (ovState===null?'bg-slate-700 border-slate-600 text-white':'border-slate-700 text-slate-300 hover:border-slate-500') + '">Auto</button>';
+            html += '</div>';
+            var dates = habit.progress ? Object.keys(habit.progress).filter(function(d){ return habit.progress[d] && habit.progress[d].length; }) : [];
+            dates.sort(function(a,b){ return a<b?1:(a>b?-1:0); });
+            if(dates.length===0){
+                html += '<p class="text-[9px] sm:text-[10px] text-slate-600 italic">Sem registros ainda.</p>';
+            } else {
+                html += '<div class="space-y-2 max-h-52 overflow-y-auto pr-1">';
+                for(var i=0;i<dates.length;i++){
+                    var d = dates[i];
+                    var dtot = dayProgressTotal(habit, d);
+                    html += '<div class="rounded-lg border border-slate-800/70 bg-slate-900/40 p-2">';
+                    html += '<div class="flex items-center justify-between mb-1"><span class="text-[9px] sm:text-[10px] font-bold text-slate-300">' + d + '</span><span class="text-[9px] sm:text-[10px] font-mono text-indigo-300">' + formatMeasureVal(habit, dtot) + '</span></div>';
+                    var entries = habit.progress[d];
+                    for(var j=0;j<entries.length;j++){
+                        var e = entries[j];
+                        var noteTxt = e.note ? (' ' + DOT + ' ' + unescapeHTML(e.note)) : '';
+                        html += '<div class="flex items-center justify-between gap-2 py-0.5">';
+                        html += '<span class="text-[9px] sm:text-[10px] text-slate-400 truncate">' + formatMeasureVal(habit, e.amount) + noteTxt + '</span>';
+                        html += '<span class="flex items-center gap-1 shrink-0">';
+                        html += '<button onclick="editMeasureEntryPrompt(' + hid + ',' + JSON.stringify(d) + ',' + JSON.stringify(e.id) + ',' + JSON.stringify(String(e.amount)) + ')" class="rounded p-1 text-slate-500 hover:text-indigo-300 transition cursor-pointer"><i data-lucide="pencil" class="w-3 h-3"></i></button>';
+                        html += '<button onclick="deleteMeasureEntry(' + hid + ',' + JSON.stringify(d) + ',' + JSON.stringify(e.id) + ')" class="rounded p-1 text-slate-500 hover:text-rose-300 transition cursor-pointer"><i data-lucide="trash-2" class="w-3 h-3"></i></button>';
+                        html += '</span></div>';
+                    }
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+            content.innerHTML = html;
+            if(window.lucide && typeof window.lucide.createIcons==='function'){ try{ window.lucide.createIcons(); }catch(e){} }
+        }
         function habitStartDate(h) {
             if (h && h.createdAt) { const d = new Date(h.createdAt + 'T00:00:00'); if (!isNaN(d.getTime())) return d; }
             const keys = Object.keys((h && h.history) || {}).sort();
@@ -5940,6 +6189,16 @@
                 let timeDisplay = habit.timeOfDay;
                 if(habit.specificTime) timeDisplay = habit.specificTime;
                 const timeHtml = (timeDisplay && timeDisplay !== 'Anytime') ? `<span class="text-[8px] sm:text-[9px] font-bold uppercase border border-slate-700 text-slate-400 bg-slate-900 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="clock" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${escapeHTML(timeDisplay)}</span>` : '';
+                let measureHtml = '';
+                if (hasMeasure(habit)) {
+                    const _mtoday = getISODateString(new Date());
+                    const _mtot = dayProgressTotal(habit, _mtoday);
+                    const _mtarget = Number(habit.measure.target)||0;
+                    const _mstep = measureIsTime(habit) ? 5 : 1;
+                    const _mdone = isAvoid ? (_mtot > _mtarget) : (_mtarget>0 ? _mtot >= _mtarget : _mtot>0);
+                    const _mcls = isAvoid ? (_mtot>_mtarget ? 'border-rose-500/40 text-rose-300 bg-rose-500/10' : 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10') : (_mdone ? 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' : 'border-indigo-500/40 text-indigo-300 bg-indigo-500/10');
+                    measureHtml = `<span class="text-[8px] sm:text-[9px] font-bold uppercase border rounded-full pl-1.5 sm:pl-2 pr-0.5 py-0.5 flex items-center gap-1 ${_mcls}"><i data-lucide="ruler" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${formatMeasureVal(habit, _mtot)}/${formatMeasureVal(habit, _mtarget)}<button onclick="event.stopPropagation(); addMeasureEntry('${habit.id}', ${_mstep}, getISODateString(new Date()), '')" class="ml-0.5 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center bg-white/10 hover:bg-white/20 transition cursor-pointer" title="+${_mstep}">+</button><button onclick="event.stopPropagation(); openReportInspector('${habit.id}')" class="rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center hover:bg-white/20 transition cursor-pointer" title="Log"><i data-lucide="pencil" class="w-2 h-2"></i></button></span>`;
+                }
 
                 return `
                     <div class="habit-swipe" data-habit-wrap="${habit.id}">
@@ -5968,6 +6227,7 @@
                                         <span class="text-[8px] sm:text-[9px] font-bold tracking-wider uppercase border rounded-full px-1.5 sm:px-2 py-0.5 ${styleDef.tailwindBadge}">${escapeHTML(habit.category)}</span>
                                         ${isAvoid ? '<span class="text-[8px] sm:text-[9px] font-bold tracking-wider uppercase border border-rose-500/40 text-rose-300 bg-rose-500/10 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="shield-off" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>Avoid</span>' : ''}
                                         ${timeHtml}
+                                        ${measureHtml}
                                         ${(habit.trackTime !== false && habit.timeLog && habit.timeLog[getISODateString(new Date())]) ? `<span class="text-[8px] sm:text-[9px] font-bold uppercase border border-indigo-500/40 text-indigo-300 bg-indigo-500/10 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="timer" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${formatDuration(habit.timeLog[getISODateString(new Date())])}</span>` : ''}
                                         <span class="text-[9px] sm:text-[11px] text-slate-500 flex items-center gap-0.5 font-mono ml-auto sm:ml-0"><i data-lucide="flame" class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-500"></i>${streak}d</span>
                                     </div>
@@ -6591,6 +6851,7 @@
                 _chipsHtml += _chip('calendar-check', (habit.frequency || 0) + 'x / week');
                 if (_timeTxt && _timeTxt !== 'Anytime') _chipsHtml += _chip('clock', _timeTxt);
                 if (habit.goal) _chipsHtml += _chip('target', unescapeHTML(habit.goal));
+                if (hasMeasure(habit)) _chipsHtml += _chip('ruler', (isAvoidHabit(habit) ? '≤ ' : '') + formatMeasureVal(habit, Number(habit.measure.target)||0) + '/dia');
                 _chips.innerHTML = _chipsHtml;
             }
 
@@ -6621,6 +6882,7 @@
 
             renderReportYearHeatmap(habit);
             renderHabitTimeLog(habit);
+            renderMeasureLog(habit);
 
             if (window.WorkoutTracker) {
                 const hName = (typeof unescapeHTML === 'function' ? unescapeHTML(habit.name || '') : (habit.name || '')).trim().toLowerCase();
