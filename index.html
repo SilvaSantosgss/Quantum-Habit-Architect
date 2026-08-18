@@ -3850,12 +3850,12 @@
     </div>
     <div id="modalReport" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3 sm:p-4">
         <!-- Strictly clamped mobile height to ensure scrolling works and buttons aren't lost -->
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl shadow-2xl relative flex flex-col max-h-[85vh] sm:max-h-[90vh]">
+        <div class="dx-modal bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl shadow-2xl relative flex flex-col max-h-[92vh] sm:max-h-[90vh]">
             <div class="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center shrink-0 relative overflow-hidden rounded-t-2xl">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="relative z-10 pr-2">
-                    <span class="text-[9px] sm:text-[10px] font-mono text-indigo-400 uppercase tracking-widest block mb-0.5">Diagnostic Matrix</span>
-                    <h3 id="reportHabitName" class="text-base sm:text-lg font-bold text-white leading-tight truncate max-w-[200px] sm:max-w-md">Inspect Focus</h3>
+                    <span class="text-[10px] sm:text-xs font-mono text-indigo-400 uppercase tracking-widest block mb-1">Diagnostic Matrix</span>
+                    <h3 id="reportHabitName" class="text-xl sm:text-2xl font-bold text-white leading-tight truncate max-w-[220px] sm:max-w-lg">Inspect Focus</h3>
                 </div>
                 <div class="flex items-center gap-1 sm:gap-2 relative z-10 shrink-0">
                     <button onclick="openEditMode()" class="text-indigo-400 hover:text-indigo-300 bg-slate-950 p-2 rounded-lg border border-slate-800 hover:bg-slate-800 transition cursor-pointer" title="Edit Habit">
@@ -3867,65 +3867,77 @@
                 </div>
             </div>
             
-            <div class="p-4 sm:p-5 overflow-y-auto space-y-4 sm:space-y-6">
+            <style>
+                /* Diagnostic Matrix UX redesign */
+                #modalReport .dx-kpi { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+                @media (min-width:640px){ #modalReport .dx-kpi{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } }
+                @media (min-width:1024px){ #modalReport .dx-kpi{ grid-template-columns:repeat(6,minmax(0,1fr)); } }
+                #modalReport .dx-kpi-card { position:relative; background:rgba(2,6,23,.72); border:1px solid rgba(30,41,59,.7); border-radius:16px; padding:14px 14px 14px 18px; overflow:hidden; }
+                #modalReport .dx-kpi-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--dx-accent,#6366f1); }
+                #modalReport .dx-kpi-lbl { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#94a3b8; }
+                #modalReport .dx-kpi-lbl i, #modalReport .dx-kpi-lbl svg { color:var(--dx-accent,#6366f1); }
+                #modalReport .dx-kpi-val { display:block; margin-top:10px; font-family:ui-monospace,SFMono-Regular,monospace; font-weight:800; font-size:1.6rem; line-height:1; color:#fff; }
+                @media (min-width:1024px){ #modalReport .dx-kpi-val{ font-size:1.5rem; } }
+                #modalReport .dx-actions { display:grid; grid-template-columns:1fr; gap:10px; }
+                @media (min-width:640px){ #modalReport .dx-actions{ grid-template-columns:2fr 1fr; } }
+                #modalReport #reportCompleteTodayBtn { padding:13px 16px !important; font-size:.85rem !important; border-radius:14px !important; }
+                #modalReport #reportCompleteTodayBtn i, #modalReport #reportCompleteTodayBtn svg { width:18px !important; height:18px !important; }
+                #modalReport .dx-archive { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:13px 16px; border-radius:14px; font-weight:700; font-size:.85rem; cursor:pointer; transition:all .15s; border:1px solid rgba(245,158,11,.3); background:rgba(245,158,11,.1); color:#fcd34d; }
+                #modalReport .dx-archive:hover { background:rgba(245,158,11,.2); }
+                #modalReport .dx-card { background:rgba(2,6,23,.8); border:1px solid rgba(30,41,59,.6); border-radius:16px; padding:16px; }
+                #modalReport .dx-card-title { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#94a3b8; }
+                /* Larger typography + tap targets on mobile */
+                @media (max-width:767px){
+                    #modalReport .dx-body [class*="text-[8px]"]{ font-size:10px !important; }
+                    #modalReport .dx-body [class*="text-[9px]"]{ font-size:11px !important; }
+                    #modalReport .dx-body [class*="text-[10px]"]{ font-size:12px !important; }
+                    #modalReport .dx-kpi-val{ font-size:1.7rem; }
+                    #modalReport #reportCompleteTodayBtn{ padding:16px !important; font-size:.95rem !important; }
+                    #modalReport .dx-archive{ padding:16px; font-size:.9rem; }
+                    #modalReport .dx-body #habitJournalInput{ min-height:104px !important; }
+                    #modalReport .dx-body #heatmapBtn-month, #modalReport .dx-body #heatmapBtn-year, #modalReport .dx-body #heatmapBtn-custom{ padding:7px 14px !important; }
+                }
+            </style>
+            <div class="dx-body p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6">
                 <div id="reportMetaChips" class="flex flex-wrap items-center gap-1.5 sm:gap-2"></div>
                 <!-- KPI band -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="activity" class="w-3 h-3 text-indigo-400"></i>All-Time</span>
-                        <span id="reportTotalDone" class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 block">0</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="target" class="w-3 h-3 text-emerald-400"></i>Adherence</span>
-                        <span id="reportConsistencyRate" class="text-lg sm:text-2xl font-bold font-mono text-emerald-400 mt-1 block">0%</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3 text-orange-400"></i>Streak</span>
-                        <span id="reportCurrentStreak" class="text-lg sm:text-2xl font-bold font-mono text-orange-400 mt-1 block">0d</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="trophy" class="w-3 h-3 text-amber-400"></i>Best</span>
-                        <span id="reportBestStreak" class="text-lg sm:text-2xl font-bold font-mono text-amber-400 mt-1 block">0d</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="calendar-check" class="w-3 h-3 text-sky-400"></i>This Week</span>
-                        <span id="reportWeekProgress" class="text-sm sm:text-lg font-bold font-mono text-white mt-1 block">0/0</span>
-                    </div>
-                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3 text-violet-400"></i>This Month</span>
-                        <span id="reportMonthCount" class="text-sm sm:text-lg font-bold font-mono text-white mt-1 block">0</span>
-                    </div>
+                <div class="dx-kpi">
+                    <div class="dx-kpi-card" style="--dx-accent:#6366f1"><span class="dx-kpi-lbl"><i data-lucide="activity" class="w-3.5 h-3.5"></i>All-Time</span><span id="reportTotalDone" class="dx-kpi-val">0</span></div>
+                    <div class="dx-kpi-card" style="--dx-accent:#10b981"><span class="dx-kpi-lbl"><i data-lucide="target" class="w-3.5 h-3.5"></i>Adherence</span><span id="reportConsistencyRate" class="dx-kpi-val" style="color:#34d399">0%</span></div>
+                    <div class="dx-kpi-card" style="--dx-accent:#f97316"><span class="dx-kpi-lbl"><i data-lucide="flame" class="w-3.5 h-3.5"></i>Streak</span><span id="reportCurrentStreak" class="dx-kpi-val" style="color:#fb923c">0d</span></div>
+                    <div class="dx-kpi-card" style="--dx-accent:#f59e0b"><span class="dx-kpi-lbl"><i data-lucide="trophy" class="w-3.5 h-3.5"></i>Best</span><span id="reportBestStreak" class="dx-kpi-val" style="color:#fbbf24">0d</span></div>
+                    <div class="dx-kpi-card" style="--dx-accent:#38bdf8"><span class="dx-kpi-lbl"><i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>This Week</span><span id="reportWeekProgress" class="dx-kpi-val">0/0</span></div>
+                    <div class="dx-kpi-card" style="--dx-accent:#a78bfa"><span class="dx-kpi-lbl"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>This Month</span><span id="reportMonthCount" class="dx-kpi-val">0</span></div>
                 </div>
 
-                <!-- Main grid: visualization (wide) + controls rail -->
+                <!-- Action bar -->
+                <div class="dx-actions">
+                    <button id="reportCompleteTodayBtn" onclick="toggleTodayFromReport()" class="w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white">
+                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span id="reportCompleteTodayLabel">Mark Today Complete</span>
+                    </button>
+                    <button onclick="archiveHabit(state.selectedReportHabitId)" class="dx-archive"><i data-lucide="archive" class="w-4 h-4"></i>Archive Habit</button>
+                </div>
+
+                <!-- Main grid: trend + logs (left) / tools (right) -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                    <!-- Visualization column -->
-                    <div class="order-2 lg:order-1 lg:col-span-2 flex flex-col space-y-3 sm:space-y-4">
-                        <div class="w-full bg-slate-950/60 border border-slate-900 p-2 sm:p-3 rounded-xl shadow-inner h-44 sm:h-72">
-                            <canvas id="detailedReportChart"></canvas>
+                    <div class="lg:col-span-2 flex flex-col gap-4">
+                        <div class="dx-card" style="padding:12px 14px">
+                            <div class="dx-card-title" style="margin-bottom:10px"><i data-lucide="line-chart" class="w-3.5 h-3.5" style="color:#818cf8"></i>Performance Trend</div>
+                            <div class="w-full h-56 sm:h-72"><canvas id="detailedReportChart"></canvas></div>
                         </div>
-                        <div id="journalLogsHistory" class="bg-slate-950/60 shadow-inner rounded-xl p-3 sm:p-4 border border-slate-900 max-h-32 sm:max-h-56 overflow-y-auto text-[10px] sm:text-xs space-y-2 flex-grow"></div>
+                        <div class="dx-card" style="padding:12px 14px">
+                            <div class="dx-card-title" style="margin-bottom:10px"><i data-lucide="history" class="w-3.5 h-3.5" style="color:#818cf8"></i>Log History</div>
+                            <div id="journalLogsHistory" class="max-h-40 sm:max-h-56 overflow-y-auto text-[10px] sm:text-xs space-y-2"></div>
+                        </div>
                     </div>
-                    <!-- Controls column -->
-                    <div class="order-1 lg:order-2 space-y-3 sm:space-y-4">
-                        <button id="reportCompleteTodayBtn" onclick="toggleTodayFromReport()" class="w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white">
-                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span id="reportCompleteTodayLabel">Mark Today Complete</span>
-                        </button>
-                        <button onclick="archiveHabit(state.selectedReportHabitId)" class="w-full flex items-center justify-center gap-2 border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer">
-                            <i data-lucide="archive" class="w-3.5 h-3.5"></i>Archive Habit
-                        </button>
-                        <div id="reportMeasureCard" class="hidden bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner">
-                            <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="ruler" class="w-3 h-3 text-indigo-400"></i>Contador de meta</span>
+                    <div class="flex flex-col gap-4">
+                        <div id="reportMeasureCard" class="hidden dx-card space-y-2">
+                            <span class="dx-card-title"><i data-lucide="ruler" class="w-3.5 h-3.5" style="color:#818cf8"></i>Contador de meta</span>
                             <div id="reportMeasureContent"></div>
                         </div>
-                        <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 sm:space-y-3 shadow-inner">
-                            <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Daily Node Log</span>
-                            <textarea id="habitJournalInput" placeholder="Add metrics, logs or notes for today..." class="w-full h-16 sm:h-24 bg-slate-900/50 border border-slate-800 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
-                            <button onclick="saveJournalEntry()" class="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-[10px] sm:text-[11px] font-bold text-slate-200 hover:text-white py-1.5 sm:py-2 rounded-lg transition cursor-pointer">Commit Log</button>
-                        </div>
-                        <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner js-time-card">
+                        <div class="dx-card js-time-card space-y-2">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="timer" class="w-3 h-3 text-indigo-400"></i>Tempo</span>
+                                <span class="dx-card-title"><i data-lucide="timer" class="w-3.5 h-3.5" style="color:#818cf8"></i>Tempo</span>
                                 <button onclick="openTimerModal(state.selectedReportHabitId)" class="text-[9px] sm:text-[10px] font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1 cursor-pointer"><i data-lucide="play" class="w-3 h-3"></i>Cronômetro</button>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
@@ -3936,19 +3948,25 @@
                             <div class="js-time-stats grid grid-cols-3 gap-1.5 mt-2 mb-1"></div>
                             <div class="js-time-log max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
                         </div>
+                        <div class="dx-card space-y-2">
+                            <span class="dx-card-title"><i data-lucide="pen-line" class="w-3.5 h-3.5" style="color:#818cf8"></i>Daily Node Log</span>
+                            <textarea id="habitJournalInput" placeholder="Add metrics, logs or notes for today..." class="w-full h-16 sm:h-24 bg-slate-900/50 border border-slate-800 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
+                            <button onclick="saveJournalEntry()" class="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-[10px] sm:text-[11px] font-bold text-slate-200 hover:text-white py-2 rounded-lg transition cursor-pointer">Commit Log</button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-950/60 border border-slate-900 rounded-xl p-3 sm:p-4 shadow-inner">
-                    <div class="flex items-center justify-between mb-2 sm:mb-3 gap-2 flex-wrap">
-                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="grid-3x3" class="w-3 h-3 text-indigo-400"></i>Activity Matrix</span>
+                <!-- Activity Matrix -->
+                <div class="dx-card" style="padding:14px 16px">
+                    <div class="flex items-center justify-between mb-3 gap-2 flex-wrap">
+                        <span class="dx-card-title"><i data-lucide="grid-3x3" class="w-3.5 h-3.5" style="color:#818cf8"></i>Activity Matrix</span>
                         <div class="flex items-center gap-0.5 bg-slate-900/70 rounded-lg p-0.5 border border-slate-800">
-                            <button id="heatmapBtn-month" type="button" onclick="setHeatmapMode('month')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Month</button>
-                            <button id="heatmapBtn-year" type="button" onclick="setHeatmapMode('year')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Year</button>
+                            <button id="heatmapBtn-month" type="button" onclick="setHeatmapMode('month')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Month</button>
+                            <button id="heatmapBtn-year" type="button" onclick="setHeatmapMode('year')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Year</button>
                             <button id="heatmapBtn-custom" type="button" onclick="setHeatmapMode('custom')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Custom</button>
                         </div>
                     </div>
-                    <div id="heatmapCustomWrap" style="display:none" class="flex items-center gap-2 mb-2 sm:mb-3 flex-wrap">
+                    <div id="heatmapCustomWrap" style="display:none" class="flex items-center gap-2 mb-3 flex-wrap">
                         <input id="heatmapCustomStartInput" type="date" onchange="applyHeatmapCustom()" class="bg-slate-900 border border-slate-800 rounded-md px-2 py-1 text-[10px] text-slate-300 outline-none focus:border-indigo-500/50">
                         <span class="text-slate-500 text-[10px]">to</span>
                         <input id="heatmapCustomEndInput" type="date" onchange="applyHeatmapCustom()" class="bg-slate-900 border border-slate-800 rounded-md px-2 py-1 text-[10px] text-slate-300 outline-none focus:border-indigo-500/50">
