@@ -2495,9 +2495,15 @@
             #nav-game { display: none !important; }
             body.web-combined #section-tracker.tab-section.active,
             body.web-combined #section-game.tab-section.active { display: block; animation: none; }
-            body.web-combined .tg-divider { display: flex; align-items: center; gap: 12px; margin: 8px 0 24px; padding-top: 28px; border-top: 1px solid rgba(148,163,184,0.15); }
-            body.web-combined .tg-divider .tg-divider-title { display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 800; letter-spacing: .02em; color: #e2e8f0; text-transform: uppercase; }
+            body.web-combined #trackerLeftCol > #section-game { margin: 0; }
+            body.web-combined .tg-divider { display: flex; align-items: center; gap: 10px; margin: 2px 0 14px; padding-top: 18px; border-top: 1px solid rgba(148,163,184,0.15); }
+            body.web-combined .tg-divider .tg-divider-title { display: inline-flex; align-items: center; gap: 7px; font-size: 0.8rem; font-weight: 800; letter-spacing: .04em; color: #e2e8f0; text-transform: uppercase; }
             body.web-combined .tg-divider .tg-divider-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(99,102,241,.45), transparent); }
+            /* Stack the game panel vertically so it fits the narrow filter-width column */
+            body.web-combined #section-game [class~="sm:flex-row"] { flex-direction: column !important; align-items: stretch !important; }
+            body.web-combined #section-game .game-hero-desktop { min-width: 0 !important; }
+            body.web-combined #section-game [class*="sm:min-w-[320px]"] { min-width: 0 !important; }
+            body.web-combined #section-game [class*="lg:grid-cols-"] { grid-template-columns: minmax(0,1fr) !important; }
         }
         
         /* Popup & Modal Animations */
@@ -2946,7 +2952,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
                 
                 <!-- Left Column: Action Center & Filters -->
-                <div class="space-y-4 sm:space-y-6">
+                <div id="trackerLeftCol" class="space-y-4 sm:space-y-6">
                     <!-- Advanced Creation Trigger -->
                     <style>
                         @media (max-width: 767px) {
@@ -3279,6 +3285,7 @@
             </div>
         </section>
 
+        <div id="gameHome" class="hidden"></div>
         <section id="section-game" class="tab-section">
             <div class="tg-divider" aria-hidden="true"><span class="tg-divider-title"><i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-300"></i> Game</span><span class="tg-divider-line"></span></div>
             <div id="gameScope" data-game-tab="quests" class="space-y-4 sm:space-y-8">
@@ -4931,12 +4938,10 @@
         window.addEventListener('resize', () => {
             var _tg = document.getElementById('section-tracker'), _gg = document.getElementById('section-game');
             if (!_tg || !_gg) return;
-            var _onTG = _tg.classList.contains('active') || _gg.classList.contains('active');
-            if (!_onTG) return;
+            if (!(_tg.classList.contains('active') || _gg.classList.contains('active'))) return;
             var _web = window.matchMedia('(min-width: 1024px)').matches;
             var _combined = document.body.classList.contains('web-combined');
-            if (_web && !_combined) switchTab('tracker');
-            else if (!_web && _combined) switchTab('tracker');
+            if ((_web && !_combined) || (!_web && _combined)) switchTab('tracker');
         });
 
         function setMobileTabActive(tabName) {
@@ -4998,14 +5003,19 @@
             });
             var _webCombined = window.matchMedia('(min-width: 1024px)').matches && (tabName === 'tracker' || tabName === 'game');
             var _navActiveCls = 'flex-none md:flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-800 text-white shadow-sm cursor-pointer';
+            var _game = document.getElementById('section-game');
             if (_webCombined) {
                 document.body.classList.add('web-combined');
+                var _left = document.getElementById('trackerLeftCol');
+                if (_game && _left && _game.parentElement !== _left) _left.appendChild(_game);
                 document.getElementById('section-tracker').classList.add('active');
-                document.getElementById('section-game').classList.add('active');
+                if (_game) _game.classList.add('active');
                 document.getElementById('nav-tracker').className = _navActiveCls;
                 tabName = 'tracker';
             } else {
                 document.body.classList.remove('web-combined');
+                var _home = document.getElementById('gameHome');
+                if (_game && _home && _game.previousElementSibling !== _home) _home.parentNode.insertBefore(_game, _home.nextSibling);
                 document.getElementById(`section-${tabName}`).classList.add('active');
                 document.getElementById(`nav-${tabName}`).className = _navActiveCls;
             }
