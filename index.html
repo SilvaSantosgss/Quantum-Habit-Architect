@@ -2489,6 +2489,16 @@
         /* Tab Transitions */
         .tab-section { display: none; }
         .tab-section.active { display: block; animation: fadeIn 0.25s ease-out; }
+        /* Web-only (>=1024px) combined Tracker + Game tab */
+        .tg-divider { display: none; }
+        @media (min-width: 1024px) {
+            #nav-game { display: none !important; }
+            body.web-combined #section-tracker.tab-section.active,
+            body.web-combined #section-game.tab-section.active { display: block; animation: none; }
+            body.web-combined .tg-divider { display: flex; align-items: center; gap: 12px; margin: 8px 0 24px; padding-top: 28px; border-top: 1px solid rgba(148,163,184,0.15); }
+            body.web-combined .tg-divider .tg-divider-title { display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem; font-weight: 800; letter-spacing: .02em; color: #e2e8f0; text-transform: uppercase; }
+            body.web-combined .tg-divider .tg-divider-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(99,102,241,.45), transparent); }
+        }
         
         /* Popup & Modal Animations */
         .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -3270,6 +3280,7 @@
         </section>
 
         <section id="section-game" class="tab-section">
+            <div class="tg-divider" aria-hidden="true"><span class="tg-divider-title"><i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-300"></i> Game</span><span class="tg-divider-line"></span></div>
             <div id="gameScope" data-game-tab="quests" class="space-y-4 sm:space-y-8">
                 <div class="relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/50 p-4 sm:p-6 shadow-xl">
                     <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl"></div>
@@ -4917,6 +4928,16 @@
         window.addEventListener('resize', () => {
             if (!window.matchMedia('(max-width: 767px)').matches) toggleMobileMenu(false);
         });
+        window.addEventListener('resize', () => {
+            var _tg = document.getElementById('section-tracker'), _gg = document.getElementById('section-game');
+            if (!_tg || !_gg) return;
+            var _onTG = _tg.classList.contains('active') || _gg.classList.contains('active');
+            if (!_onTG) return;
+            var _web = window.matchMedia('(min-width: 1024px)').matches;
+            var _combined = document.body.classList.contains('web-combined');
+            if (_web && !_combined) switchTab('tracker');
+            else if (!_web && _combined) switchTab('tracker');
+        });
 
         function setMobileTabActive(tabName) {
             ['tracker', 'todo', 'game', 'calendar', 'analytics', 'system'].forEach(t => {
@@ -4975,8 +4996,19 @@
             ['nav-tracker', 'nav-todo', 'nav-game', 'nav-calendar', 'nav-analytics', 'nav-system'].forEach(id => {
                 document.getElementById(id).className = 'flex-none md:flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 cursor-pointer';
             });
-            document.getElementById(`section-${tabName}`).classList.add('active');
-            document.getElementById(`nav-${tabName}`).className = 'flex-none md:flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-800 text-white shadow-sm cursor-pointer';
+            var _webCombined = window.matchMedia('(min-width: 1024px)').matches && (tabName === 'tracker' || tabName === 'game');
+            var _navActiveCls = 'flex-none md:flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-800 text-white shadow-sm cursor-pointer';
+            if (_webCombined) {
+                document.body.classList.add('web-combined');
+                document.getElementById('section-tracker').classList.add('active');
+                document.getElementById('section-game').classList.add('active');
+                document.getElementById('nav-tracker').className = _navActiveCls;
+                tabName = 'tracker';
+            } else {
+                document.body.classList.remove('web-combined');
+                document.getElementById(`section-${tabName}`).classList.add('active');
+                document.getElementById(`nav-${tabName}`).className = _navActiveCls;
+            }
             
             if (tabName === 'analytics' || tabName === 'tracker' || tabName === 'game') updateDashboard();
             if (tabName === 'calendar') renderFullCalendarTab();
