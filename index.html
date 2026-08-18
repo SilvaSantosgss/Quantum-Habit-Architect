@@ -2429,8 +2429,9 @@
         .hab-today-toggle{display:none}
         .hab-chevron{display:none}
         .hab-mobile-actions{display:none}
+        .hab-hd-mbtn{display:inline-flex;align-items:center;justify-content:center}
         @media (max-width: 1023px){
-            .hab-today-toggle{display:flex;align-items:center;justify-content:center;width:26px;height:26px;flex-shrink:0;border-radius:9999px;border:2px solid #334155;background:transparent;color:#fff;cursor:pointer;margin-right:8px;align-self:center;transition:all .15s}
+            .hab-today-toggle{display:flex;align-items:center;justify-content:center;width:26px!important;min-width:26px!important;max-width:26px!important;height:26px!important;min-height:26px!important;max-height:26px!important;box-sizing:border-box;flex:0 0 auto;flex-shrink:0;border-radius:9999px;border:2px solid #334155;background:transparent;color:#fff;cursor:pointer;margin-right:8px;align-self:center!important;transition:all .15s}
             .hab-today-toggle.done{background:#10b981;border-color:transparent}
             .hab-today-toggle .hab-check{opacity:0}
             .hab-today-toggle.done .hab-check{opacity:1}
@@ -2442,6 +2443,11 @@
             .hab-mobile-actions{margin-top:10px;gap:7px}
             .habit-swipe-item.mobile-open .hab-mobile-actions{display:flex}
             .hab-mobile-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:10px;background:#1e293b;border:1px solid #334155;color:#c7d2fe;font-size:11px;font-weight:700;cursor:pointer}
+            .hab-hd-mbtn{display:none!important}
+            .hab-mobile-measure{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 8px;border-radius:10px;font-size:11px;font-weight:700}
+            .hab-mm-val{display:flex;align-items:center;gap:4px;font-family:ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em}
+            .hab-mm-btn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;border-radius:9999px;background:rgba(255,255,255,.10);cursor:pointer;transition:background .15s}
+            .hab-mm-btn:hover{background:rgba(255,255,255,.20)}
         }
             /* ===== Game tab: mobile Hero Card + segmented tabs (mobile only) ===== */
             #gameTabBar{display:flex}
@@ -6175,6 +6181,7 @@
                 if(habit.specificTime) timeDisplay = habit.specificTime;
                 const timeHtml = (timeDisplay && timeDisplay !== 'Anytime') ? `<span class="text-[8px] sm:text-[9px] font-bold uppercase border border-slate-700 text-slate-400 bg-slate-900 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="clock" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${escapeHTML(timeDisplay)}</span>` : '';
                 let measureHtml = '';
+                let mobileMeasureHtml = '';
                 if (hasMeasure(habit)) {
                     const _mtoday = getISODateString(new Date());
                     const _mtot = dayProgressTotal(habit, _mtoday);
@@ -6182,7 +6189,8 @@
                     const _mstep = measureIsTime(habit) ? 5 : 1;
                     const _mdone = isAvoid ? (_mtot > _mtarget) : (_mtarget>0 ? _mtot >= _mtarget : _mtot>0);
                     const _mcls = isAvoid ? (_mtot>_mtarget ? 'border-rose-500/40 text-rose-300 bg-rose-500/10' : 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10') : (_mdone ? 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' : 'border-indigo-500/40 text-indigo-300 bg-indigo-500/10');
-                    measureHtml = `<span class="text-[8px] sm:text-[9px] font-bold uppercase border rounded-full pl-1.5 sm:pl-2 pr-0.5 py-0.5 flex items-center gap-1 ${_mcls}"><i data-lucide="ruler" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${formatMeasureVal(habit, _mtot)}/${formatMeasureVal(habit, _mtarget)}<button onclick="event.stopPropagation(); addMeasureEntry('${habit.id}', ${_mstep}, getISODateString(new Date()), '')" class="ml-0.5 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center bg-white/10 hover:bg-white/20 transition cursor-pointer" title="+${_mstep}">+</button><button onclick="event.stopPropagation(); openReportInspector('${habit.id}')" class="rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center hover:bg-white/20 transition cursor-pointer" title="Log"><i data-lucide="pencil" class="w-2 h-2"></i></button></span>`;
+                    measureHtml = `<span class="text-[8px] sm:text-[9px] font-bold uppercase border rounded-full pl-1.5 sm:pl-2 pr-2 lg:pr-0.5 py-0.5 flex items-center gap-1 ${_mcls}"><i data-lucide="ruler" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${formatMeasureVal(habit, _mtot)}/${formatMeasureVal(habit, _mtarget)}<button onclick="event.stopPropagation(); addMeasureEntry('${habit.id}', ${_mstep}, getISODateString(new Date()), '')" class="ml-0.5 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 hab-hd-mbtn bg-white/10 hover:bg-white/20 transition cursor-pointer" title="+${_mstep}">+</button><button onclick="event.stopPropagation(); openReportInspector('${habit.id}')" class="rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 hab-hd-mbtn hover:bg-white/20 transition cursor-pointer" title="Log"><i data-lucide="pencil" class="w-2 h-2"></i></button></span>`;
+                    mobileMeasureHtml = `<div class="hab-mobile-measure border ${_mcls}"><span class="hab-mm-val"><i data-lucide="ruler" class="w-3 h-3"></i>${formatMeasureVal(habit, _mtot)}/${formatMeasureVal(habit, _mtarget)}</span><button type="button" onclick="event.stopPropagation(); addMeasureEntry('${habit.id}', ${_mstep}, getISODateString(new Date()), '')" class="hab-mm-btn" title="+${_mstep}">+</button><button type="button" onclick="event.stopPropagation(); openReportInspector('${habit.id}')" class="hab-mm-btn" title="Log"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button></div>`;
                 }
 
                 return `
@@ -6226,7 +6234,7 @@
                             </div>
                             <div class="hab-grid-col sm:col-span-8 lg:col-span-7">
                                 <div class="habit-grid">${matrixHtml}</div>
-                                ${habit.trackTime !== false ? `<div class="hab-mobile-actions"><button type="button" onclick="event.stopPropagation(); openTimerModal('${habit.id}')" class="hab-mobile-act" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-4 h-4"></i><span>Cronômetro</span></button></div>` : ''}
+                                ${(habit.trackTime !== false || hasMeasure(habit)) ? `<div class="hab-mobile-actions">${habit.trackTime !== false ? `<button type="button" onclick="event.stopPropagation(); openTimerModal('${habit.id}')" class="hab-mobile-act" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-4 h-4"></i><span>Cronômetro</span></button>` : ''}${mobileMeasureHtml}</div>` : ''}
                             </div>
                         </div>
                     </div>
@@ -6237,7 +6245,7 @@
         }
 
         // --- Inline Report Inspector Modal ---
-        let heatmapMode = 'year';
+        let heatmapMode = 'month';
         let heatmapCustomStart = null;
         let heatmapCustomEnd = null;
         function _heatmapBtnClass(active){ return 'px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer ' + (active ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40' : 'text-slate-400 border border-transparent hover:text-slate-200'); }
@@ -6301,7 +6309,7 @@
             let endDate = new Date(today);
             let start = new Date(today);
             if (heatmapMode === 'month') {
-                start.setDate(start.getDate() - 34);
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
             } else if (heatmapMode === 'custom' && heatmapCustomStart) {
                 start = _hmParse(heatmapCustomStart);
                 endDate = heatmapCustomEnd ? _hmParse(heatmapCustomEnd) : new Date(today);
@@ -8705,7 +8713,7 @@
                     const btn = document.getElementById('authSubmitBtn');
                     if (btn) { btn.disabled = false; btn.textContent = authMode === 'signin' ? 'Sign In' : 'Create Account'; }
                     subscribeCloud();
-                    switchTab('tracker');
+                    switchTab('game');
                     if (window.lucide && lucide.createIcons) lucide.createIcons();
                 } else {
                     if (cloudUnsub) { cloudUnsub(); cloudUnsub = null; }
@@ -8730,7 +8738,7 @@
             renderTodos();
             renderArchived();
             switchSettingsTab('appearance');
-            setMobileTabActive('system');
+            switchTab('game');
             lucide.createIcons();
         });
     </script>
