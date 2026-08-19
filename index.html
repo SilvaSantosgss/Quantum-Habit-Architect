@@ -2454,6 +2454,9 @@
             .game-tabbar{gap:4px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:4px}
             .game-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:10px;font-size:10px;font-weight:800;color:#94a3b8;background:transparent;border:none;cursor:pointer;transition:background .15s,color .15s}
             .game-tab.gtab-active{background:#6366f1;color:#fff}
+            .hist-chip{border:1px solid #1e293b;background:rgba(15,23,42,.6);color:#94a3b8;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+            .hist-chip:hover{color:#e2e8f0}
+            .hist-chip.hist-chip-active{background:#6366f1;border-color:#6366f1;color:#fff}
             .game-hero-mobile{display:flex;position:relative;z-index:10;flex-direction:column;gap:11px;margin-top:14px}
             .ghm-top{display:flex;gap:13px;align-items:center}
             .ghm-ring{position:relative;flex-shrink:0;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(#fbbf24 0%,rgba(129,140,248,0.3) 0);box-shadow:0 0 12px rgba(251,191,36,0.25)}
@@ -3344,6 +3347,7 @@
                     <button type="button" data-gtab-btn="quests" onclick="setGameTab('quests')" class="game-tab gtab-active"><i data-lucide="swords" class="h-4 w-4"></i><span>Quests</span></button>
                     <button type="button" data-gtab-btn="recovery" onclick="setGameTab('recovery')" class="game-tab"><i data-lucide="skull" class="h-4 w-4"></i><span>Recovery</span></button>
                     <button type="button" data-gtab-btn="shop" onclick="setGameTab('shop')" class="game-tab"><i data-lucide="shopping-bag" class="h-4 w-4"></i><span>Shop</span></button>
+                    <button type="button" data-gtab-btn="history" onclick="setGameTab('history')" class="game-tab"><i data-lucide="scroll-text" class="h-4 w-4"></i><span>History</span></button>
                     <button type="button" data-gtab-btn="feats" onclick="setGameTab('feats')" class="game-tab"><i data-lucide="trophy" class="h-4 w-4"></i><span>Feats</span></button>
                 </div>
 
@@ -3406,6 +3410,25 @@
                     </div>
                 </div>
 
+                <div data-gtab="history" class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
+                    <div class="mb-4 flex items-center justify-between gap-3 flex-wrap">
+                        <div class="flex items-center gap-2">
+                            <div class="rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-2"><i data-lucide="scroll-text" class="h-4 w-4 text-indigo-300"></i></div>
+                            <div>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Activity ledger</h3>
+                                <p class="text-[10px] text-slate-500">Every XP/HP gain or loss, completion, and rank change.</p>
+                            </div>
+                        </div>
+                        <span id="gameHistoryCount" class="rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1 text-xs font-bold text-slate-300">0 events</span>
+                    </div>
+                    <div id="gameHistoryFilters" class="mb-3 flex flex-wrap gap-1.5">
+                        <button type="button" data-hist-filter="all" onclick="setGameHistoryFilter('all')" class="hist-chip hist-chip-active">All</button>
+                        <button type="button" data-hist-filter="win" onclick="setGameHistoryFilter('win')" class="hist-chip">Wins</button>
+                        <button type="button" data-hist-filter="loss" onclick="setGameHistoryFilter('loss')" class="hist-chip">Losses</button>
+                        <button type="button" data-hist-filter="rank" onclick="setGameHistoryFilter('rank')" class="hist-chip">Ranks</button>
+                    </div>
+                    <div id="gameHistoryList" class="space-y-2"></div>
+                </div>
                 <div data-gtab="feats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     <div class="rounded-2xl border border-orange-500/20 bg-orange-950/10 p-4 text-center">
                         <span class="block text-[9px] font-bold uppercase tracking-wider text-orange-300">Current Streak</span>
@@ -4529,6 +4552,13 @@
                 <div>
                     <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Icon (Lucide name)</label>
                     <input type="text" id="achIcon" placeholder="award" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500/50 transition outline-none">
+                </div>
+                <div id="achHabitWrap">
+                    <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Applies to</label>
+                    <select id="achHabit" onchange="onAchHabitChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-indigo-500/50 transition outline-none">
+                        <option value="">Overall (all activity)</option>
+                    </select>
+                    <p class="mt-1 text-[10px] text-slate-500">Pick a habit to track a goal like a 10-day streak of one habit.</p>
                 </div>
                 <div id="achMetricWrap" class="grid grid-cols-2 gap-3">
                     <div>
@@ -7569,6 +7599,45 @@
             }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-6 text-center text-xs text-slate-500">No rewards redeemed yet.</div>`;
         }
 
+        function computeHabitBestStreak(h) {
+            const days = Object.keys((h && h.history) || {}).filter(function(d){ return h.history[d] === true; }).sort();
+            if (!days.length) return 0;
+            let best = 1, cur = 1;
+            for (let i = 1; i < days.length; i++) {
+                const diff = Math.round((new Date(days[i]) - new Date(days[i - 1])) / 86400000);
+                if (diff === 1) { cur++; best = Math.max(best, cur); } else if (diff > 1) { cur = 1; }
+            }
+            return best;
+        }
+        const ACH_GLOBAL_METRICS = [['totalCompleted','Total completions'],['level','Level'],['bestStreak','Best streak (days)'],['redeemedCount','Rewards redeemed'],['totalEarnedCoins','Total coins earned'],['hp','HP']];
+        const ACH_HABIT_METRICS = [['habitStreak','Current streak (days)'],['habitBestStreak','Best streak (days)'],['habitCompletions','Total completions']];
+        function populateAchHabitOptions(selectedId) {
+            const sel = document.getElementById('achHabit');
+            if (!sel) return;
+            let html = '<option value="">Overall (all activity)</option>';
+            activeHabits().forEach(function(h){ html += '<option value="' + h.id + '">' + escapeHTML(h.name) + '</option>'; });
+            sel.innerHTML = html;
+            sel.value = selectedId || '';
+        }
+        function fillAchMetricOptions(isHabit, selected) {
+            const sel = document.getElementById('achMetric');
+            if (!sel) return;
+            const list = isHabit ? ACH_HABIT_METRICS : ACH_GLOBAL_METRICS;
+            sel.innerHTML = list.map(function(m){ return '<option value="' + m[0] + '">' + m[1] + '</option>'; }).join('');
+            if (selected) sel.value = selected;
+        }
+        function onAchHabitChange() {
+            const sel = document.getElementById('achHabit');
+            fillAchMetricOptions(!!(sel && sel.value));
+        }
+        function defaultAchievementDesc(metric, goal, habitName) {
+            if (metric === 'habitStreak') return goal + '-day streak \u00b7 ' + (habitName || 'habit');
+            if (metric === 'habitBestStreak') return goal + '-day best streak \u00b7 ' + (habitName || 'habit');
+            if (metric === 'habitCompletions') return goal + ' completions \u00b7 ' + (habitName || 'habit');
+            if (metric === 'level') return 'Reach level ' + goal;
+            const labels = { totalCompleted: 'total completions', bestStreak: 'day best streak', redeemedCount: 'rewards redeemed', totalEarnedCoins: 'coins earned', hp: 'HP' };
+            return goal + ' ' + (labels[metric] || 'points');
+        }
         let editingAchievementId = null;
         function buildAchievementList() {
             const g = ensureGameState();
@@ -7578,8 +7647,20 @@
                 return { id: b.id, name: o.name || b.name, desc: o.desc || b.desc, icon: o.icon || b.icon, check: b.check, custom: false, overridden: !!ov[b.id] };
             });
             const custom = (g.customAchievements || []).map(function(c) {
-                const metric = c.metric || 'totalCompleted';
                 const goal = Number(c.goal) || 1;
+                if (c.habitId) {
+                    const hmetric = c.metric || 'habitStreak';
+                    return { id: c.id, name: c.name, desc: c.desc || '', icon: c.icon || 'award', custom: true, overridden: false, metric: hmetric, goal: goal, habitId: c.habitId, habitName: c.habitName || '', check: function(s){
+                        const h = (state.habits || []).find(function(x){ return x.id === c.habitId && !x.archived; });
+                        if (!h) return false;
+                        let val = 0;
+                        if (hmetric === 'habitStreak') val = (typeof computeStreak === 'function') ? computeStreak(h) : 0;
+                        else if (hmetric === 'habitBestStreak') val = computeHabitBestStreak(h);
+                        else val = habitSuccessCount(h);
+                        return val >= goal;
+                    } };
+                }
+                const metric = c.metric || 'totalCompleted';
                 return { id: c.id, name: c.name, desc: c.desc || '', icon: c.icon || 'award', check: function(s){ return (Number(s[metric]) || 0) >= goal; }, custom: true, overridden: false, metric: metric, goal: goal };
             });
             return base.concat(custom);
@@ -7590,9 +7671,11 @@
             document.getElementById('achName').value = '';
             document.getElementById('achDesc').value = '';
             document.getElementById('achIcon').value = 'award';
-            document.getElementById('achMetric').value = 'totalCompleted';
+            populateAchHabitOptions('');
+            fillAchMetricOptions(false, 'totalCompleted');
             document.getElementById('achGoal').value = '';
             const mw = document.getElementById('achMetricWrap'); if (mw) mw.classList.remove('hidden');
+            const hw = document.getElementById('achHabitWrap'); if (hw) hw.classList.remove('hidden');
             const note = document.getElementById('achBuiltinNote'); if (note) note.classList.add('hidden');
             openModal('modalAchievement');
         }
@@ -7605,14 +7688,18 @@
             document.getElementById('achDesc').value = a.desc || '';
             document.getElementById('achIcon').value = a.icon || 'award';
             const mw = document.getElementById('achMetricWrap');
+            const hw = document.getElementById('achHabitWrap');
             const note = document.getElementById('achBuiltinNote');
             if (a.custom) {
-                document.getElementById('achMetric').value = a.metric || 'totalCompleted';
+                populateAchHabitOptions(a.habitId || '');
+                fillAchMetricOptions(!!a.habitId, a.metric || (a.habitId ? 'habitStreak' : 'totalCompleted'));
                 document.getElementById('achGoal').value = a.goal || '';
                 if (mw) mw.classList.remove('hidden');
+                if (hw) hw.classList.remove('hidden');
                 if (note) note.classList.add('hidden');
             } else {
                 if (mw) mw.classList.add('hidden');
+                if (hw) hw.classList.add('hidden');
                 if (note) note.classList.remove('hidden');
             }
             openModal('modalAchievement');
@@ -7620,19 +7707,23 @@
         function saveAchievement() {
             const name = (document.getElementById('achName').value || '').trim();
             if (!name) { showToast('Enter an achievement name.', 'error'); return; }
-            const desc = (document.getElementById('achDesc').value || '').trim();
+            let desc = (document.getElementById('achDesc').value || '').trim();
             const icon = (document.getElementById('achIcon').value || 'award').trim() || 'award';
             const g = ensureGameState();
             if (editingAchievementId === 'new' || String(editingAchievementId).indexOf('ach_') === 0) {
-                const metric = document.getElementById('achMetric').value || 'totalCompleted';
+                const habitSel = document.getElementById('achHabit');
+                const habitId = habitSel ? habitSel.value : '';
+                const metric = document.getElementById('achMetric').value || (habitId ? 'habitStreak' : 'totalCompleted');
                 const goal = parseInt(document.getElementById('achGoal').value, 10);
                 if (!goal || goal < 1) { showToast('Enter a valid goal value.', 'error'); return; }
+                const habitName = habitId ? (((activeHabits().find(function(x){ return x.id === habitId; })) || {}).name || '') : '';
+                if (!desc) { desc = defaultAchievementDesc(metric, goal, habitName); }
                 if (editingAchievementId === 'new') {
                     g.customAchievements = g.customAchievements || [];
-                    g.customAchievements.push({ id: 'ach_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: name, desc: desc, icon: icon, metric: metric, goal: goal });
+                    g.customAchievements.push({ id: 'ach_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: name, desc: desc, icon: icon, metric: metric, goal: goal, habitId: habitId, habitName: habitName });
                 } else {
                     const c = (g.customAchievements || []).find(function(x){ return x.id === editingAchievementId; });
-                    if (c) { c.name = name; c.desc = desc; c.icon = icon; c.metric = metric; c.goal = goal; }
+                    if (c) { c.name = name; c.desc = desc; c.icon = icon; c.metric = metric; c.goal = goal; c.habitId = habitId; c.habitName = habitName; }
                 }
             } else {
                 g.achievementOverrides = g.achievementOverrides || {};
@@ -7644,6 +7735,7 @@
             closeModals();
             showToast('Achievement saved.');
         }
+
         function deleteCustomAchievement(id) {
             const g = ensureGameState();
             g.customAchievements = (g.customAchievements || []).filter(function(x){ return x.id !== id; });
@@ -8234,6 +8326,109 @@
             const scope = document.getElementById('gameScope');
             setGameTab((scope && scope.dataset.gameTab) ? scope.dataset.gameTab : 'quests');
         }
+        let gameHistoryFilter = 'all';
+        function buildGameHistory() {
+            const events = [];
+            activeHabits().forEach(function(h){
+                const rw = rewardOf(h); const avoid = isAvoidHabit(h); const icon = h.icon || 'activity';
+                Object.keys(h.history || {}).forEach(function(ds){
+                    const v = h.history[ds];
+                    if (avoid) {
+                        if (v === true) events.push({ date: ds, cat: 'loss', icon: icon, title: h.name, detail: 'Slipped on avoid habit', xp: -rw.xpLoss, hp: -rw.hpLoss });
+                    } else {
+                        if (v === true) events.push({ date: ds, cat: 'win', icon: icon, title: h.name, detail: 'Habit completed', xp: rw.xpGain, hp: rw.hpGain });
+                        else if (v === false) events.push({ date: ds, cat: 'loss', icon: icon, title: h.name, detail: 'Habit missed', xp: -rw.xpLoss, hp: -rw.hpLoss });
+                    }
+                });
+            });
+            activeTodos().forEach(function(t){
+                const rw = rewardOf(t);
+                Object.keys(t.history || {}).forEach(function(ds){
+                    if (t.history[ds]) events.push({ date: ds, cat: 'win', icon: 'list-checks', title: t.title, detail: 'Task completed', xp: rw.xpGain, hp: rw.hpGain });
+                });
+            });
+            events.sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+            let cum = 0, lastLevel = 1, lastRankName = getRank(1).name;
+            const out = [];
+            events.forEach(function(e){
+                out.push(e);
+                cum = Math.max(0, cum + (e.xp || 0));
+                const lv = levelFromXp(cum).level;
+                if (lv !== lastLevel) {
+                    const up = lv > lastLevel;
+                    const rk = getRank(lv);
+                    out.push({ date: e.date, cat: 'level', icon: up ? 'chevrons-up' : 'chevrons-down', title: (up ? 'Level up to ' + lv : 'Dropped to level ' + lv), detail: 'Rank ' + rk.index + ' \u00b7 ' + rk.name, xp: 0, hp: 0 });
+                    if (rk.name !== lastRankName) {
+                        out.push({ date: e.date, cat: 'rank', icon: 'crown', title: (up ? 'New rank: ' + rk.name : 'Rank changed: ' + rk.name), detail: 'Rank ' + rk.index + ' of ' + GAME_RANKS.length, xp: 0, hp: 0 });
+                        lastRankName = rk.name;
+                    }
+                    lastLevel = lv;
+                }
+            });
+            out.reverse();
+            return out;
+        }
+        function fmtHistDate(ds) {
+            const today = getISODateString(new Date());
+            const yd = new Date(); yd.setDate(yd.getDate() - 1);
+            if (ds === today) return 'Today';
+            if (ds === getISODateString(yd)) return 'Yesterday';
+            const d = new Date(ds + 'T00:00:00');
+            if (isNaN(d.getTime())) return ds;
+            return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+        function renderHistRow(e) {
+            let accent, iconWrap;
+            if (e.cat === 'win') { accent = 'border-emerald-500/20 bg-emerald-500/5'; iconWrap = 'bg-emerald-500/15 text-emerald-300'; }
+            else if (e.cat === 'loss') { accent = 'border-rose-500/20 bg-rose-500/5'; iconWrap = 'bg-rose-500/15 text-rose-300'; }
+            else if (e.cat === 'rank') { accent = 'border-amber-500/30 bg-amber-500/10'; iconWrap = 'bg-amber-500/15 text-amber-300'; }
+            else { accent = 'border-indigo-500/30 bg-indigo-500/10'; iconWrap = 'bg-indigo-500/15 text-indigo-300'; }
+            let deltas = '';
+            if (e.xp) { const p = e.xp > 0; deltas += '<span class="rounded-md border px-1.5 py-0.5 text-[10px] font-bold ' + (p ? 'border-indigo-500/30 text-indigo-300' : 'border-rose-500/30 text-rose-300') + '">' + (p ? '+' : '') + e.xp + ' XP</span>'; }
+            if (e.hp) { const p = e.hp > 0; deltas += '<span class="rounded-md border px-1.5 py-0.5 text-[10px] font-bold ' + (p ? 'border-emerald-500/30 text-emerald-300' : 'border-rose-500/30 text-rose-300') + '">' + (p ? '+' : '') + e.hp + ' HP</span>'; }
+            return '<div class="flex items-center gap-3 rounded-xl border ' + accent + ' px-3 py-2.5">'
+                + '<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ' + iconWrap + '"><i data-lucide="' + escapeHTML(e.icon || 'activity') + '" class="h-4 w-4"></i></div>'
+                + '<div class="min-w-0 flex-1"><div class="truncate text-xs font-bold text-white">' + escapeHTML(e.title) + '</div><div class="truncate text-[10px] text-slate-500">' + escapeHTML(e.detail) + '</div></div>'
+                + '<div class="ml-auto flex shrink-0 items-center gap-1">' + deltas + '</div></div>';
+        }
+        function setGameHistoryFilter(f) {
+            gameHistoryFilter = f;
+            document.querySelectorAll('#gameHistoryFilters [data-hist-filter]').forEach(function(b){
+                b.classList.toggle('hist-chip-active', b.getAttribute('data-hist-filter') === f);
+            });
+            renderGameHistory();
+        }
+        function renderGameHistory() {
+            const container = document.getElementById('gameHistoryList');
+            if (!container) return;
+            const all = buildGameHistory();
+            const f = gameHistoryFilter;
+            let list = all.filter(function(e){
+                if (f === 'all') return true;
+                if (f === 'win') return e.cat === 'win';
+                if (f === 'loss') return e.cat === 'loss';
+                if (f === 'rank') return e.cat === 'rank' || e.cat === 'level';
+                return true;
+            });
+            const cnt = document.getElementById('gameHistoryCount');
+            if (cnt) cnt.textContent = all.length + (all.length === 1 ? ' event' : ' events');
+            const CAP = 250;
+            list = list.slice(0, CAP);
+            if (!list.length) {
+                container.innerHTML = '<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">No activity yet. Complete a habit or task to start your ledger.</div>';
+                return;
+            }
+            let html = ''; let curDate = null;
+            list.forEach(function(e){
+                if (e.date !== curDate) {
+                    curDate = e.date;
+                    html += '<div class="flex items-center gap-2 pt-2"><span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">' + escapeHTML(fmtHistDate(e.date)) + '</span><span class="h-px flex-1 bg-slate-800"></span></div>';
+                }
+                html += renderHistRow(e);
+            });
+            container.innerHTML = html;
+            if (window.lucide) lucide.createIcons();
+        }
         function renderGameSection() {
             const today = getISODateString(new Date());
             const habits = activeHabits();
@@ -8343,6 +8538,7 @@
             renderRewardShop(availableCoins);
             renderRedemptionHistory();
             renderAchievements({ totalCompleted, level, hp, bestStreak, redeemedCount: g.redeemed.length, totalEarnedCoins });
+            renderGameHistory();
             applyGameTab();
 
             if (window.lucide) lucide.createIcons();
