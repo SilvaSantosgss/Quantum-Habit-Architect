@@ -2429,9 +2429,8 @@
         .hab-today-toggle{display:none}
         .hab-chevron{display:none}
         .hab-mobile-actions{display:none}
-        .hab-hd-mbtn{display:inline-flex;align-items:center;justify-content:center}
         @media (max-width: 1023px){
-            .hab-today-toggle{display:flex;align-items:center;justify-content:center;width:26px!important;min-width:26px!important;max-width:26px!important;height:26px!important;min-height:26px!important;max-height:26px!important;box-sizing:border-box;flex:0 0 auto;flex-shrink:0;border-radius:9999px;border:2px solid #334155;background:transparent;color:#fff;cursor:pointer;margin-right:8px;align-self:center!important;transition:all .15s}
+            .hab-today-toggle{display:flex;align-items:center;justify-content:center;width:26px;height:26px;flex-shrink:0;border-radius:9999px;border:2px solid #334155;background:transparent;color:#fff;cursor:pointer;margin-right:8px;align-self:center;transition:all .15s}
             .hab-today-toggle.done{background:#10b981;border-color:transparent}
             .hab-today-toggle .hab-check{opacity:0}
             .hab-today-toggle.done .hab-check{opacity:1}
@@ -2443,20 +2442,12 @@
             .hab-mobile-actions{margin-top:10px;gap:7px}
             .habit-swipe-item.mobile-open .hab-mobile-actions{display:flex}
             .hab-mobile-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px;border-radius:10px;background:#1e293b;border:1px solid #334155;color:#c7d2fe;font-size:11px;font-weight:700;cursor:pointer}
-            .hab-hd-mbtn{display:none!important}
-            .hab-mobile-measure{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 8px;border-radius:10px;font-size:11px;font-weight:700}
-            .hab-mm-val{display:flex;align-items:center;gap:4px;font-family:ui-monospace,monospace;text-transform:uppercase;letter-spacing:.02em}
-            .hab-mm-btn{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;border-radius:9999px;background:rgba(255,255,255,.10);cursor:pointer;transition:background .15s}
-            .hab-mm-btn:hover{background:rgba(255,255,255,.20)}
         }
             /* ===== Game tab: mobile Hero Card + segmented tabs (mobile only) ===== */
             #gameTabBar{display:flex}
             .game-tabbar{gap:4px;background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:4px}
             .game-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0;border-radius:10px;font-size:10px;font-weight:800;color:#94a3b8;background:transparent;border:none;cursor:pointer;transition:background .15s,color .15s}
             .game-tab.gtab-active{background:#6366f1;color:#fff}
-            .hist-chip{border:1px solid #1e293b;background:rgba(15,23,42,.6);color:#94a3b8;border-radius:99px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
-            .hist-chip:hover{color:#e2e8f0}
-            .hist-chip.hist-chip-active{background:#6366f1;border-color:#6366f1;color:#fff}
             .game-hero-mobile{display:flex;position:relative;z-index:10;flex-direction:column;gap:11px;margin-top:14px}
             .ghm-top{display:flex;gap:13px;align-items:center}
             .ghm-ring{position:relative;flex-shrink:0;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:conic-gradient(#fbbf24 0%,rgba(129,140,248,0.3) 0);box-shadow:0 0 12px rgba(251,191,36,0.25)}
@@ -2492,22 +2483,6 @@
         /* Tab Transitions */
         .tab-section { display: none; }
         .tab-section.active { display: block; animation: fadeIn 0.25s ease-out; }
-        /* Web-only (>=1024px) combined Tracker + Game tab */
-        .tg-divider { display: none; }
-        @media (min-width: 1024px) {
-            #nav-game { display: none !important; }
-            body.web-combined #section-tracker.tab-section.active,
-            body.web-combined #section-game.tab-section.active { display: block; animation: none; }
-            body.web-combined #trackerLeftCol > #section-game { margin: 0; }
-            body.web-combined .tg-divider { display: flex; align-items: center; gap: 10px; margin: 2px 0 14px; padding-top: 18px; border-top: 1px solid rgba(148,163,184,0.15); }
-            body.web-combined .tg-divider .tg-divider-title { display: inline-flex; align-items: center; gap: 7px; font-size: 0.8rem; font-weight: 800; letter-spacing: .04em; color: #e2e8f0; text-transform: uppercase; }
-            body.web-combined .tg-divider .tg-divider-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(99,102,241,.45), transparent); }
-            /* Stack the game panel vertically so it fits the narrow filter-width column */
-            body.web-combined #section-game [class~="sm:flex-row"] { flex-direction: column !important; align-items: stretch !important; }
-            body.web-combined #section-game .game-hero-desktop { min-width: 0 !important; }
-            body.web-combined #section-game [class*="sm:min-w-[320px]"] { min-width: 0 !important; }
-            body.web-combined #section-game [class*="lg:grid-cols-"] { grid-template-columns: minmax(0,1fr) !important; }
-        }
         
         /* Popup & Modal Animations */
         .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -2955,7 +2930,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
                 
                 <!-- Left Column: Action Center & Filters -->
-                <div id="trackerLeftCol" class="space-y-4 sm:space-y-6">
+                <div class="space-y-4 sm:space-y-6">
                     <!-- Advanced Creation Trigger -->
                     <style>
                         @media (max-width: 767px) {
@@ -3288,9 +3263,7 @@
             </div>
         </section>
 
-        <div id="gameHome" class="hidden"></div>
         <section id="section-game" class="tab-section">
-            <div class="tg-divider" aria-hidden="true"><span class="tg-divider-title"><i data-lucide="gamepad-2" class="w-4 h-4 text-indigo-300"></i> Game</span><span class="tg-divider-line"></span></div>
             <div id="gameScope" data-game-tab="quests" class="space-y-4 sm:space-y-8">
                 <div class="relative overflow-hidden rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/50 p-4 sm:p-6 shadow-xl">
                     <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl"></div>
@@ -3347,7 +3320,6 @@
                     <button type="button" data-gtab-btn="quests" onclick="setGameTab('quests')" class="game-tab gtab-active"><i data-lucide="swords" class="h-4 w-4"></i><span>Quests</span></button>
                     <button type="button" data-gtab-btn="recovery" onclick="setGameTab('recovery')" class="game-tab"><i data-lucide="skull" class="h-4 w-4"></i><span>Recovery</span></button>
                     <button type="button" data-gtab-btn="shop" onclick="setGameTab('shop')" class="game-tab"><i data-lucide="shopping-bag" class="h-4 w-4"></i><span>Shop</span></button>
-                    <button type="button" data-gtab-btn="history" onclick="setGameTab('history')" class="game-tab"><i data-lucide="scroll-text" class="h-4 w-4"></i><span>History</span></button>
                     <button type="button" data-gtab-btn="feats" onclick="setGameTab('feats')" class="game-tab"><i data-lucide="trophy" class="h-4 w-4"></i><span>Feats</span></button>
                 </div>
 
@@ -3410,25 +3382,6 @@
                     </div>
                 </div>
 
-                <div data-gtab="history" class="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6">
-                    <div class="mb-4 flex items-center justify-between gap-3 flex-wrap">
-                        <div class="flex items-center gap-2">
-                            <div class="rounded-lg border border-indigo-500/20 bg-indigo-500/10 p-2"><i data-lucide="scroll-text" class="h-4 w-4 text-indigo-300"></i></div>
-                            <div>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300">Activity ledger</h3>
-                                <p class="text-[10px] text-slate-500">Every XP/HP gain or loss, completion, and rank change.</p>
-                            </div>
-                        </div>
-                        <span id="gameHistoryCount" class="rounded-lg border border-slate-700 bg-slate-800/60 px-2.5 py-1 text-xs font-bold text-slate-300">0 events</span>
-                    </div>
-                    <div id="gameHistoryFilters" class="mb-3 flex flex-wrap gap-1.5">
-                        <button type="button" data-hist-filter="all" onclick="setGameHistoryFilter('all')" class="hist-chip hist-chip-active">All</button>
-                        <button type="button" data-hist-filter="win" onclick="setGameHistoryFilter('win')" class="hist-chip">Wins</button>
-                        <button type="button" data-hist-filter="loss" onclick="setGameHistoryFilter('loss')" class="hist-chip">Losses</button>
-                        <button type="button" data-hist-filter="rank" onclick="setGameHistoryFilter('rank')" class="hist-chip">Ranks</button>
-                    </div>
-                    <div id="gameHistoryList" class="space-y-2"></div>
-                </div>
                 <div data-gtab="feats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     <div class="rounded-2xl border border-orange-500/20 bg-orange-950/10 p-4 text-center">
                         <span class="block text-[9px] font-bold uppercase tracking-wider text-orange-300">Current Streak</span>
@@ -3448,7 +3401,7 @@
                     </div>
                 </div>
 
-                <div data-gtab="shop feats" class="gtab-stack grid grid-cols-1 gap-4 sm:gap-6">
+                <div data-gtab="shop feats" class="gtab-stack grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <div data-gtab="shop" class="rounded-2xl border border-amber-500/20 bg-slate-900/40 p-4 sm:p-6">
                         <div class="mb-4 flex items-center justify-between gap-3">
                             <div class="flex items-center gap-2">
@@ -3483,7 +3436,7 @@
                             </div>
                             <div class="flex items-center gap-2"><button onclick="openAddAchievement()" class="inline-flex items-center gap-1 rounded-lg border border-indigo-500/40 bg-indigo-500/10 px-2.5 py-1 text-[10px] font-bold text-indigo-200 hover:bg-indigo-500/20 transition cursor-pointer"><i data-lucide="plus" class="h-3 w-3"></i>Add</button><span class="rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1 text-xs font-bold text-indigo-300"><span id="achieveCount2">0 / 0</span></span></div>
                         </div>
-                        <div id="gameAchievements" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+                        <div id="gameAchievements" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
                     </div>
                 </div>
             </div>
@@ -3873,12 +3826,12 @@
     </div>
     <div id="modalReport" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3 sm:p-4">
         <!-- Strictly clamped mobile height to ensure scrolling works and buttons aren't lost -->
-        <div class="dx-modal bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-5xl shadow-2xl relative flex flex-col max-h-[92vh] sm:max-h-[90vh]">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl shadow-2xl relative flex flex-col max-h-[85vh] sm:max-h-[90vh]">
             <div class="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center shrink-0 relative overflow-hidden rounded-t-2xl">
                 <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="relative z-10 pr-2">
-                    <span class="text-[10px] sm:text-xs font-mono text-indigo-400 uppercase tracking-widest block mb-1">Diagnostic Matrix</span>
-                    <h3 id="reportHabitName" class="text-xl sm:text-2xl font-bold text-white leading-tight truncate max-w-[220px] sm:max-w-lg">Inspect Focus</h3>
+                    <span class="text-[9px] sm:text-[10px] font-mono text-indigo-400 uppercase tracking-widest block mb-0.5">Diagnostic Matrix</span>
+                    <h3 id="reportHabitName" class="text-base sm:text-lg font-bold text-white leading-tight truncate max-w-[200px] sm:max-w-md">Inspect Focus</h3>
                 </div>
                 <div class="flex items-center gap-1 sm:gap-2 relative z-10 shrink-0">
                     <button onclick="openEditMode()" class="text-indigo-400 hover:text-indigo-300 bg-slate-950 p-2 rounded-lg border border-slate-800 hover:bg-slate-800 transition cursor-pointer" title="Edit Habit">
@@ -3890,77 +3843,60 @@
                 </div>
             </div>
             
-            <style>
-                /* Diagnostic Matrix UX redesign */
-                #modalReport .dx-kpi { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-                @media (min-width:640px){ #modalReport .dx-kpi{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } }
-                @media (min-width:1024px){ #modalReport .dx-kpi{ grid-template-columns:repeat(6,minmax(0,1fr)); } }
-                #modalReport .dx-kpi-card { position:relative; background:rgba(2,6,23,.72); border:1px solid rgba(30,41,59,.7); border-radius:16px; padding:14px 14px 14px 18px; overflow:hidden; }
-                #modalReport .dx-kpi-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--dx-accent,#6366f1); }
-                #modalReport .dx-kpi-lbl { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#94a3b8; }
-                #modalReport .dx-kpi-lbl i, #modalReport .dx-kpi-lbl svg { color:var(--dx-accent,#6366f1); }
-                #modalReport .dx-kpi-val { display:block; margin-top:10px; font-family:ui-monospace,SFMono-Regular,monospace; font-weight:800; font-size:1.6rem; line-height:1; color:#fff; }
-                @media (min-width:1024px){ #modalReport .dx-kpi-val{ font-size:1.5rem; } }
-                #modalReport .dx-actions { display:grid; grid-template-columns:1fr; gap:10px; }
-                @media (min-width:640px){ #modalReport .dx-actions{ grid-template-columns:2fr 1fr; } }
-                #modalReport #reportCompleteTodayBtn { padding:13px 16px !important; font-size:.85rem !important; border-radius:14px !important; }
-                #modalReport #reportCompleteTodayBtn i, #modalReport #reportCompleteTodayBtn svg { width:18px !important; height:18px !important; }
-                #modalReport .dx-archive { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:13px 16px; border-radius:14px; font-weight:700; font-size:.85rem; cursor:pointer; transition:all .15s; border:1px solid rgba(245,158,11,.3); background:rgba(245,158,11,.1); color:#fcd34d; }
-                #modalReport .dx-archive:hover { background:rgba(245,158,11,.2); }
-                #modalReport .dx-card { background:rgba(2,6,23,.8); border:1px solid rgba(30,41,59,.6); border-radius:16px; padding:16px; }
-                #modalReport .dx-card-title { display:flex; align-items:center; gap:6px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#94a3b8; }
-                /* Larger typography + tap targets on mobile */
-                @media (max-width:767px){
-                    #modalReport .dx-body [class*="text-[8px]"]{ font-size:10px !important; }
-                    #modalReport .dx-body [class*="text-[9px]"]{ font-size:11px !important; }
-                    #modalReport .dx-body [class*="text-[10px]"]{ font-size:12px !important; }
-                    #modalReport .dx-kpi-val{ font-size:1.7rem; }
-                    #modalReport #reportCompleteTodayBtn{ padding:16px !important; font-size:.95rem !important; }
-                    #modalReport .dx-archive{ padding:16px; font-size:.9rem; }
-                    #modalReport .dx-body #habitJournalInput{ min-height:104px !important; }
-                    #modalReport .dx-body #heatmapBtn-month, #modalReport .dx-body #heatmapBtn-year, #modalReport .dx-body #heatmapBtn-custom{ padding:7px 14px !important; }
-                }
-            </style>
-            <div class="dx-body p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6">
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-4 sm:space-y-6">
                 <div id="reportMetaChips" class="flex flex-wrap items-center gap-1.5 sm:gap-2"></div>
-                <!-- KPI band -->
-                <div class="dx-kpi">
-                    <div class="dx-kpi-card" style="--dx-accent:#6366f1"><span class="dx-kpi-lbl"><i data-lucide="activity" class="w-3.5 h-3.5"></i>All-Time</span><span id="reportTotalDone" class="dx-kpi-val">0</span></div>
-                    <div class="dx-kpi-card" style="--dx-accent:#10b981"><span class="dx-kpi-lbl"><i data-lucide="target" class="w-3.5 h-3.5"></i>Adherence</span><span id="reportConsistencyRate" class="dx-kpi-val" style="color:#34d399">0%</span></div>
-                    <div class="dx-kpi-card" style="--dx-accent:#f97316"><span class="dx-kpi-lbl"><i data-lucide="flame" class="w-3.5 h-3.5"></i>Streak</span><span id="reportCurrentStreak" class="dx-kpi-val" style="color:#fb923c">0d</span></div>
-                    <div class="dx-kpi-card" style="--dx-accent:#f59e0b"><span class="dx-kpi-lbl"><i data-lucide="trophy" class="w-3.5 h-3.5"></i>Best</span><span id="reportBestStreak" class="dx-kpi-val" style="color:#fbbf24">0d</span></div>
-                    <div class="dx-kpi-card" style="--dx-accent:#38bdf8"><span class="dx-kpi-lbl"><i data-lucide="calendar-check" class="w-3.5 h-3.5"></i>This Week</span><span id="reportWeekProgress" class="dx-kpi-val">0/0</span></div>
-                    <div class="dx-kpi-card" style="--dx-accent:#a78bfa"><span class="dx-kpi-lbl"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>This Month</span><span id="reportMonthCount" class="dx-kpi-val">0</span></div>
-                </div>
-
-                <!-- Action bar -->
-                <div class="dx-actions">
-                    <button id="reportCompleteTodayBtn" onclick="toggleTodayFromReport()" class="w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white">
-                        <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span id="reportCompleteTodayLabel">Mark Today Complete</span>
-                    </button>
-                    <button onclick="archiveHabit(state.selectedReportHabitId)" class="dx-archive"><i data-lucide="archive" class="w-4 h-4"></i>Archive Habit</button>
-                </div>
-
-                <!-- Main grid: trend + logs (left) / tools (right) -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                    <div class="lg:col-span-2 flex flex-col gap-4">
-                        <div class="dx-card" style="padding:12px 14px">
-                            <div class="dx-card-title" style="margin-bottom:10px"><i data-lucide="line-chart" class="w-3.5 h-3.5" style="color:#818cf8"></i>Performance Trend</div>
-                            <div class="w-full h-56 sm:h-72"><canvas id="detailedReportChart"></canvas></div>
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">All-Time Cycles</span>
+                                <span id="reportTotalDone" class="text-lg sm:text-2xl font-bold font-mono text-white mt-1 block">0</span>
+                            </div>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Adherence</span>
+                                <span id="reportConsistencyRate" class="text-lg sm:text-2xl font-bold font-mono text-emerald-400 mt-1 block">0%</span>
+                            </div>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3 text-orange-400"></i>Current Streak</span>
+                                <span id="reportCurrentStreak" class="text-lg sm:text-2xl font-bold font-mono text-orange-400 mt-1 block">0d</span>
+                            </div>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="trophy" class="w-3 h-3 text-amber-400"></i>Best Streak</span>
+                                <span id="reportBestStreak" class="text-lg sm:text-2xl font-bold font-mono text-amber-400 mt-1 block">0d</span>
+                            </div>
                         </div>
-                        <div class="dx-card" style="padding:12px 14px">
-                            <div class="dx-card-title" style="margin-bottom:10px"><i data-lucide="history" class="w-3.5 h-3.5" style="color:#818cf8"></i>Log History</div>
-                            <div id="journalLogsHistory" class="max-h-40 sm:max-h-56 overflow-y-auto text-[10px] sm:text-xs space-y-2"></div>
+
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">This Week</span>
+                                <span id="reportWeekProgress" class="text-sm sm:text-lg font-bold font-mono text-white mt-1 block">0/0</span>
+                            </div>
+                            <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800/60 shadow-inner">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">This Month</span>
+                                <span id="reportMonthCount" class="text-sm sm:text-lg font-bold font-mono text-white mt-1 block">0</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex flex-col gap-4">
-                        <div id="reportMeasureCard" class="hidden dx-card space-y-2">
-                            <span class="dx-card-title"><i data-lucide="ruler" class="w-3.5 h-3.5" style="color:#818cf8"></i>Contador de meta</span>
+
+                        <button id="reportCompleteTodayBtn" onclick="toggleTodayFromReport()" class="w-full flex items-center justify-center gap-2 border py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-800 border-slate-700 text-slate-200 hover:bg-indigo-600 hover:border-indigo-500 hover:text-white">
+                            <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i><span id="reportCompleteTodayLabel">Mark Today Complete</span>
+                        </button>
+                        <button onclick="archiveHabit(state.selectedReportHabitId)" class="w-full flex items-center justify-center gap-2 border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 py-2 sm:py-2.5 rounded-xl font-bold text-[10px] sm:text-xs transition cursor-pointer mt-2">
+                            <i data-lucide="archive" class="w-3.5 h-3.5"></i>Archive Habit
+                        </button>
+                        
+                        <div id="reportMeasureCard" class="hidden bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner">
+                            <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="ruler" class="w-3 h-3 text-indigo-400"></i>Contador de meta</span>
                             <div id="reportMeasureContent"></div>
                         </div>
-                        <div class="dx-card js-time-card space-y-2">
+                        <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 sm:space-y-3 shadow-inner">
+                            <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium block">Daily Node Log</span>
+                            <textarea id="habitJournalInput" placeholder="Add metrics, logs or notes for today..." class="w-full h-16 sm:h-24 bg-slate-900/50 border border-slate-800 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
+                            <button onclick="saveJournalEntry()" class="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-[10px] sm:text-[11px] font-bold text-slate-200 hover:text-white py-1.5 sm:py-2 rounded-lg transition cursor-pointer">Commit Log</button>
+                        </div>
+
+                        <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner js-time-card lg:hidden">
                             <div class="flex items-center justify-between gap-2">
-                                <span class="dx-card-title"><i data-lucide="timer" class="w-3.5 h-3.5" style="color:#818cf8"></i>Tempo</span>
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="timer" class="w-3 h-3 text-indigo-400"></i>Tempo</span>
                                 <button onclick="openTimerModal(state.selectedReportHabitId)" class="text-[9px] sm:text-[10px] font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1 cursor-pointer"><i data-lucide="play" class="w-3 h-3"></i>Cronômetro</button>
                             </div>
                             <div class="grid grid-cols-2 gap-2">
@@ -3971,25 +3907,39 @@
                             <div class="js-time-stats grid grid-cols-3 gap-1.5 mt-2 mb-1"></div>
                             <div class="js-time-log max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
                         </div>
-                        <div class="dx-card space-y-2">
-                            <span class="dx-card-title"><i data-lucide="pen-line" class="w-3.5 h-3.5" style="color:#818cf8"></i>Daily Node Log</span>
-                            <textarea id="habitJournalInput" placeholder="Add metrics, logs or notes for today..." class="w-full h-16 sm:h-24 bg-slate-900/50 border border-slate-800 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs text-white focus:outline-none focus:border-indigo-500 transition resize-none"></textarea>
-                            <button onclick="saveJournalEntry()" class="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-[10px] sm:text-[11px] font-bold text-slate-200 hover:text-white py-2 rounded-lg transition cursor-pointer">Commit Log</button>
+                    </div>
+                    
+                    <div class="lg:col-span-2 flex flex-col h-full space-y-3 sm:space-y-4">
+                        <div class="w-full bg-slate-950/60 border border-slate-900 p-2 sm:p-3 rounded-xl shadow-inner h-36 sm:min-h-[220px]">
+                            <canvas id="detailedReportChart"></canvas>
+                        </div>
+                        <div id="journalLogsHistory" class="bg-slate-950/60 shadow-inner rounded-xl p-3 sm:p-4 border border-slate-900 max-h-32 sm:max-h-40 overflow-y-auto text-[10px] sm:text-xs space-y-2 flex-grow"></div>
+                        <div class="bg-slate-950/80 p-3 sm:p-4 rounded-xl border border-slate-800/60 space-y-2 shadow-inner js-time-card hidden lg:block">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="timer" class="w-3 h-3 text-indigo-400"></i>Tempo</span>
+                                <button onclick="openTimerModal(state.selectedReportHabitId)" class="text-[9px] sm:text-[10px] font-bold text-indigo-300 hover:text-indigo-200 flex items-center gap-1 cursor-pointer"><i data-lucide="play" class="w-3 h-3"></i>Cronômetro</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Hoje</span><span class="js-time-today text-sm font-bold font-mono text-indigo-300">0s</span></div>
+                                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/60"><span class="text-[8px] text-slate-500 uppercase block">Total</span><span class="js-time-total text-sm font-bold font-mono text-white">0s</span></div>
+                            </div>
+                            <div class="js-time-spark flex items-end justify-between gap-1 h-10 mt-2"></div>
+                            <div class="js-time-stats grid grid-cols-3 gap-1.5 mt-2 mb-1"></div>
+                            <div class="js-time-log max-h-32 overflow-y-auto text-[10px] sm:text-xs space-y-1 mt-1"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Activity Matrix -->
-                <div class="dx-card" style="padding:14px 16px">
-                    <div class="flex items-center justify-between mb-3 gap-2 flex-wrap">
-                        <span class="dx-card-title"><i data-lucide="grid-3x3" class="w-3.5 h-3.5" style="color:#818cf8"></i>Activity Matrix</span>
+                <div class="bg-slate-950/60 border border-slate-900 rounded-xl p-3 sm:p-4 shadow-inner">
+                    <div class="flex items-center justify-between mb-2 sm:mb-3 gap-2 flex-wrap">
+                        <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase font-medium flex items-center gap-1"><i data-lucide="grid-3x3" class="w-3 h-3 text-indigo-400"></i>Activity Matrix</span>
                         <div class="flex items-center gap-0.5 bg-slate-900/70 rounded-lg p-0.5 border border-slate-800">
-                            <button id="heatmapBtn-month" type="button" onclick="setHeatmapMode('month')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Month</button>
-                            <button id="heatmapBtn-year" type="button" onclick="setHeatmapMode('year')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Year</button>
+                            <button id="heatmapBtn-month" type="button" onclick="setHeatmapMode('month')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Month</button>
+                            <button id="heatmapBtn-year" type="button" onclick="setHeatmapMode('year')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Year</button>
                             <button id="heatmapBtn-custom" type="button" onclick="setHeatmapMode('custom')" class="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer text-slate-400 border border-transparent hover:text-slate-200">Custom</button>
                         </div>
                     </div>
-                    <div id="heatmapCustomWrap" style="display:none" class="flex items-center gap-2 mb-3 flex-wrap">
+                    <div id="heatmapCustomWrap" style="display:none" class="flex items-center gap-2 mb-2 sm:mb-3 flex-wrap">
                         <input id="heatmapCustomStartInput" type="date" onchange="applyHeatmapCustom()" class="bg-slate-900 border border-slate-800 rounded-md px-2 py-1 text-[10px] text-slate-300 outline-none focus:border-indigo-500/50">
                         <span class="text-slate-500 text-[10px]">to</span>
                         <input id="heatmapCustomEndInput" type="date" onchange="applyHeatmapCustom()" class="bg-slate-900 border border-slate-800 rounded-md px-2 py-1 text-[10px] text-slate-300 outline-none focus:border-indigo-500/50">
@@ -4553,13 +4503,6 @@
                     <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Icon (Lucide name)</label>
                     <input type="text" id="achIcon" placeholder="award" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-600 focus:border-indigo-500/50 transition outline-none">
                 </div>
-                <div id="achHabitWrap">
-                    <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Applies to</label>
-                    <select id="achHabit" onchange="onAchHabitChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs sm:text-sm text-white focus:border-indigo-500/50 transition outline-none">
-                        <option value="">Overall (all activity)</option>
-                    </select>
-                    <p class="mt-1 text-[10px] text-slate-500">Pick a habit to track a goal like a 10-day streak of one habit.</p>
-                </div>
                 <div id="achMetricWrap" class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Metric</label>
@@ -4983,14 +4926,6 @@
         window.addEventListener('resize', () => {
             if (!window.matchMedia('(max-width: 767px)').matches) toggleMobileMenu(false);
         });
-        window.addEventListener('resize', () => {
-            var _tg = document.getElementById('section-tracker'), _gg = document.getElementById('section-game');
-            if (!_tg || !_gg) return;
-            if (!(_tg.classList.contains('active') || _gg.classList.contains('active'))) return;
-            var _web = window.matchMedia('(min-width: 1024px)').matches;
-            var _combined = document.body.classList.contains('web-combined');
-            if ((_web && !_combined) || (!_web && _combined)) switchTab('tracker');
-        });
 
         function setMobileTabActive(tabName) {
             ['tracker', 'todo', 'game', 'calendar', 'analytics', 'system'].forEach(t => {
@@ -5049,24 +4984,8 @@
             ['nav-tracker', 'nav-todo', 'nav-game', 'nav-calendar', 'nav-analytics', 'nav-system'].forEach(id => {
                 document.getElementById(id).className = 'flex-none md:flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 cursor-pointer';
             });
-            var _webCombined = window.matchMedia('(min-width: 1024px)').matches && (tabName === 'tracker' || tabName === 'game');
-            var _navActiveCls = 'flex-none md:flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-800 text-white shadow-sm cursor-pointer';
-            var _game = document.getElementById('section-game');
-            if (_webCombined) {
-                document.body.classList.add('web-combined');
-                var _left = document.getElementById('trackerLeftCol');
-                if (_game && _left && _game.parentElement !== _left) _left.appendChild(_game);
-                document.getElementById('section-tracker').classList.add('active');
-                if (_game) _game.classList.add('active');
-                document.getElementById('nav-tracker').className = _navActiveCls;
-                tabName = 'tracker';
-            } else {
-                document.body.classList.remove('web-combined');
-                var _home = document.getElementById('gameHome');
-                if (_game && _home && _game.previousElementSibling !== _home) _home.parentNode.insertBefore(_game, _home.nextSibling);
-                document.getElementById(`section-${tabName}`).classList.add('active');
-                document.getElementById(`nav-${tabName}`).className = _navActiveCls;
-            }
+            document.getElementById(`section-${tabName}`).classList.add('active');
+            document.getElementById(`nav-${tabName}`).className = 'flex-none md:flex-1 flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-800 text-white shadow-sm cursor-pointer';
             
             if (tabName === 'analytics' || tabName === 'tracker' || tabName === 'game') updateDashboard();
             if (tabName === 'calendar') renderFullCalendarTab();
@@ -6271,7 +6190,6 @@
                 if(habit.specificTime) timeDisplay = habit.specificTime;
                 const timeHtml = (timeDisplay && timeDisplay !== 'Anytime') ? `<span class="text-[8px] sm:text-[9px] font-bold uppercase border border-slate-700 text-slate-400 bg-slate-900 rounded-full px-1.5 sm:px-2 py-0.5 flex items-center gap-1"><i data-lucide="clock" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${escapeHTML(timeDisplay)}</span>` : '';
                 let measureHtml = '';
-                let mobileMeasureHtml = '';
                 if (hasMeasure(habit)) {
                     const _mtoday = getISODateString(new Date());
                     const _mtot = dayProgressTotal(habit, _mtoday);
@@ -6279,8 +6197,7 @@
                     const _mstep = measureIsTime(habit) ? 5 : 1;
                     const _mdone = isAvoid ? (_mtot > _mtarget) : (_mtarget>0 ? _mtot >= _mtarget : _mtot>0);
                     const _mcls = isAvoid ? (_mtot>_mtarget ? 'border-rose-500/40 text-rose-300 bg-rose-500/10' : 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10') : (_mdone ? 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' : 'border-indigo-500/40 text-indigo-300 bg-indigo-500/10');
-                    measureHtml = `<span class="text-[8px] sm:text-[9px] font-bold uppercase border rounded-full pl-1.5 sm:pl-2 pr-2 lg:pr-0.5 py-0.5 flex items-center gap-1 ${_mcls}"><i data-lucide="ruler" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${formatMeasureVal(habit, _mtot)}/${formatMeasureVal(habit, _mtarget)}<button onclick="event.stopPropagation(); addMeasureEntry('${habit.id}', ${_mstep}, getISODateString(new Date()), '')" class="ml-0.5 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 hab-hd-mbtn bg-white/10 hover:bg-white/20 transition cursor-pointer" title="+${_mstep}">+</button><button onclick="event.stopPropagation(); openReportInspector('${habit.id}')" class="rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 hab-hd-mbtn hover:bg-white/20 transition cursor-pointer" title="Log"><i data-lucide="pencil" class="w-2 h-2"></i></button></span>`;
-                    mobileMeasureHtml = `<div class="hab-mobile-measure border ${_mcls}"><span class="hab-mm-val"><i data-lucide="ruler" class="w-3 h-3"></i>${formatMeasureVal(habit, _mtot)}/${formatMeasureVal(habit, _mtarget)}</span><button type="button" onclick="event.stopPropagation(); addMeasureEntry('${habit.id}', ${_mstep}, getISODateString(new Date()), '')" class="hab-mm-btn" title="+${_mstep}">+</button><button type="button" onclick="event.stopPropagation(); openReportInspector('${habit.id}')" class="hab-mm-btn" title="Log"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button></div>`;
+                    measureHtml = `<span class="text-[8px] sm:text-[9px] font-bold uppercase border rounded-full pl-1.5 sm:pl-2 pr-0.5 py-0.5 flex items-center gap-1 ${_mcls}"><i data-lucide="ruler" class="w-2 h-2 sm:w-2.5 sm:h-2.5"></i>${formatMeasureVal(habit, _mtot)}/${formatMeasureVal(habit, _mtarget)}<button onclick="event.stopPropagation(); addMeasureEntry('${habit.id}', ${_mstep}, getISODateString(new Date()), '')" class="ml-0.5 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center bg-white/10 hover:bg-white/20 transition cursor-pointer" title="+${_mstep}">+</button><button onclick="event.stopPropagation(); openReportInspector('${habit.id}')" class="rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center hover:bg-white/20 transition cursor-pointer" title="Log"><i data-lucide="pencil" class="w-2 h-2"></i></button></span>`;
                 }
 
                 return `
@@ -6324,7 +6241,7 @@
                             </div>
                             <div class="hab-grid-col sm:col-span-8 lg:col-span-7">
                                 <div class="habit-grid">${matrixHtml}</div>
-                                ${(habit.trackTime !== false || hasMeasure(habit)) ? `<div class="hab-mobile-actions">${habit.trackTime !== false ? `<button type="button" onclick="event.stopPropagation(); openTimerModal('${habit.id}')" class="hab-mobile-act" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-4 h-4"></i><span>Cronômetro</span></button>` : ''}${mobileMeasureHtml}</div>` : ''}
+                                ${habit.trackTime !== false ? `<div class="hab-mobile-actions"><button type="button" onclick="event.stopPropagation(); openTimerModal('${habit.id}')" class="hab-mobile-act" title="Cronômetro" aria-label="Cronômetro"><i data-lucide="timer" class="w-4 h-4"></i><span>Cronômetro</span></button></div>` : ''}
                             </div>
                         </div>
                     </div>
@@ -6335,7 +6252,7 @@
         }
 
         // --- Inline Report Inspector Modal ---
-        let heatmapMode = 'month';
+        let heatmapMode = 'year';
         let heatmapCustomStart = null;
         let heatmapCustomEnd = null;
         function _heatmapBtnClass(active){ return 'px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-semibold transition cursor-pointer ' + (active ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40' : 'text-slate-400 border border-transparent hover:text-slate-200'); }
@@ -6399,7 +6316,7 @@
             let endDate = new Date(today);
             let start = new Date(today);
             if (heatmapMode === 'month') {
-                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                start.setDate(start.getDate() - 34);
             } else if (heatmapMode === 'custom' && heatmapCustomStart) {
                 start = _hmParse(heatmapCustomStart);
                 endDate = heatmapCustomEnd ? _hmParse(heatmapCustomEnd) : new Date(today);
@@ -6796,8 +6713,11 @@
         }
         window.addEventListener('resize', function(){ try { _timerUpdateFloating(); } catch (e) {} });
         function _applyTimeCardVisibility(track) {
+            var isDesktop = window.innerWidth >= 1024;
             document.querySelectorAll('.js-time-card').forEach(function(cardEl){
-                cardEl.style.display = (track !== false) ? 'block' : 'none';
+                var desktopCard = cardEl.classList.contains('lg:block');
+                var show = track !== false && (desktopCard ? isDesktop : !isDesktop);
+                cardEl.style.display = show ? 'block' : 'none';
             });
         }
         window.addEventListener('resize', function(){ if (typeof state !== 'undefined' && state && state.selectedReportHabitId) { var _h = (state.habits || []).find(function(x){ return x.id === state.selectedReportHabitId; }); if (_h) _applyTimeCardVisibility(_h.trackTime); } });
@@ -7599,45 +7519,6 @@
             }).join('') : `<div class="rounded-xl border border-dashed border-slate-800 py-6 text-center text-xs text-slate-500">No rewards redeemed yet.</div>`;
         }
 
-        function computeHabitBestStreak(h) {
-            const days = Object.keys((h && h.history) || {}).filter(function(d){ return h.history[d] === true; }).sort();
-            if (!days.length) return 0;
-            let best = 1, cur = 1;
-            for (let i = 1; i < days.length; i++) {
-                const diff = Math.round((new Date(days[i]) - new Date(days[i - 1])) / 86400000);
-                if (diff === 1) { cur++; best = Math.max(best, cur); } else if (diff > 1) { cur = 1; }
-            }
-            return best;
-        }
-        const ACH_GLOBAL_METRICS = [['totalCompleted','Total completions'],['level','Level'],['bestStreak','Best streak (days)'],['redeemedCount','Rewards redeemed'],['totalEarnedCoins','Total coins earned'],['hp','HP']];
-        const ACH_HABIT_METRICS = [['habitStreak','Current streak (days)'],['habitBestStreak','Best streak (days)'],['habitCompletions','Total completions']];
-        function populateAchHabitOptions(selectedId) {
-            const sel = document.getElementById('achHabit');
-            if (!sel) return;
-            let html = '<option value="">Overall (all activity)</option>';
-            activeHabits().forEach(function(h){ html += '<option value="' + h.id + '">' + escapeHTML(h.name) + '</option>'; });
-            sel.innerHTML = html;
-            sel.value = selectedId || '';
-        }
-        function fillAchMetricOptions(isHabit, selected) {
-            const sel = document.getElementById('achMetric');
-            if (!sel) return;
-            const list = isHabit ? ACH_HABIT_METRICS : ACH_GLOBAL_METRICS;
-            sel.innerHTML = list.map(function(m){ return '<option value="' + m[0] + '">' + m[1] + '</option>'; }).join('');
-            if (selected) sel.value = selected;
-        }
-        function onAchHabitChange() {
-            const sel = document.getElementById('achHabit');
-            fillAchMetricOptions(!!(sel && sel.value));
-        }
-        function defaultAchievementDesc(metric, goal, habitName) {
-            if (metric === 'habitStreak') return goal + '-day streak \u00b7 ' + (habitName || 'habit');
-            if (metric === 'habitBestStreak') return goal + '-day best streak \u00b7 ' + (habitName || 'habit');
-            if (metric === 'habitCompletions') return goal + ' completions \u00b7 ' + (habitName || 'habit');
-            if (metric === 'level') return 'Reach level ' + goal;
-            const labels = { totalCompleted: 'total completions', bestStreak: 'day best streak', redeemedCount: 'rewards redeemed', totalEarnedCoins: 'coins earned', hp: 'HP' };
-            return goal + ' ' + (labels[metric] || 'points');
-        }
         let editingAchievementId = null;
         function buildAchievementList() {
             const g = ensureGameState();
@@ -7647,20 +7528,8 @@
                 return { id: b.id, name: o.name || b.name, desc: o.desc || b.desc, icon: o.icon || b.icon, check: b.check, custom: false, overridden: !!ov[b.id] };
             });
             const custom = (g.customAchievements || []).map(function(c) {
-                const goal = Number(c.goal) || 1;
-                if (c.habitId) {
-                    const hmetric = c.metric || 'habitStreak';
-                    return { id: c.id, name: c.name, desc: c.desc || '', icon: c.icon || 'award', custom: true, overridden: false, metric: hmetric, goal: goal, habitId: c.habitId, habitName: c.habitName || '', check: function(s){
-                        const h = (state.habits || []).find(function(x){ return x.id === c.habitId && !x.archived; });
-                        if (!h) return false;
-                        let val = 0;
-                        if (hmetric === 'habitStreak') val = (typeof computeStreak === 'function') ? computeStreak(h) : 0;
-                        else if (hmetric === 'habitBestStreak') val = computeHabitBestStreak(h);
-                        else val = habitSuccessCount(h);
-                        return val >= goal;
-                    } };
-                }
                 const metric = c.metric || 'totalCompleted';
+                const goal = Number(c.goal) || 1;
                 return { id: c.id, name: c.name, desc: c.desc || '', icon: c.icon || 'award', check: function(s){ return (Number(s[metric]) || 0) >= goal; }, custom: true, overridden: false, metric: metric, goal: goal };
             });
             return base.concat(custom);
@@ -7671,11 +7540,9 @@
             document.getElementById('achName').value = '';
             document.getElementById('achDesc').value = '';
             document.getElementById('achIcon').value = 'award';
-            populateAchHabitOptions('');
-            fillAchMetricOptions(false, 'totalCompleted');
+            document.getElementById('achMetric').value = 'totalCompleted';
             document.getElementById('achGoal').value = '';
             const mw = document.getElementById('achMetricWrap'); if (mw) mw.classList.remove('hidden');
-            const hw = document.getElementById('achHabitWrap'); if (hw) hw.classList.remove('hidden');
             const note = document.getElementById('achBuiltinNote'); if (note) note.classList.add('hidden');
             openModal('modalAchievement');
         }
@@ -7688,18 +7555,14 @@
             document.getElementById('achDesc').value = a.desc || '';
             document.getElementById('achIcon').value = a.icon || 'award';
             const mw = document.getElementById('achMetricWrap');
-            const hw = document.getElementById('achHabitWrap');
             const note = document.getElementById('achBuiltinNote');
             if (a.custom) {
-                populateAchHabitOptions(a.habitId || '');
-                fillAchMetricOptions(!!a.habitId, a.metric || (a.habitId ? 'habitStreak' : 'totalCompleted'));
+                document.getElementById('achMetric').value = a.metric || 'totalCompleted';
                 document.getElementById('achGoal').value = a.goal || '';
                 if (mw) mw.classList.remove('hidden');
-                if (hw) hw.classList.remove('hidden');
                 if (note) note.classList.add('hidden');
             } else {
                 if (mw) mw.classList.add('hidden');
-                if (hw) hw.classList.add('hidden');
                 if (note) note.classList.remove('hidden');
             }
             openModal('modalAchievement');
@@ -7707,23 +7570,19 @@
         function saveAchievement() {
             const name = (document.getElementById('achName').value || '').trim();
             if (!name) { showToast('Enter an achievement name.', 'error'); return; }
-            let desc = (document.getElementById('achDesc').value || '').trim();
+            const desc = (document.getElementById('achDesc').value || '').trim();
             const icon = (document.getElementById('achIcon').value || 'award').trim() || 'award';
             const g = ensureGameState();
             if (editingAchievementId === 'new' || String(editingAchievementId).indexOf('ach_') === 0) {
-                const habitSel = document.getElementById('achHabit');
-                const habitId = habitSel ? habitSel.value : '';
-                const metric = document.getElementById('achMetric').value || (habitId ? 'habitStreak' : 'totalCompleted');
+                const metric = document.getElementById('achMetric').value || 'totalCompleted';
                 const goal = parseInt(document.getElementById('achGoal').value, 10);
                 if (!goal || goal < 1) { showToast('Enter a valid goal value.', 'error'); return; }
-                const habitName = habitId ? (((activeHabits().find(function(x){ return x.id === habitId; })) || {}).name || '') : '';
-                if (!desc) { desc = defaultAchievementDesc(metric, goal, habitName); }
                 if (editingAchievementId === 'new') {
                     g.customAchievements = g.customAchievements || [];
-                    g.customAchievements.push({ id: 'ach_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: name, desc: desc, icon: icon, metric: metric, goal: goal, habitId: habitId, habitName: habitName });
+                    g.customAchievements.push({ id: 'ach_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), name: name, desc: desc, icon: icon, metric: metric, goal: goal });
                 } else {
                     const c = (g.customAchievements || []).find(function(x){ return x.id === editingAchievementId; });
-                    if (c) { c.name = name; c.desc = desc; c.icon = icon; c.metric = metric; c.goal = goal; c.habitId = habitId; c.habitName = habitName; }
+                    if (c) { c.name = name; c.desc = desc; c.icon = icon; c.metric = metric; c.goal = goal; }
                 }
             } else {
                 g.achievementOverrides = g.achievementOverrides || {};
@@ -7735,7 +7594,6 @@
             closeModals();
             showToast('Achievement saved.');
         }
-
         function deleteCustomAchievement(id) {
             const g = ensureGameState();
             g.customAchievements = (g.customAchievements || []).filter(function(x){ return x.id !== id; });
@@ -7763,7 +7621,7 @@
                 const isUnlocked = unlocked || g.unlockedBadges.includes(b.id);
                 return `<div class="flex items-center gap-3 rounded-xl border ${isUnlocked ? 'border-amber-500/30 bg-amber-500/5' : 'border-slate-800 bg-slate-950/40 opacity-60'} px-3 py-2.5">
                     <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${isUnlocked ? 'bg-amber-500/15 text-amber-300' : 'bg-slate-800 text-slate-600'}"><i data-lucide="${isUnlocked ? b.icon : 'lock'}" class="h-4 w-4"></i></div>
-                    <div class="min-w-0 flex-1"><div class="text-xs font-bold leading-tight break-words ${isUnlocked ? 'text-white' : 'text-slate-500'}">${escapeHTML(b.name)}${b.custom ? ' <span class="text-[8px] text-indigo-300">CUSTOM</span>' : ''}</div><div class="text-[10px] leading-tight text-slate-500 break-words mt-0.5">${escapeHTML(b.desc)}</div></div>
+                    <div class="min-w-0 flex-1"><div class="truncate text-xs font-bold ${isUnlocked ? 'text-white' : 'text-slate-500'}">${escapeHTML(b.name)}${b.custom ? ' <span class="text-[8px] text-indigo-300">CUSTOM</span>' : ''}</div><div class="truncate text-[10px] text-slate-500">${escapeHTML(b.desc)}</div></div>
                     <div class="ml-auto flex shrink-0 items-center gap-1">${isUnlocked ? '<i data-lucide="check-circle-2" class="h-4 w-4 text-emerald-400"></i>' : ''}<button onclick="openEditAchievement('${b.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-sky-300 cursor-pointer" title="Edit"><i data-lucide="pencil" class="h-3 w-3"></i></button>${b.custom ? `<button onclick="deleteCustomAchievement('${b.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-rose-300 cursor-pointer" title="Remove"><i data-lucide="trash-2" class="h-3 w-3"></i></button>` : (b.overridden ? `<button onclick="resetAchievement('${b.id}')" class="rounded-md border border-slate-800 px-1.5 py-1 text-slate-500 hover:text-amber-300 cursor-pointer" title="Reset to default"><i data-lucide="rotate-ccw" class="h-3 w-3"></i></button>` : '')}</div>
                 </div>`;
             }).join('');
@@ -8326,109 +8184,6 @@
             const scope = document.getElementById('gameScope');
             setGameTab((scope && scope.dataset.gameTab) ? scope.dataset.gameTab : 'quests');
         }
-        let gameHistoryFilter = 'all';
-        function buildGameHistory() {
-            const events = [];
-            activeHabits().forEach(function(h){
-                const rw = rewardOf(h); const avoid = isAvoidHabit(h); const icon = h.icon || 'activity';
-                Object.keys(h.history || {}).forEach(function(ds){
-                    const v = h.history[ds];
-                    if (avoid) {
-                        if (v === true) events.push({ date: ds, cat: 'loss', icon: icon, title: h.name, detail: 'Slipped on avoid habit', xp: -rw.xpLoss, hp: -rw.hpLoss });
-                    } else {
-                        if (v === true) events.push({ date: ds, cat: 'win', icon: icon, title: h.name, detail: 'Habit completed', xp: rw.xpGain, hp: rw.hpGain });
-                        else if (v === false) events.push({ date: ds, cat: 'loss', icon: icon, title: h.name, detail: 'Habit missed', xp: -rw.xpLoss, hp: -rw.hpLoss });
-                    }
-                });
-            });
-            activeTodos().forEach(function(t){
-                const rw = rewardOf(t);
-                Object.keys(t.history || {}).forEach(function(ds){
-                    if (t.history[ds]) events.push({ date: ds, cat: 'win', icon: 'list-checks', title: t.title, detail: 'Task completed', xp: rw.xpGain, hp: rw.hpGain });
-                });
-            });
-            events.sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
-            let cum = 0, lastLevel = 1, lastRankName = getRank(1).name;
-            const out = [];
-            events.forEach(function(e){
-                out.push(e);
-                cum = Math.max(0, cum + (e.xp || 0));
-                const lv = levelFromXp(cum).level;
-                if (lv !== lastLevel) {
-                    const up = lv > lastLevel;
-                    const rk = getRank(lv);
-                    out.push({ date: e.date, cat: 'level', icon: up ? 'chevrons-up' : 'chevrons-down', title: (up ? 'Level up to ' + lv : 'Dropped to level ' + lv), detail: 'Rank ' + rk.index + ' \u00b7 ' + rk.name, xp: 0, hp: 0 });
-                    if (rk.name !== lastRankName) {
-                        out.push({ date: e.date, cat: 'rank', icon: 'crown', title: (up ? 'New rank: ' + rk.name : 'Rank changed: ' + rk.name), detail: 'Rank ' + rk.index + ' of ' + GAME_RANKS.length, xp: 0, hp: 0 });
-                        lastRankName = rk.name;
-                    }
-                    lastLevel = lv;
-                }
-            });
-            out.reverse();
-            return out;
-        }
-        function fmtHistDate(ds) {
-            const today = getISODateString(new Date());
-            const yd = new Date(); yd.setDate(yd.getDate() - 1);
-            if (ds === today) return 'Today';
-            if (ds === getISODateString(yd)) return 'Yesterday';
-            const d = new Date(ds + 'T00:00:00');
-            if (isNaN(d.getTime())) return ds;
-            return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-        }
-        function renderHistRow(e) {
-            let accent, iconWrap;
-            if (e.cat === 'win') { accent = 'border-emerald-500/20 bg-emerald-500/5'; iconWrap = 'bg-emerald-500/15 text-emerald-300'; }
-            else if (e.cat === 'loss') { accent = 'border-rose-500/20 bg-rose-500/5'; iconWrap = 'bg-rose-500/15 text-rose-300'; }
-            else if (e.cat === 'rank') { accent = 'border-amber-500/30 bg-amber-500/10'; iconWrap = 'bg-amber-500/15 text-amber-300'; }
-            else { accent = 'border-indigo-500/30 bg-indigo-500/10'; iconWrap = 'bg-indigo-500/15 text-indigo-300'; }
-            let deltas = '';
-            if (e.xp) { const p = e.xp > 0; deltas += '<span class="rounded-md border px-1.5 py-0.5 text-[10px] font-bold ' + (p ? 'border-indigo-500/30 text-indigo-300' : 'border-rose-500/30 text-rose-300') + '">' + (p ? '+' : '') + e.xp + ' XP</span>'; }
-            if (e.hp) { const p = e.hp > 0; deltas += '<span class="rounded-md border px-1.5 py-0.5 text-[10px] font-bold ' + (p ? 'border-emerald-500/30 text-emerald-300' : 'border-rose-500/30 text-rose-300') + '">' + (p ? '+' : '') + e.hp + ' HP</span>'; }
-            return '<div class="flex items-center gap-3 rounded-xl border ' + accent + ' px-3 py-2.5">'
-                + '<div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ' + iconWrap + '"><i data-lucide="' + escapeHTML(e.icon || 'activity') + '" class="h-4 w-4"></i></div>'
-                + '<div class="min-w-0 flex-1"><div class="truncate text-xs font-bold text-white">' + escapeHTML(e.title) + '</div><div class="truncate text-[10px] text-slate-500">' + escapeHTML(e.detail) + '</div></div>'
-                + '<div class="ml-auto flex shrink-0 items-center gap-1">' + deltas + '</div></div>';
-        }
-        function setGameHistoryFilter(f) {
-            gameHistoryFilter = f;
-            document.querySelectorAll('#gameHistoryFilters [data-hist-filter]').forEach(function(b){
-                b.classList.toggle('hist-chip-active', b.getAttribute('data-hist-filter') === f);
-            });
-            renderGameHistory();
-        }
-        function renderGameHistory() {
-            const container = document.getElementById('gameHistoryList');
-            if (!container) return;
-            const all = buildGameHistory();
-            const f = gameHistoryFilter;
-            let list = all.filter(function(e){
-                if (f === 'all') return true;
-                if (f === 'win') return e.cat === 'win';
-                if (f === 'loss') return e.cat === 'loss';
-                if (f === 'rank') return e.cat === 'rank' || e.cat === 'level';
-                return true;
-            });
-            const cnt = document.getElementById('gameHistoryCount');
-            if (cnt) cnt.textContent = all.length + (all.length === 1 ? ' event' : ' events');
-            const CAP = 250;
-            list = list.slice(0, CAP);
-            if (!list.length) {
-                container.innerHTML = '<div class="rounded-xl border border-dashed border-slate-800 py-8 text-center text-xs text-slate-500">No activity yet. Complete a habit or task to start your ledger.</div>';
-                return;
-            }
-            let html = ''; let curDate = null;
-            list.forEach(function(e){
-                if (e.date !== curDate) {
-                    curDate = e.date;
-                    html += '<div class="flex items-center gap-2 pt-2"><span class="text-[10px] font-bold uppercase tracking-wider text-slate-500">' + escapeHTML(fmtHistDate(e.date)) + '</span><span class="h-px flex-1 bg-slate-800"></span></div>';
-                }
-                html += renderHistRow(e);
-            });
-            container.innerHTML = html;
-            if (window.lucide) lucide.createIcons();
-        }
         function renderGameSection() {
             const today = getISODateString(new Date());
             const habits = activeHabits();
@@ -8538,7 +8293,6 @@
             renderRewardShop(availableCoins);
             renderRedemptionHistory();
             renderAchievements({ totalCompleted, level, hp, bestStreak, redeemedCount: g.redeemed.length, totalEarnedCoins });
-            renderGameHistory();
             applyGameTab();
 
             if (window.lucide) lucide.createIcons();
@@ -8969,7 +8723,7 @@
                     const btn = document.getElementById('authSubmitBtn');
                     if (btn) { btn.disabled = false; btn.textContent = authMode === 'signin' ? 'Sign In' : 'Create Account'; }
                     subscribeCloud();
-                    switchTab('game');
+                    switchTab('tracker');
                     if (window.lucide && lucide.createIcons) lucide.createIcons();
                 } else {
                     if (cloudUnsub) { cloudUnsub(); cloudUnsub = null; }
@@ -8994,7 +8748,7 @@
             renderTodos();
             renderArchived();
             switchSettingsTab('appearance');
-            switchTab('game');
+            setMobileTabActive('system');
             lucide.createIcons();
         });
     </script>
